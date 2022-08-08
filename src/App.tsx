@@ -1,12 +1,15 @@
 import React from "react"
-import logo from "./logo.svg"
+
+import { Button } from "@mui/material"
+import IconButton from "@mui/material/IconButton"
+import { Delete as DangStset } from "@mui/icons-material"
+
 import "./App.css"
 
 function App(): JSX.Element {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p />
         <a
           className="App-link"
@@ -14,7 +17,11 @@ function App(): JSX.Element {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          <Button variant="contained">
+            <IconButton aria-label="delete">
+              <DangStset />
+            </IconButton>
+          </Button>
         </a>
       </header>
     </div>
