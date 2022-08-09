@@ -81,7 +81,7 @@ const ListDetailCard: React.FC<ListDetailCardProps> = ({
   item: { index, titleBody, titleBottom, titleTop },
 }) => {
   return (
-    <Grid container spacing={3} sx={GRID_WRAP}>
+    <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={2}>
         <ThemeCardNumbering variant="h2" align="center" sx={CARD_NUMBERING}>
           {index}
