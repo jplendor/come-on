@@ -15,8 +15,6 @@ const Layout: React.FC<Props> = ({ children }) => {
             backgroundColor: "#cfe8fc",
             border: "1px solid grey",
             height: "98vh",
-            width: "sm",
-            position: "relative",
           }}
         >
           {children}

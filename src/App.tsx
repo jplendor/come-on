@@ -1,13 +1,7 @@
 import React from "react"
-import Navbar from "./components/NavBar"
 
 const App = (): JSX.Element => {
-  return (
-    <>
-      <p>hello</p>
-      <Navbar />
-    </>
-  )
+  return <div>test</div>
 }
 
 export default App
