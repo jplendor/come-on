@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Container, Grid, Avatar } from "@mui/material"
+import { Grid, Avatar } from "@mui/material"
 import { Map, Groups } from "@mui/icons-material"
 import styled from "@emotion/styled"
 
