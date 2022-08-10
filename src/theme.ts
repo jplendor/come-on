@@ -5,11 +5,12 @@ import { createTheme } from "@mui/material/styles"
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#d90f0fde",
+      main: "#92B4EC",
     },
     secondary: {
-      main: "#19857b",
+      main: "#FFD24C",
     },
+    // TODO: 색 정하기
     error: {
       main: red.A400,
     },

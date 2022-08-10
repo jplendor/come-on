@@ -1,6 +1,6 @@
 import React from "react"
-import { Grid, Avatar, Hidden } from "@mui/material"
-import { Map, Groups, HideImageOutlined } from "@mui/icons-material"
+import { Grid, Avatar, AppBar } from "@mui/material"
+import { Map, Groups } from "@mui/icons-material"
 import styled from "@emotion/styled"
 
 const CSS_ITEM = {
@@ -9,7 +9,6 @@ const CSS_ITEM = {
   justifyContent: "center",
   alignItems: "center",
   padding: "1rem 0",
-  margin: "0 auto",
   transition: "0.3s",
   "&:hover": {
     color: "#92b4ec",
@@ -17,23 +16,21 @@ const CSS_ITEM = {
   },
 }
 
-const MyBox = styled.div`
-  box-shadow: 0 3px 3px rgba(180, 184, 181, 0.5);
-`
 const SubTitle = styled.div`
   font-weight: bold;
 `
 
 const Navbar: React.FC = () => {
   return (
-    <MyBox>
+    <AppBar
+      position="sticky"
+      color="primary"
+      sx={{ top: "auto", bottom: "0", padding: "0px" }}
+    >
       <Grid
         container
-        maxWidth="xs"
         sx={{
           backgroundColor: "#ffffff",
-          position: "absolute",
-          bottom: "0",
           boxShadow: " 0 -3px 3px rgba(180,184,181,.5)",
           overflow: "hidden",
         }}
@@ -70,8 +67,7 @@ const Navbar: React.FC = () => {
           <SubTitle>마이페이지</SubTitle>
         </Grid>
       </Grid>
-    </MyBox>
+    </AppBar>
   )
 }
-
 export default Navbar
