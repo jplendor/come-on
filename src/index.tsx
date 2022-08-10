@@ -8,6 +8,7 @@ import App from "./App"
 import theme from "./theme"
 import reportWebVitals from "./reportWebVitals"
 import Layout from "./components/Layout"
+import Navbar from "./components/NavBar"
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
