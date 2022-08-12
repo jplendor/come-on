@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Typography, Tooltip, IconButton } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import styled from "@emotion/styled"
 import PackmanImg from "../../assets/packman.png"
 
