@@ -1,11 +1,19 @@
 /* eslint-disable max-len */
 import React from "react"
-
+import { Route, BrowserRouter, Routes } from "react-router-dom"
 import { generateComponent } from "./utils"
+
+import MapContainer from "./components/common/MapContainer"
+import Navbar from "./components/common/Navbar"
+import Guide from "./components/common/Guide"
+
 import ListDetailCard, {
   ListDetailCardProp,
 } from "./components/common/ListDetailCard"
 import Listitem, { ListItemProp } from "./components/common/Listitem"
+
+import Course from "./pages/Course"
+import Layout from "./components/Layout"
 
 const SAMPLE_DATA1: ListItemProp[] = [
   {
@@ -57,16 +65,29 @@ const SAMPLE_DATA2: ListDetailCardProp[] = [
     titleBottom: "노래방 3시간 먼저가는사람 대머리",
   },
 ]
+
 const App = (): JSX.Element => {
   return (
-    <>
+    <BrowserRouter>
+      {/* <Guide guideStr="정보를 입력해주세요!" />
       {generateComponent(SAMPLE_DATA1, (item, key) => (
         <Listitem item={item} key={key} />
       ))}
       {generateComponent(SAMPLE_DATA2, (item, key) => (
         <ListDetailCard item={item} key={key} />
-      ))}
-    </>
+      ))} */}
+      <Routes>
+        <Route path="/" />
+        <Route path="/course/:id" element={<Course />} />
+        <Route path="/course/register" />
+        <Route path="/meeting" />
+        <Route path="/meeting/:id" />
+        <Route path="/meeting/:id/register" />
+        <Route path="/my-info" />
+        <Route path="/login" />
+      </Routes>
+      <Navbar />
+    </BrowserRouter>
   )
 }
 

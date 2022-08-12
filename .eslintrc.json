@@ -12,6 +12,7 @@
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
+  "ignorePatterns": ["**/*.html"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -21,8 +22,13 @@
   },
   "plugins": ["react", "@typescript-eslint", "react-hooks"],
   "rules": {
-    "react/function-component-definition": [2, { "namedComponents": "arrow-function",
-    "unnamedComponents":"arrow-function" }],
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
     "react/jsx-filename-extension": ["warn", { "extensions": [".tsx"] }],
     "import/extensions": [
       "error",
@@ -32,10 +38,10 @@
         "tsx": "never"
       }
     ],
-    "prettier/prettier" : [
+    "prettier/prettier": [
       "error",
       {
-          "endOfLine": "auto"
+        "endOfLine": "auto"
       }
     ],
     "@typescript-eslint/explicit-function-return-type": [
@@ -50,7 +56,10 @@
   },
   "settings": {
     "import/resolver": {
-      "typescript": {}
+      "node": {
+        "extensions": [".js", ".jsx", ".tsx", ".ts", ".html"],
+        "typescript": {}
+      }
     }
   }
 }
