@@ -2,6 +2,7 @@
 import React from "react"
 import Navbar from "./components/common/NavBar"
 import Guide from "./components/common/Guide"
+import MapContainer from "./components/common/MapContainer"
 
 import { generateComponent } from "./utils"
 import ListDetailCard, {
@@ -63,6 +64,7 @@ const SAMPLE_DATA2: ListDetailCardProp[] = [
 const App = (): JSX.Element => {
   return (
     <>
+      <MapContainer />
       <Guide guideStr="정보를 입력해주세요!" />
       {generateComponent(SAMPLE_DATA1, (item, key) => (
         <Listitem item={item} key={key} />

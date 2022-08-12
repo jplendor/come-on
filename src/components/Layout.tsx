@@ -10,7 +10,7 @@ const Layout: React.FC<Props> = ({ children }) => {
     <Grid sm={12} item>
       <Container maxWidth="sm">
         {/* 임시 배경 - c:08/09 */}
-        <Box sx={{ paddingBottom: "120px" }}>{children}</Box>
+        <Box sx={{}}>{children}</Box>
       </Container>
     </Grid>
   )
