@@ -15,12 +15,12 @@ interface NavigationBarProps {
   maxPage: number
 }
 
-const NavigationBar: React.FC<NavigationBarProps> = ({
-  currentPage,
+const NavigationBar = ({
+  currentPage: currentPageProp,
   setCurrentPage,
   minPage,
   maxPage,
-}) => {
+}: NavigationBarProps): JSX.Element => {
   const ACTIVE = {
     color: "#FFC700",
   }
@@ -54,12 +54,11 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
   }
 
   const handleArrowBtnClick = (type: ArrowType): void => {
-    if (type === "back" && currentPage > minPage) {
-      setCurrentPage(currentPage - 1)
+    if (type === ArrowType.Back && currentPageProp > minPage) {
+      setCurrentPage(currentPageProp - 1)
     }
-
-    if (type === "forward" && currentPage < maxPage) {
-      setCurrentPage(currentPage + 1)
+    if (type === ArrowType.Forward && currentPageProp < maxPage) {
+      setCurrentPage(currentPageProp + 1)
     }
   }
 
@@ -75,21 +74,29 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
     setDotStyle(nextDotStyle)
   }
 
-  const makeStyleChanger = (a: style, b: style): typeof styleChanger => {
-    const styleChanger = (cp: number): void => {
+  const makeStyleChanger = (
+    style1: style,
+    style2: style
+  ): typeof styleChanger => {
+    const styleChanger = (currentPage: number): void => {
       setStyle(
-        [cp === minPage ? b : a, cp === maxPage ? b : a],
-        new Array(maxPage).fill(b).map((v, i) => (cp - 1 === i ? a : v))
+        [
+          currentPage === minPage ? style2 : style1,
+          currentPage === maxPage ? style2 : style1,
+        ],
+        new Array(maxPage)
+          .fill(style2)
+          .map((v, i) => (currentPage - 1 === i ? style1 : v))
       )
     }
     return styleChanger
   }
 
-  const sc = makeStyleChanger(ACTIVE, UNACTIVE)
+  const changeStyle = makeStyleChanger(ACTIVE, UNACTIVE)
 
   useEffect(() => {
-    sc(currentPage)
-  }, [currentPage])
+    changeStyle(currentPageProp)
+  }, [currentPageProp])
 
   return (
     <Grid container sx={GRID_CONTAINER}>

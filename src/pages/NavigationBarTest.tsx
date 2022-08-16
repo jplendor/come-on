@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import NavigationBar from "../components/common/NavigationBar"
 
-const NavigationBarTest: React.FC = () => {
+const NavigationBarTest = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1)
 
   return (
