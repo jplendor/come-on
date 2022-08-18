@@ -11,6 +11,7 @@ import ListDetailCard, {
   ListDetailCardProp,
 } from "./components/common/ListDetailCard"
 import Listitem, { ListItemProp } from "./components/common/Listitem"
+import CalendarTest from "./pages/CalendarTest"
 
 import Course from "./pages/Course"
 import Layout from "./components/Layout"
@@ -69,6 +70,7 @@ const SAMPLE_DATA2: ListDetailCardProp[] = [
 const App = (): JSX.Element => {
   return (
     <BrowserRouter>
+      <CalendarTest />
       {/* <Guide guideStr="정보를 입력해주세요!" />
       {generateComponent(SAMPLE_DATA1, (item, key) => (
         <Listitem item={item} key={key} />
