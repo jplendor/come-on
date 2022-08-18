@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
   Box,
   Grid,
@@ -16,15 +16,28 @@ import { Close as CloseIcon, Edit as EditIcon } from "@mui/icons-material"
 
 const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
   "&.MuiTypography-root": {
-    backgroundColor: theme.palette.primary.main,
+    height: "110px",
+    lineHeight: "110px",
+    borderRadius: "0 10px 10px 0",
   },
+  color: "white",
+  backgroundColor: theme.palette.primary.main,
 }))
+
+const SelectedNumberCard = {
+  backgroundColor: "#FFD24C",
+}
+
+const SelectedCard = {
+  border: "1px solid #FFD24C",
+}
 
 const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
   "&.MuiGrid-root": {
     borderRadius: "10px 0 0 10px",
-    border: `1px solid ${theme.palette.primary.main}`,
+    color: "black",
   },
+  border: `1px solid #92B4EC`,
 }))
 
 const CARD_NUMBERING = {
@@ -77,18 +90,40 @@ interface ListDetailCardProps {
   item: ListDetailCardProp
 }
 
-const ListDetailCard: React.FC<ListDetailCardProps> = ({
+const ListDetailCard: React.FC<any> = ({
+  onClick,
+  isSelected,
   item: { index, titleBody, titleBottom, titleTop },
 }) => {
+  // API
+  const deleteCard = (): any => {
+    // x버튼 누를 시 삭제.
+  }
+
+  const modifyCard = (): any => {
+    // 수정버튼 누를 시 수정
+  }
+
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={2}>
-        <ThemeCardNumbering variant="h2" align="center" sx={CARD_NUMBERING}>
+        <ThemeCardNumbering
+          variant="h2"
+          align="center"
+          sx={
+            isSelected === String(index) ? SelectedNumberCard : CARD_NUMBERING
+          }
+        >
           {index}
         </ThemeCardNumbering>
       </Grid>
       <Grid item xs={10}>
-        <ThemeGrid container>
+        <ThemeGrid
+          container
+          id={index}
+          onClick={onClick}
+          sx={isSelected === String(index) ? SelectedCard : {}}
+        >
           <Grid item xs={11}>
             <Box sx={TITLE_WRAP}>
               <Typography component="span" sx={TITLE_TOP}>

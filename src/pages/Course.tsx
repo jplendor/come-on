@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 
-import { Box, Typography } from "@mui/material"
+import { Box, Typography, makeStyles } from "@mui/material"
 
 import FavoriteIcon from "@mui/icons-material/Favorite"
 
 import { styled } from "@mui/material/styles"
+import { SettingsInputAntennaTwoTone } from "@mui/icons-material"
 import MapContainer from "../components/common/MapContainer"
 import ListDetailCard, {
   ListDetailCardProp,
@@ -46,7 +47,24 @@ const TitleContainer = styled(Box)(() => ({
   alignItems: "center",
 }))
 
+const KakaoContainer = styled(Box)(() => ({
+  display: "flex",
+  justifyContent: "right",
+  alignItems: "center",
+}))
+
 const Course = (): any => {
+  const i = 0
+  const [isSelected, setSelected] = useState("")
+
+  const onClickFocus = (event: Event | null): any => {
+    const e: any = event?.currentTarget
+    setSelected(e.id)
+  }
+
+  const onClickHeart = (event: Event | null): any => {
+    const e: any = event?.currentTarget
+  }
   return (
     <>
       {/* 타이틀만들기 */}
@@ -55,6 +73,7 @@ const Course = (): any => {
           <Typography variant="h5" sx={{ fontWeight: "800" }}>
             {SAMPLE_DATA3.title}
           </Typography>
+          {/* {하트버튼 만들기} */}
           <Box className="subTitle">
             <Typography variant="subtitle1" sx={{ fontWeight: "800" }}>
               {`${SAMPLE_DATA3.author}  |  ${SAMPLE_DATA3.date}`}
@@ -65,14 +84,22 @@ const Course = (): any => {
           <FavoriteIcon fontSize="inherit" />
         </Typography>
       </TitleContainer>
-      <MapContainer />
-      <Box>
-        <Typography>카카오톡으로 공유하기</Typography>
-        <KakaoIcon width="40px" height="40px" />
-      </Box>
+      <MapContainer selectedNumber={isSelected} />
+      <KakaoContainer p={1}>
+        <Typography mr={1} variant="subtitle1" sx={{ fontWeight: "800" }}>
+          카카오톡으로 공유하기
+        </Typography>
+        <KakaoIcon width="30px" height="30px" />
+      </KakaoContainer>
       {/* 카카오톡 공유하기 */}
+      {/* 버튼만들기 */}
       {generateComponent(SAMPLE_DATA2, (item, key) => (
-        <ListDetailCard item={item} key={key} />
+        <ListDetailCard
+          item={item}
+          key={key}
+          onClick={onClickFocus}
+          isSelected={isSelected}
+        />
       ))}
     </>
   )
