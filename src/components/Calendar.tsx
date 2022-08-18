@@ -3,41 +3,55 @@ import { Box } from "@mui/material"
 
 import { generateComponent } from "../utils"
 
-const Month = ({ dates }: { dates: number[] }): JSX.Element => {
-  const MONTH = {
-    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
-  }
-
-  const DATE = {
-    width: 1 / 7,
-    height: "80px",
-    lineHeight: "80px",
-    display: "inline-block",
-    textAlign: "center",
-  }
-
-  return (
-    <Box sx={MONTH}>
-      {generateComponent(dates, (data, key) => (
-        <Box sx={DATE} key={key}>
-          {data}
-        </Box>
-      ))}
-    </Box>
-  )
+interface Selection {
+  date: string
+  idList: string[]
 }
 
 interface CalendarProps {
   fromDate: string
   toDate: string
+  selectionData: Selection[]
+  totalNumberMembers: number
 }
+
+interface dateData {
+  date: number
+  percentage: number
+}
+
 interface CalendarData {
   year: number
   month: number
-  date: number[]
+  dateData: dateData[]
 }
 
-const Calendar = ({ fromDate, toDate }: CalendarProps): JSX.Element => {
+const toStringYyyymmdd = (dateParam: Date): string => {
+  const [yyyy, month, date] = [
+    dateParam.getFullYear(),
+    dateParam.getMonth(),
+    dateParam.getDate(),
+  ]
+  const mm = month < 9 ? `0${month + 1}` : month + 1
+  const dd = date < 10 ? `0${date}` : date
+  return `${yyyy}-${mm}-${dd}`
+}
+
+const getLastDate = (date: Date): number => {
+  const lastDate = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDate()
+  return lastDate
+}
+
+const Calendar = ({
+  fromDate,
+  toDate,
+  selectionData: selectionDataProp,
+  totalNumberMembers: totalNumberMembersProp,
+}: CalendarProps): JSX.Element => {
   const [allDates, setAllDates] = useState<CalendarData[]>([])
 
   const CALENDAR = {
@@ -76,13 +90,17 @@ const Calendar = ({ fromDate, toDate }: CalendarProps): JSX.Element => {
     fontWeight: "bold",
   }
 
-  const getLastDate = (date: Date): number => {
-    const lastDate = new Date(
-      date.getFullYear(),
-      date.getMonth() + 1,
-      0
-    ).getDate()
-    return lastDate
+  const MONTH = {
+    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
+    display: "flex",
+    flexWrap: "wrap",
+  }
+
+  const DATE = {
+    width: 1 / 7,
+    height: "80px",
+    lineHeight: "80px",
+    textAlign: "center",
   }
 
   const getAllDates = useCallback(
@@ -93,12 +111,23 @@ const Calendar = ({ fromDate, toDate }: CalendarProps): JSX.Element => {
       const to = new Date(toString)
 
       // 월별 일자 구하기
-      const getDates = (year: number, month: number): number[] => {
-        let newData: number[] = []
+      const getDates = (year: number, month: number): dateData[] => {
+        let newData: dateData[] = []
 
-        const loop = (start: number, end: number, arr: number[]): void => {
+        const loop = (start: number, end: number, arr: dateData[]): void => {
           for (let i = start; i <= end; i += 1) {
-            arr.push(i)
+            const filteredSelectionData = selectionDataProp.filter(
+              (item) => item.date === toStringYyyymmdd(new Date(year, month, i))
+            )
+            const selectionCount =
+              filteredSelectionData.length === 0
+                ? 0
+                : filteredSelectionData[0].idList.length
+
+            arr.push({
+              date: i,
+              percentage: selectionCount / totalNumberMembersProp,
+            })
           }
         }
 
@@ -113,8 +142,11 @@ const Calendar = ({ fromDate, toDate }: CalendarProps): JSX.Element => {
         }
 
         // 첫 날 요일만큼 빈 데이터 넣기
-        const startDay = new Date(year, month, newData[0]).getDay()
-        newData = [...new Array(startDay).fill(""), ...newData]
+        const startDay = new Date(year, month, newData[0].date).getDay()
+        newData = [
+          ...new Array(startDay).fill({ date: 0, percentage: 0 }),
+          ...newData,
+        ]
 
         return newData
       }
@@ -127,7 +159,7 @@ const Calendar = ({ fromDate, toDate }: CalendarProps): JSX.Element => {
         newAllDates.push({
           year: i.getFullYear(),
           month: i.getMonth(),
-          date: getDates(i.getFullYear(), i.getMonth()),
+          dateData: getDates(i.getFullYear(), i.getMonth()),
         })
       }
 
@@ -149,10 +181,22 @@ const Calendar = ({ fromDate, toDate }: CalendarProps): JSX.Element => {
           </Box>
         ))}
       </Box>
-      {generateComponent(allDates, (data, key) => (
-        <Box key={key} sx={MONTH_CONTAINER}>
-          <Box sx={MONTH_NUMBER}>{`${data.month + 1}`}</Box>
-          <Month dates={data.date} />
+      {generateComponent(allDates, (data1, key1) => (
+        <Box key={key1} sx={MONTH_CONTAINER}>
+          <Box sx={MONTH_NUMBER}>{`${data1.month + 1}`}</Box>
+          <Box sx={MONTH}>
+            {generateComponent(data1.dateData, (data2, key2) => (
+              <Box
+                sx={{
+                  ...DATE,
+                  backgroundColor: `rgba(255, 165, 165, ${data2.percentage})`,
+                }}
+                key={key2}
+              >
+                {data2.date === 0 ? "" : data2.date}
+              </Box>
+            ))}
+          </Box>
         </Box>
       ))}
     </Box>
