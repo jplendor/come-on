@@ -103,14 +103,21 @@ const Calendar = ({
     textAlign: "center",
   }
 
+  // 모든 날짜 구하기
   const getAllDates = useCallback(
     (fromString: string, toString: string): CalendarData[] => {
       const newAllDates: CalendarData[] = []
 
       const from = new Date(fromString)
+      const [fromY, fromM, fromD] = [
+        from.getFullYear(),
+        from.getMonth(),
+        from.getDate(),
+      ]
       const to = new Date(toString)
+      const [toY, toM, toD] = [to.getFullYear(), to.getMonth(), to.getDate()]
 
-      // 월별 일자 구하기
+      // 월별 날짜정보(날짜, 선택율) 구하기
       const getDates = (year: number, month: number): dateData[] => {
         let newData: dateData[] = []
 
@@ -131,12 +138,17 @@ const Calendar = ({
           }
         }
 
-        if (month === from.getMonth() && month === to.getMonth()) {
-          loop(from.getDate(), to.getDate(), newData)
-        } else if (month === from.getMonth()) {
-          loop(from.getDate(), getLastDate(from), newData)
-        } else if (month === to.getMonth()) {
-          loop(1, to.getDate(), newData)
+        if (
+          year === fromY &&
+          month === fromM &&
+          year === toY &&
+          month === toM
+        ) {
+          loop(fromD, toD, newData)
+        } else if (year === fromY && month === fromM) {
+          loop(fromD, getLastDate(from), newData)
+        } else if (year === toY && month === toM) {
+          loop(1, toD, newData)
         } else {
           loop(1, getLastDate(new Date(year, month)), newData)
         }
@@ -152,14 +164,16 @@ const Calendar = ({
       }
 
       for (
-        let i = new Date(from.getFullYear(), from.getMonth(), 1);
+        let i = new Date(fromY, fromM, 1);
         i <= to;
         i.setMonth(i.getMonth() + 1)
       ) {
+        const [iY, iM] = [i.getFullYear(), i.getMonth()]
+
         newAllDates.push({
-          year: i.getFullYear(),
-          month: i.getMonth(),
-          dateData: getDates(i.getFullYear(), i.getMonth()),
+          year: iY,
+          month: iM,
+          dateData: getDates(iY, iM),
         })
       }
 
@@ -181,19 +195,19 @@ const Calendar = ({
           </Box>
         ))}
       </Box>
-      {generateComponent(allDates, (data1, key1) => (
+      {generateComponent(allDates, (allData, key1) => (
         <Box key={key1} sx={MONTH_CONTAINER}>
-          <Box sx={MONTH_NUMBER}>{`${data1.month + 1}`}</Box>
+          <Box sx={MONTH_NUMBER}>{`${allData.month + 1}`}</Box>
           <Box sx={MONTH}>
-            {generateComponent(data1.dateData, (data2, key2) => (
+            {generateComponent(allData.dateData, (monthData, key2) => (
               <Box
                 sx={{
                   ...DATE,
-                  backgroundColor: `rgba(255, 165, 165, ${data2.percentage})`,
+                  backgroundColor: `rgba(255, 165, 165, ${monthData.percentage})`,
                 }}
                 key={key2}
               >
-                {data2.date === 0 ? "" : data2.date}
+                {monthData.date === 0 ? "" : monthData.date}
               </Box>
             ))}
           </Box>
