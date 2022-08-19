@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { Box } from "@mui/material"
+import { Box, Dialog, DialogTitle, Grid, Avatar, Button } from "@mui/material"
 
 import { generateComponent } from "../utils"
 
@@ -7,7 +7,48 @@ interface Selection {
   date: string
   idList: string[]
 }
+interface SelectionDataModalProps {
+  open: boolean
+  onClose: () => void
+  targetDateData: Selection
+  totalNumberMembers: number
+}
 
+const SelectionDataModal = (props: SelectionDataModalProps): JSX.Element => {
+  const { open, onClose, targetDateData, totalNumberMembers } = props
+
+  const DIALOG_TITLE = {
+    backgroundColor: "#8E8E8E",
+    color: "#FFFFFF",
+  }
+
+  const GRID_ITEM = {
+    display: "flex",
+  }
+
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle sx={DIALOG_TITLE}>{targetDateData.date}</DialogTitle>
+      <Grid container>
+        {targetDateData.idList.length === 0
+          ? "해당 날짜를 선택한 멤버가 없습니다"
+          : generateComponent(targetDateData.idList, (data, key) => (
+              <Grid item key={key} sx={GRID_ITEM} xs={12}>
+                <Avatar
+                  alt="프로필 이미지"
+                  src="https://cdn.pixabay.com/photo/2015/03/03/18/58/woman-657753_960_720.jpg"
+                />
+                <Box>{data}</Box>
+              </Grid>
+            ))}
+      </Grid>
+      <Box>{`가능 인원 : ${targetDateData.idList.length} / ${totalNumberMembers}`}</Box>
+      <Button variant="contained" onClick={onClose}>
+        닫기
+      </Button>
+    </Dialog>
+  )
+}
 interface CalendarProps {
   fromDate: string
   toDate: string
@@ -53,6 +94,11 @@ const Calendar = ({
   totalNumberMembers: totalNumberMembersProp,
 }: CalendarProps): JSX.Element => {
   const [allDates, setAllDates] = useState<CalendarData[]>([])
+  const [open, setOpen] = useState(false)
+  const [targetDateData, setTargetDateData] = useState<Selection>({
+    date: "",
+    idList: [],
+  })
 
   const CALENDAR = {
     height: "500px",
@@ -182,6 +228,34 @@ const Calendar = ({
     []
   )
 
+  const handleDateClick = (e: React.MouseEvent<HTMLDivElement>): void => {
+    if (!(e.target instanceof HTMLDivElement)) {
+      return
+    }
+    if (!e.target.dataset.date) {
+      return
+    }
+
+    const targetDate = e.target.dataset.date
+    const filteredSelectionData = selectionDataProp.filter(
+      (item) => item.date === targetDate
+    )[0]
+
+    setTargetDateData(
+      filteredSelectionData === undefined
+        ? {
+            date: targetDate,
+            idList: [],
+          }
+        : filteredSelectionData
+    )
+    setOpen(true)
+  }
+
+  const handleClose = (): void => {
+    setOpen(false)
+  }
+
   useEffect(() => {
     setAllDates(getAllDates(fromDate, toDate))
   }, [fromDate, toDate, getAllDates])
@@ -201,11 +275,19 @@ const Calendar = ({
           <Box sx={MONTH}>
             {generateComponent(allData.dateData, (monthData, key2) => (
               <Box
+                key={key2}
                 sx={{
                   ...DATE,
                   backgroundColor: `rgba(255, 165, 165, ${monthData.percentage})`,
                 }}
-                key={key2}
+                data-date={
+                  monthData.date === 0
+                    ? null
+                    : toStringYyyymmdd(
+                        new Date(allData.year, allData.month, monthData.date)
+                      )
+                }
+                onClick={handleDateClick}
               >
                 {monthData.date === 0 ? "" : monthData.date}
               </Box>
@@ -213,6 +295,12 @@ const Calendar = ({
           </Box>
         </Box>
       ))}
+      <SelectionDataModal
+        open={open}
+        onClose={handleClose}
+        targetDateData={targetDateData}
+        totalNumberMembers={totalNumberMembersProp}
+      />
     </Box>
   )
 }
