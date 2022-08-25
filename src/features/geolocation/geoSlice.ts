@@ -26,7 +26,7 @@ const geoSlice = createSlice({
   name: "geolocation",
   initialState,
   reducers: {
-    geoAdded: {
+    geoUpdate: {
       reducer: (_, action: PayloadAction<GeoSliceState>) => action.payload,
       prepare: (geolocation: UseGeolocationReturnType) =>
         !geolocation
