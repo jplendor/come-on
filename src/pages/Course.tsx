@@ -53,29 +53,36 @@ const KakaoContainer = styled(Box)(() => ({
   alignItems: "center",
 }))
 
+const FONT_SIZE_800 = {
+  fontWeight: "800",
+}
+
 const Course = (): any => {
-  const i = 0
   const [isSelected, setSelected] = useState("")
 
-  const onClickFocus = (event: Event | null): any => {
-    const e: any = event?.currentTarget
-    setSelected(e.id)
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
+    const e = event?.currentTarget
+
+    if (e) {
+      setSelected(e.id)
+    } else setSelected("")
   }
 
-  const onClickHeart = (event: Event | null): any => {
-    const e: any = event?.currentTarget
-  }
+  // heart버튼 클릭시 이벤트
+  // const onClickHeart = (event: React.MouseEvent<HTMLDivElement> | null): any => {
+  //   const e: any = event?.currentTarget
+  // }
   return (
     <>
       {/* 타이틀만들기 */}
       <TitleContainer p={2}>
         <Box className="Title" mt={2}>
-          <Typography variant="h5" sx={{ fontWeight: "800" }}>
+          <Typography variant="h5" sx={FONT_SIZE_800}>
             {SAMPLE_DATA3.title}
           </Typography>
           {/* {하트버튼 만들기} */}
           <Box className="subTitle">
-            <Typography variant="subtitle1" sx={{ fontWeight: "800" }}>
+            <Typography variant="subtitle1" sx={FONT_SIZE_800}>
               {`${SAMPLE_DATA3.author}  |  ${SAMPLE_DATA3.date}`}
             </Typography>
           </Box>
@@ -86,7 +93,7 @@ const Course = (): any => {
       </TitleContainer>
       <MapContainer selectedNumber={isSelected} />
       <KakaoContainer p={1}>
-        <Typography mr={1} variant="subtitle1" sx={{ fontWeight: "800" }}>
+        <Typography mr={1} variant="subtitle1" sx={FONT_SIZE_800}>
           카카오톡으로 공유하기
         </Typography>
         <KakaoIcon width="30px" height="30px" />

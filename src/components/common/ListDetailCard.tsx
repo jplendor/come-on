@@ -24,11 +24,11 @@ const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
 }))
 
-const SelectedNumberCard = {
+const SELECTED_NUM_CARD = {
   backgroundColor: "#FFD24C",
 }
 
-const SelectedCard = {
+const SELECTEC_CARD = {
   border: "1px solid #FFD24C",
 }
 
@@ -88,9 +88,11 @@ export interface ListDetailCardProp {
 
 interface ListDetailCardProps {
   item: ListDetailCardProp
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
+  isSelected: string
 }
 
-const ListDetailCard: React.FC<any> = ({
+const ListDetailCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
   item: { index, titleBody, titleBottom, titleTop },
@@ -110,9 +112,7 @@ const ListDetailCard: React.FC<any> = ({
         <ThemeCardNumbering
           variant="h2"
           align="center"
-          sx={
-            isSelected === String(index) ? SelectedNumberCard : CARD_NUMBERING
-          }
+          sx={isSelected === String(index) ? SELECTED_NUM_CARD : CARD_NUMBERING}
         >
           {index}
         </ThemeCardNumbering>
@@ -120,9 +120,9 @@ const ListDetailCard: React.FC<any> = ({
       <Grid item xs={10}>
         <ThemeGrid
           container
-          id={index}
+          id={String(index)}
           onClick={onClick}
-          sx={isSelected === String(index) ? SelectedCard : {}}
+          sx={isSelected === String(index) ? SELECTEC_CARD : {}}
         >
           <Grid item xs={11}>
             <Box sx={TITLE_WRAP}>
