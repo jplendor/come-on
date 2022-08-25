@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react"
 import { Box, Dialog, DialogTitle, Grid, Avatar, Button } from "@mui/material"
 
-import { generateComponent } from "../utils"
+import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "../utils"
 
 interface Selection {
   date: string
@@ -15,7 +15,14 @@ interface SelectionDataModalProps {
 }
 
 const SelectionDataModal = (props: SelectionDataModalProps): JSX.Element => {
-  const { open, onClose, targetDateData, totalNumberMembers } = props
+  const {
+    open,
+    onClose,
+    targetDateData: { date, idList },
+    totalNumberMembers,
+  } = props
+
+  const IDLIST_LENGTH = idList.length
 
   const DIALOG_TITLE = {
     backgroundColor: "#8E8E8E",
@@ -28,11 +35,11 @@ const SelectionDataModal = (props: SelectionDataModalProps): JSX.Element => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle sx={DIALOG_TITLE}>{targetDateData.date}</DialogTitle>
+      <DialogTitle sx={DIALOG_TITLE}>{date}</DialogTitle>
       <Grid container>
-        {targetDateData.idList.length === 0
+        {IDLIST_LENGTH === 0
           ? "해당 날짜를 선택한 멤버가 없습니다"
-          : generateComponent(targetDateData.idList, (data, key) => (
+          : generateComponent(idList, (data, key) => (
               <Grid item key={key} sx={GRID_ITEM} xs={12}>
                 <Avatar
                   alt="프로필 이미지"
@@ -42,7 +49,7 @@ const SelectionDataModal = (props: SelectionDataModalProps): JSX.Element => {
               </Grid>
             ))}
       </Grid>
-      <Box>{`가능 인원 : ${targetDateData.idList.length} / ${totalNumberMembers}`}</Box>
+      <Box>{`가능 인원 : ${IDLIST_LENGTH} / ${totalNumberMembers}`}</Box>
       <Button variant="contained" onClick={onClose}>
         닫기
       </Button>
@@ -67,23 +74,9 @@ interface CalendarData {
   dateData: dateData[]
 }
 
-const toStringYyyymmdd = (dateParam: Date): string => {
-  const [yyyy, month, date] = [
-    dateParam.getFullYear(),
-    dateParam.getMonth(),
-    dateParam.getDate(),
-  ]
-  const mm = month < 9 ? `0${month + 1}` : month + 1
-  const dd = date < 10 ? `0${date}` : date
-  return `${yyyy}-${mm}-${dd}`
-}
-
 const getLastDate = (date: Date): number => {
-  const lastDate = new Date(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    0
-  ).getDate()
+  const [targetY, targetM] = getYyyymmddArray(date)
+  const lastDate = new Date(targetY, targetM + 1, 0).getDate()
   return lastDate
 }
 
@@ -155,13 +148,9 @@ const Calendar = ({
       const newAllDates: CalendarData[] = []
 
       const from = new Date(fromString)
-      const [fromY, fromM, fromD] = [
-        from.getFullYear(),
-        from.getMonth(),
-        from.getDate(),
-      ]
+      const [fromY, fromM, fromD] = getYyyymmddArray(from)
       const to = new Date(toString)
-      const [toY, toM, toD] = [to.getFullYear(), to.getMonth(), to.getDate()]
+      const [toY, toM, toD] = getYyyymmddArray(to)
 
       // 월별 날짜정보(날짜, 선택율) 구하기
       const getDates = (year: number, month: number): dateData[] => {
@@ -214,7 +203,7 @@ const Calendar = ({
         i <= to;
         i.setMonth(i.getMonth() + 1)
       ) {
-        const [iY, iM] = [i.getFullYear(), i.getMonth()]
+        const [iY, iM] = getYyyymmddArray(i)
 
         newAllDates.push({
           year: iY,
@@ -225,7 +214,7 @@ const Calendar = ({
 
       return newAllDates
     },
-    []
+    [selectionDataProp, totalNumberMembersProp]
   )
 
   const handleDateClick = (e: React.MouseEvent<HTMLDivElement>): void => {
