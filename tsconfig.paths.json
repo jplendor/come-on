@@ -2,9 +2,12 @@
     "compilerOptions": {
       "baseUrl": ".",
       "paths": {
+        "store": ["./src/app/store.ts"],
+        "features/*": ["./src/features/*"],
         "hooks/*": ["./src/hooks/*"],
+        "pages/*": ["./src/pages/*"],
         "types/*": ["./src/types/*"],
-
+        "utils": ["./src/utils/index.ts"],
       }
     }
   }

@@ -7,9 +7,12 @@ const overrides = (config) => {
     ...config.resolve,
     alias: {
       ...config.alias,
-
+      store: path.resolve(__dirname, "src/app/store.ts"),
+      features: path.resolve(__dirname, "src/features"),
       hooks: path.resolve(__dirname, "src/hooks"),
+      pages: path.resolve(__dirname, "src/pages"),
       types: path.resolve(__dirname, "src/types"),
+      utils: path.resolve(__dirname, "src/utils/index.ts"),
     },
   }
   return config
