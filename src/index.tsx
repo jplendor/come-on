@@ -1,26 +1,35 @@
 import React from "react"
 import { Provider } from "react-redux"
 import ReactDOM from "react-dom/client"
+import { CookiesProvider } from "react-cookie"
+import { BrowserRouter } from "react-router-dom"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
+
+import checkLoginStatus from "features/auth/checkLoginStatus"
 
 import "./index.css"
 import App from "./App"
 import theme from "./theme"
 import { store } from "./app/store"
-import Layout from "./components/Layout"
+import Layout from "./layouts/Layout"
 import reportWebVitals from "./reportWebVitals"
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
+checkLoginStatus()
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Layout>
+      <CookiesProvider>
         <Provider store={store}>
-          <App />
+          <BrowserRouter>
+            <Layout>
+              <App />
+            </Layout>
+          </BrowserRouter>
         </Provider>
-      </Layout>
+      </CookiesProvider>
     </ThemeProvider>
   </React.StrictMode>
 )
