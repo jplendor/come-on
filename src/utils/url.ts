@@ -1,15 +1,27 @@
-/* eslint-disable import/prefer-default-export */
-import { isObject } from "@fxts/core"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import {
+  map,
+  pipe,
+  curry,
+  split,
+  toArray,
+  isObject,
+  fromEntries,
+} from "@fxts/core"
 
+import { AuthParams, Url } from "types/auth"
+
+import { CookieName, decryptCookie } from "./cookies"
 import { LeafPath, pullingProperty } from "./pullingProperty"
 
-type CheckURL = (url: string | object) => string
+type CheckURL = (url: string | object) => Url
 type ConversionToUrl = <T extends object>(
   target: T,
   propertys: LeafPath<T>
-) => string
+) => Url
 
-const checkURL: CheckURL = (url) => (isObject(url) ? "/" : url)
+const checkURL: CheckURL = (url) => (isObject(url) ? "/" : url) as Url
 
 /**
  * 객체 내부에서 속성을 가져와 유효한 url로 만듭니다.
@@ -20,3 +32,19 @@ const checkURL: CheckURL = (url) => (isObject(url) ? "/" : url)
 
 export const conversionToUrl: ConversionToUrl = (target, propertys) =>
   checkURL(pullingProperty(target, propertys))
+
+const getSeparatorByString = curry((separator: string, target: string) =>
+  pipe(split(separator, target), toArray)
+)
+
+export const paramConversionToObj = (data: string, sep1 = "&", sep2 = "=") =>
+  pipe(
+    data,
+    getSeparatorByString(sep1),
+    map(getSeparatorByString(sep2)),
+    toArray,
+    fromEntries as any
+  )
+
+export const encryptedParamConversionToObj = () =>
+  pipe(decryptCookie(CookieName.auth), paramConversionToObj) as AuthParams
