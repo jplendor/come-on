@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export type CallBack = <CallBackRetrunType>(
-  a: boolean,
-  b: CallBackRetrunType
-) => void
-type TrueCallBack = (f: (arg: any) => void) => CallBack
+type TrueCallBack = <F extends Function>(
+  f: F
+) => <A1>(arg0: boolean, arg1: A1) => void | any
 
 /**
  * 함수를 인수로 넣어주면 다시 함수가 리턴됩니다. -> 고차함수
@@ -20,17 +18,36 @@ type TrueCallBack = (f: (arg: any) => void) => CallBack
  * @returns 두개의 인자를 받는 함수를 리턴합니다.
  *
  * * createAt: 2022-08-27
- * *  author: jeongbaebang
+ * * author: jeongbaebang
  * @example
  * ```ts
-  const func = trueCallBack((arg: string) =>
-    console.log(`참이면 로그가 실행됩니다. 넘어온 인자: ${arg}`)
+  const func = hof((arg: string) =>
+    console.log(`해당 함수가 실행되었습니다. 넘어온 인자: ${arg}`)
   )
 
-  func(true, "apple") // "참이면 로그가 실행됩니다. 넘어온 인자: apple"
+  func(true, "apple") // "해당 함수가 실행되었습니다. 넘어온 인자: apple"
   func(false, "rich") // (실행되지 않음)
  * ```
  */
 
-export const trueCallBack: TrueCallBack = (f) => (arg0, arg1) =>
+export const hof: TrueCallBack = (f) => (arg0, arg1) =>
   arg0 ? f(arg1) : undefined
+
+/**
+ *  첫번째 인수값이 참이면 두번째 인자가 실행됩니다.
+ *  1. 두번째 인자가 함수이면 함수를 실행합니다.
+ *  2. 두번째 인자가 값이라면 값을 반환합니다.
+ * 
+ * * createAt: 2022-08-28
+ * * author: jeongbaebang
+ * 
+ * @example
+ * ```ts
+  trueCallBack(true, 10) // 10 
+  trueCallBack(true, () => console.log(10)) // console.log(10)
+ * ```
+ */
+
+export const trueCallBack = hof((f: unknown) =>
+  typeof f === "function" ? f() : f
+)
