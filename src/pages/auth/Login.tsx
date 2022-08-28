@@ -1,13 +1,13 @@
 import React, { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
+import { useDidMount } from "rooks"
 import { Location } from "types/auth"
 import { conversionToUrl } from "utils"
 import useAuth from "hooks/auth/useAuth"
 import useSavePath from "hooks/auth/useSavePath"
 import useUrlRoute from "hooks/auth/useUrlRoute"
 
-import { useDidMount } from "rooks"
 import KakaoLogin from "./KakaoLogin"
 import SocialLogin from "./SocialLogin"
 

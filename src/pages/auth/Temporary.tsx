@@ -1,8 +1,8 @@
 import React from "react"
+import { Button } from "@mui/material"
 import { Link } from "react-router-dom"
 
 import useAuth from "hooks/auth/useAuth"
-import { Button } from "@mui/material"
 
 /**
  * Auth 테스트용 임시 컴포넌트. **추후 삭제 예정**
