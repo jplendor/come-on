@@ -1,7 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 import { RootState } from "store"
-import { CookieName, encryptCookie, removeCookie } from "utils"
+
+import {
+  CookieName,
+  encryptCookie,
+  encryptedParamConversionToObj,
+  removeCookie,
+  trueCallBack,
+} from "utils"
 
 export interface AuthSliceState {
   isloggedin: boolean
@@ -19,26 +26,34 @@ export const tokenValidation = createAsyncThunk<
   { state: RootState }
 >(
   "auth/tokenValidation",
-  // TODO: 서버API타입정의하기 []
 
   /**
-   * token 매개변수에 두가지 경우가 들어온다.
-   * 1. 로그인API파라미터로 받아오는 token.
-   * 2. 저장된 토큰쿠키를 조회하여 받아오는 token.
+   * authData 매개변수에 두가지 경우가 들어온다.
+   *  1. 로그인API파라미터로 받아오는 token.
+   *  2. 저장된 토큰쿠키를 조회하여 받아오는 token.
    * 서버에는 항상 올바른 토큰만을 전송하게끔 해야한다.
    * 토큰 만료 등 정상적인 현상은 상관없다.
+   *
+   * 토큰 쿠키를 복호화 시키면 token, expiry 값이 들어있다.
    */
 
+  // FINISH: 서버API타입정의하기 [v]
   // FINISH: 요청 중복 방지 처리 [v]
   // FINISH: token 값이 없다면 에러 디스패치 [v]
   // 에러 디스패치 조건 -> 암호화된 쿠키값이 변조되었을때.
+  // TODO: 토큰 만료 처리 [] -> 만료되면 서버로 보내지 말기
+  //  1.TODO: 토큰이 만료되었다면 토큰 재발급 API 전송 []
+  //  2.TODO: 토큰 만료 비교 함수 만들기 []
 
-  async (token: string, { rejectWithValue }) => {
-    if (!token) return rejectWithValue("암호화 쿠키가 존재하지 않거나 변조됨.")
+  async (authData: string, { rejectWithValue }) => {
+    trueCallBack(!authData, () =>
+      rejectWithValue("암호화 쿠키가 존재하지 않거나 변조됨.")
+    )
 
     return (await new Promise((resolve) => {
+      // 해당 로직에서 서버로 토큰 전송
       setTimeout(() => {
-        resolve(token)
+        resolve(authData)
       }, 500)
     })) as string
   },
@@ -68,6 +83,8 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(tokenValidation.pending, (state) => {
+      const ParamObj = encryptedParamConversionToObj()
+      console.log("복호화된 객체:", ParamObj)
       state.status = "pending"
     })
     /**

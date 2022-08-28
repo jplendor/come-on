@@ -1,11 +1,11 @@
 import React, { useEffect } from "react"
 
 import { Url } from "types/auth"
-import { conversionToUrl } from "utils"
 import useAuth from "hooks/auth/useAuth"
 import useUrlRoute from "hooks/auth/useUrlRoute"
 import useSavePath from "hooks/auth/useSavePath"
-import useSearchParamByToken from "hooks/auth/useSearchParamByToken"
+import { conversionToUrl, trueCallBack } from "utils"
+import useSearchParam from "hooks/auth/useSearchParamByToken"
 
 /**
  * 해당 페이지에 토큰이 들어올것이라고 기대한다.
@@ -35,27 +35,26 @@ import useSearchParamByToken from "hooks/auth/useSearchParamByToken"
 const Verification = (): JSX.Element => {
   const { urlRoute } = useUrlRoute()
   const { dispatchTokenValidation, LoginStatus } = useAuth()
-  const { getTokenParam, removeTokenParam } = useSearchParamByToken()
+  const { getParamAll, removeParam } = useSearchParam()
   const { getPreviousPathName, removePreviousPathName } = useSavePath()
 
   useEffect(() => {
-    const token = getTokenParam()
-    if (token) {
-      removeTokenParam()
-      dispatchTokenValidation(token)
-    }
-  }, [dispatchTokenValidation, getTokenParam, removeTokenParam])
+    const authParam = getParamAll()
+    trueCallBack(Boolean(authParam), () => {
+      removeParam()
+      dispatchTokenValidation(authParam)
+    })
+  }, [dispatchTokenValidation, getParamAll, removeParam])
 
   useEffect(() => {
     urlRoute(LoginStatus, ({ status, isloggedin }, go) => {
-      go(status === "failed", Url.home)
-      go(
-        isloggedin === true,
-        conversionToUrl(getPreviousPathName(), ["from", "pathname"])
-      )
+      go(status === "failed", { url: Url.home })
+      go(isloggedin === true, {
+        url: conversionToUrl(getPreviousPathName(), ["from", "pathname"]),
+      })
     })
     return () => removePreviousPathName()
-  }, [urlRoute, LoginStatus, getPreviousPathName, removePreviousPathName])
+  }, [LoginStatus, getPreviousPathName, removePreviousPathName, urlRoute])
 
   return <div />
 }

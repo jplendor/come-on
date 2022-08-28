@@ -15,7 +15,7 @@ const KakaoLogin = (): JSX.Element => {
     return (
       // 추후에 서버에서 제공하는 로그인 API 경로를 전달한다.
       // eslint-disable-next-line max-len
-      <RedirectURL url="http://localhost:3000/auth/login-verification?token=0xe10742928d01ac23eab87a6c6e2ef90" />
+      <RedirectURL url="http://localhost:3000/auth/login-verification?token=0xe10742928d01ac23eab87a6c6e2ef90&expiry=1661699810740" />
     )
 
   return (

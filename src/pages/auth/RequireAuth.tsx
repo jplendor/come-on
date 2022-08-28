@@ -1,8 +1,9 @@
-import React from "react"
-import { Navigate, useLocation } from "react-router-dom"
+import { useEffect } from "react"
+import { useLocation } from "react-router-dom"
 
 import { conversionToUrl } from "utils"
 import useAuth from "hooks/auth/useAuth"
+import useUrlRoute from "hooks/auth/useUrlRoute"
 import { RequireAuthProps, Url } from "types/auth"
 
 /**
@@ -13,26 +14,29 @@ import { RequireAuthProps, Url } from "types/auth"
  * @param children 로그인 권한이 있으면 해당 컴포넌트를 렌더링 시킨다.
  */
 
-const RequireAuth = ({ children }: RequireAuthProps): JSX.Element => {
+const RequireAuth = ({ children }: RequireAuthProps): JSX.Element | null => {
   const location = useLocation()
+  const { urlRoute } = useUrlRoute()
   const {
     LoginStatus: { isloggedin },
   } = useAuth()
 
-  if (!isloggedin)
-    return (
-      <Navigate
-        to={Url.login}
-        state={{
-          from: {
-            pathname: conversionToUrl(location, ["pathname"]),
+  useEffect(() => {
+    urlRoute(isloggedin, (loginState, go) => {
+      go(loginState === false, {
+        url: Url.login,
+        option: {
+          state: {
+            from: {
+              pathname: conversionToUrl(location, ["pathname"]),
+            },
           },
-        }}
-        replace
-      />
-    )
+        },
+      })
+    })
+  }, [isloggedin, location, urlRoute])
 
-  return children
+  return isloggedin ? children : null
 }
 
 export default RequireAuth

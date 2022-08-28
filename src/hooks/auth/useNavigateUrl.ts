@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useNavigate } from "react-router-dom"
-import { Url } from "types/auth"
+import { GoUrl } from "types/auth"
 
 const useNavigateUrl = () => {
   const navigate = useNavigate()
-  const goUrl = (url: Url) => navigate(url, { replace: true })
+  const goUrl: GoUrl = ({ url, option = {} }) =>
+    navigate(url, { ...option, replace: true })
   return { goUrl }
 }
 

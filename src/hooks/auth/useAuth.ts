@@ -24,9 +24,7 @@ const useAuth = () => {
 
   const dispatchTokenValidation = (
     token: string = decryptCookie(CookieName.auth)
-  ) => {
-    dispatch(tokenValidation(token))
-  }
+  ) => dispatch(tokenValidation(token))
 
   return {
     LoginStatus,

@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useSearchParams } from "react-router-dom"
-import { ParamName } from "types/auth"
 
-const useSearchParamByToken = () => {
+const useSearchParam = () => {
   const [params, setParams] = useSearchParams()
-  const getTokenParam = () => params.get(ParamName.token)
-  const removeTokenParam = () => setParams("", { replace: true })
+  const getParamAll = () => params.toString()
+  const removeParam = () => setParams("", { replace: true })
   return {
-    getTokenParam,
-    removeTokenParam,
+    getParamAll,
+    removeParam,
   }
 }
 
-export default useSearchParamByToken
+export default useSearchParam

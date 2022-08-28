@@ -32,10 +32,9 @@ const Login = (): JSX.Element => {
 
   useEffect(() => {
     urlRoute(LoginStatus, ({ isloggedin }, go) =>
-      go(
-        isloggedin === true,
-        conversionToUrl(getPreviousPathName(), ["from", "pathname"])
-      )
+      go(isloggedin === true, {
+        url: conversionToUrl(getPreviousPathName(), ["from", "pathname"]),
+      })
     )
     return () => removePreviousPathName()
   }, [urlRoute, LoginStatus, getPreviousPathName, removePreviousPathName])
