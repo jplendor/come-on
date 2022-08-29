@@ -14,6 +14,7 @@ import Listitem, { ListItemProp } from "./components/common/Listitem"
 
 import Course from "./pages/Course"
 import Layout from "./components/Layout"
+import MeetingCreate from "./pages/meeting/MeetingCreate"
 
 const SAMPLE_DATA1: ListItemProp[] = [
   {
@@ -81,8 +82,8 @@ const App = (): JSX.Element => {
         <Route path="/course/:id" element={<Course />} />
         <Route path="/course/register" />
         <Route path="/meeting" />
+        <Route path="/meeting/register" element={<MeetingCreate />} />
         <Route path="/meeting/:id" />
-        <Route path="/meeting/:id/register" />
         <Route path="/my-info" />
         <Route path="/login" />
       </Routes>
