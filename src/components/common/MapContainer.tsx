@@ -69,7 +69,7 @@ const MapContainer = ({ selectedNumber }: MapContainerProps): JSX.Element => {
 
     const options = {
       center: SAMPLE_DATA3[0].position, // 지도의 중심좌표
-      level: 4, // 지도의 확대 레벨
+      level: 3, // 지도의 확대 레벨
     }
 
     const map = new kakao.maps.Map(container, options)
@@ -108,7 +108,7 @@ const MapContainer = ({ selectedNumber }: MapContainerProps): JSX.Element => {
   }, [selectedNumber])
 
   return (
-    <div id="map" ref={contain} style={{ width: "100%", height: "300px" }} />
+    <div id="map" ref={contain} style={{ width: "100%", height: "20rem" }} />
   )
 }
 export default MapContainer

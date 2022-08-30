@@ -6,6 +6,7 @@ import { generateComponent } from "./utils"
 import MapContainer from "./components/common/MapContainer"
 import Navbar from "./components/common/Navbar"
 import Guide from "./components/common/Guide"
+import KakaoShare from "./components/KakaoShare"
 
 import ListDetailCard, {
   ListDetailCardProp,
@@ -77,7 +78,7 @@ const App = (): JSX.Element => {
         <ListDetailCard item={item} key={key} />
       ))} */}
       <Routes>
-        <Route path="/" />
+        <Route path="/" element={<KakaoShare />} />
         <Route path="/course/:id" element={<Course />} />
         <Route path="/course/register" />
         <Route path="/meeting" />
