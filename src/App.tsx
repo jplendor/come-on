@@ -15,6 +15,7 @@ import Listitem, { ListItemProp } from "./components/common/Listitem"
 
 import Course from "./pages/Course"
 import Layout from "./components/Layout"
+import CourseRegiDetail from "./pages/CourseRegiDetail"
 
 const SAMPLE_DATA1: ListItemProp[] = [
   {
@@ -78,9 +79,9 @@ const App = (): JSX.Element => {
         <ListDetailCard item={item} key={key} />
       ))} */}
       <Routes>
-        <Route path="/" element={<KakaoShare />} />
+        <Route path="/" />
         <Route path="/course/:id" element={<Course />} />
-        <Route path="/course/register" />
+        <Route path="/course/register" element={<CourseRegiDetail />} />
         <Route path="/meeting" />
         <Route path="/meeting/:id" />
         <Route path="/meeting/:id/register" />
