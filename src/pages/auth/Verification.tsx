@@ -5,7 +5,7 @@ import useAuth from "hooks/auth/useAuth"
 import useUrlRoute from "hooks/auth/useUrlRoute"
 import useSavePath from "hooks/auth/useSavePath"
 import { conversionToUrl, trueCallBack } from "utils"
-import useSearchParam from "hooks/auth/useSearchParamByToken"
+import useSearchParam from "hooks/auth/useSearchParam"
 
 /**
  * 해당 페이지에 토큰이 들어올것이라고 기대한다.
@@ -34,8 +34,8 @@ import useSearchParam from "hooks/auth/useSearchParamByToken"
 
 const Verification = (): JSX.Element => {
   const { urlRoute } = useUrlRoute()
-  const { dispatchTokenValidation, LoginStatus } = useAuth()
   const { getParamAll, removeParam } = useSearchParam()
+  const { dispatchTokenValidation, LoginStatus } = useAuth()
   const { getPreviousPathName, removePreviousPathName } = useSavePath()
 
   useEffect(() => {

@@ -6,8 +6,8 @@ const useSavePath = () => {
   const [pathName, setPathName, removePathName] =
     useLocalstorageState<PreviousPathname>(LocalstorageName.path)
   const getPreviousPathName = () => pathName
-  const setPreviousPathName = (arg: PreviousPathname) => setPathName(arg)
   const removePreviousPathName = () => removePathName()
+  const setPreviousPathName = (arg: PreviousPathname) => setPathName(arg)
   return {
     getPreviousPathName,
     setPreviousPathName,

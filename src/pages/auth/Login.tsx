@@ -41,10 +41,10 @@ const Login = (): JSX.Element => {
 
   return (
     <main>
-      <h1>유저 권한이 없습니다. 로그인 하세요</h1>
       <SocialLogin>
         <KakaoLogin />
       </SocialLogin>
+      <p>유저 권한이 없습니다. 로그인 하세요</p>
     </main>
   )
 }

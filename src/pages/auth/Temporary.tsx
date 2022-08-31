@@ -13,18 +13,6 @@ const Temporary = (): JSX.Element => {
   const { isloggedin } = LoginStatus
   return (
     <>
-      {isloggedin ? (
-        <div>
-          <h1>로그인됨</h1>
-          <Button onClick={() => loggedOutDispatch()} variant="contained">
-            로그아웃
-          </Button>
-        </div>
-      ) : (
-        <h1>
-          <Link to="/auth/login">로그인 페이지 가기(비로그인)</Link>
-        </h1>
-      )}
       <Link to="/auth/test-needed-token">로그인권한이 필요한 링크</Link>
       <br />
       <Link to="/auth/test-needed-token2">로그인권한이 필요한 링크2</Link>
@@ -34,6 +22,18 @@ const Temporary = (): JSX.Element => {
       <button type="button" onClick={() => loggedInDispatch()}>
         권한 얻기
       </button>
+      {isloggedin ? (
+        <div>
+          <p>로그인됨</p>
+          <Button onClick={() => loggedOutDispatch()} variant="contained">
+            로그아웃
+          </Button>
+        </div>
+      ) : (
+        <p>
+          <Link to="/auth/login">로그인 페이지 가기(비로그인)</Link>
+        </p>
+      )}
     </>
   )
 }

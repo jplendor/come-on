@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { UrlRoute } from "types/auth"
 import { hof } from "utils"
+import { UrlRoute } from "types/auth"
 
 import useNavigateUrl from "./useNavigateUrl"
 

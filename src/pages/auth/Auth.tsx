@@ -1,3 +1,4 @@
+import { Alert } from "@mui/material"
 import React from "react"
 
 import { Route, Routes } from "react-router-dom"
@@ -39,7 +40,9 @@ const Auth = (): JSX.Element => {
         path="test-needed-token"
         element={
           <RequireAuth>
-            <h1>로그인 성공했을때만 보여주는 페이지1</h1>
+            <Alert severity="success">
+              로그인 성공했을때만 보여주는 페이지1
+            </Alert>
           </RequireAuth>
         }
       />
@@ -47,7 +50,9 @@ const Auth = (): JSX.Element => {
         path="test-needed-token2"
         element={
           <RequireAuth>
-            <h1>로그인 성공했을때만 보여주는 페이지2</h1>
+            <Alert severity="success">
+              로그인 성공했을때만 보여주는 페이지2
+            </Alert>
           </RequireAuth>
         }
       />

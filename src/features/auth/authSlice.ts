@@ -1,13 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 import { RootState } from "store"
-
 import {
   CookieName,
-  encryptCookie,
-  encryptedParamConversionToObj,
   removeCookie,
   trueCallBack,
+  encryptCookie,
+  encryptedParamConversionToObj,
 } from "utils"
 
 export interface AuthSliceState {
@@ -83,8 +82,8 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(tokenValidation.pending, (state) => {
-      const ParamObj = encryptedParamConversionToObj()
-      console.log("복호화된 객체:", ParamObj)
+      const paramObj = encryptedParamConversionToObj()
+      console.log("복호화된 객체:", paramObj)
       state.status = "pending"
     })
     /**

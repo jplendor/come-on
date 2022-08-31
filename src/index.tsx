@@ -8,7 +8,6 @@ import { ThemeProvider } from "@mui/material/styles"
 
 import checkLoginStatus from "features/auth/checkLoginStatus"
 
-import "./index.css"
 import App from "./App"
 import theme from "./theme"
 import { store } from "./app/store"
@@ -19,8 +18,8 @@ const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 checkLoginStatus()
 root.render(
   <React.StrictMode>
+    <CssBaseline />
     <ThemeProvider theme={theme}>
-      <CssBaseline />
       <CookiesProvider>
         <Provider store={store}>
           <BrowserRouter>

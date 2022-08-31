@@ -1,3 +1,4 @@
+import { Alert } from "@mui/material"
 import React, { useEffect } from "react"
 
 import { RedirectURLProps } from "types/auth"
@@ -12,7 +13,7 @@ const RedirectURL = ({ url }: RedirectURLProps): JSX.Element => {
     window.location.href = url
   }, [url])
 
-  return <h5>Redirecting...</h5>
+  return <Alert severity="info">Redirecting...</Alert>
 }
 
 export default RedirectURL

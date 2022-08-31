@@ -22,7 +22,7 @@ const RequireAuth = ({ children }: RequireAuthProps): JSX.Element | null => {
   } = useAuth()
 
   useEffect(() => {
-    urlRoute(isloggedin, (loginState, go) => {
+    urlRoute(isloggedin, (loginState, go) =>
       go(loginState === false, {
         url: Url.login,
         option: {
@@ -33,7 +33,7 @@ const RequireAuth = ({ children }: RequireAuthProps): JSX.Element | null => {
           },
         },
       })
-    })
+    )
   }, [isloggedin, location, urlRoute])
 
   return isloggedin ? children : null
