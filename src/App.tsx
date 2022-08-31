@@ -16,6 +16,7 @@ import Listitem, { ListItemProp } from "./components/common/Listitem"
 import Course from "./pages/Course"
 import Layout from "./components/Layout"
 import CourseRegiDetail from "./pages/CourseRegiDetail"
+import CourseRegiDetail2 from "./pages/CourseRegiDetail2"
 
 const SAMPLE_DATA1: ListItemProp[] = [
   {
@@ -81,7 +82,7 @@ const App = (): JSX.Element => {
       <Routes>
         <Route path="/" />
         <Route path="/course/:id" element={<Course />} />
-        <Route path="/course/register" element={<CourseRegiDetail />} />
+        <Route path="/course/register" element={<CourseRegiDetail2 />} />
         <Route path="/meeting" />
         <Route path="/meeting/:id" />
         <Route path="/meeting/:id/register" />

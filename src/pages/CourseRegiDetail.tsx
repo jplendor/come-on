@@ -1,7 +1,14 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useRef,
+} from "react"
 
 import { styled } from "@mui/material/styles"
-import { Box, Input, Typography, TextField } from "@mui/material"
+import { Box, Input, Typography, TextField, Fab } from "@mui/material"
+import { PhotoCamera } from "@mui/icons-material"
 import NabvigationBar from "../components/common/NavigationBar"
 import Guide from "../components/common/Guide"
 
@@ -24,8 +31,8 @@ const ImgContainer = styled(Box)(() => ({
   width: "100%",
   height: "20rem",
   objectFit: "cover",
-  overflow: "hidden",
   borderRadius: "6px",
+  position: "relative",
 }))
 
 const LABEL_STYLE = {
@@ -41,9 +48,20 @@ const FORM_STYLE = {
   padding: "0 10px",
 }
 
+const ICON_STYLE = {
+  color: "white",
+}
+
+const IconContainer = styled(Box)(() => ({
+  zIndex: "1000",
+  position: "absolute",
+  bottom: "25px",
+  right: "25px",
+}))
+
 const CourseRegiDetail = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1)
-
+  const selectFile = useRef<any>(null)
   return (
     <>
       <NabvigationBar
@@ -53,15 +71,28 @@ const CourseRegiDetail = (): JSX.Element => {
         maxPage={3}
       />
       <Guide guideStr=" 코스정보를 입력해 주세요!" />
-      {/* ㅇㅁㄴㅇ */}
+      {/*  */}
       <ImgContainer>
         <img
           src="https://pbs.twimg.com/media/DVT-AesUQAATx65.jpg"
           alt="img"
           width="100%"
           height="100%"
+          z-index="0"
         />
+        <IconContainer>
+          <Fab
+            color="secondary"
+            aria-label="camera"
+            size="large"
+            component="label"
+          >
+            <PhotoCamera sx={ICON_STYLE} />
+            <input hidden accept="image/*" type="file" ref={selectFile} />
+          </Fab>
+        </IconContainer>
       </ImgContainer>
+
       <FormBox sx={FORM_STYLE}>
         <TitleContainer>
           <Typography variant="h6" sx={LABEL_STYLE}>
