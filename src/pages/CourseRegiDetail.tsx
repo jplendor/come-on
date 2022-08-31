@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 
 import { styled } from "@mui/material/styles"
-import { Box } from "@mui/material"
+import { Box, Input, Typography, TextField } from "@mui/material"
 import NabvigationBar from "../components/common/NavigationBar"
 import Guide from "../components/common/Guide"
 
@@ -28,6 +28,19 @@ const ImgContainer = styled(Box)(() => ({
   borderRadius: "6px",
 }))
 
+const LABEL_STYLE = {
+  margin: "20px 0",
+  fontWeight: "800",
+}
+
+const INPUT_STYLE = {
+  width: "100%",
+}
+
+const FORM_STYLE = {
+  padding: "0 10px",
+}
+
 const CourseRegiDetail = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1)
 
@@ -49,17 +62,20 @@ const CourseRegiDetail = (): JSX.Element => {
           height="100%"
         />
       </ImgContainer>
-      <FormBox>
+      <FormBox sx={FORM_STYLE}>
         <TitleContainer>
-          <p>코스이름</p>
-          <input type="text" />
+          <Typography variant="h6" sx={LABEL_STYLE}>
+            코스이름
+          </Typography>
+          <Input type="text" sx={INPUT_STYLE} />
         </TitleContainer>
         <DetailContainer>
-          <p>설명설명</p>
-          <input type="text" />
+          <Typography variant="h6" sx={LABEL_STYLE}>
+            코스설명
+          </Typography>
+          <TextField multiline maxRows="10" sx={INPUT_STYLE} rows={10} />
         </DetailContainer>
       </FormBox>
-      <div>ddd</div>
     </>
   )
 }
