@@ -18,6 +18,8 @@ import Course from "./pages/Course"
 import CourseRegiDetail from "./pages/CourseRegiDetail1"
 import CourseRegiDetail2 from "./pages/CourseRegiDetail2"
 import SearchPlace from "./pages/SearchPlace"
+import Layout from "./components/Layout"
+import MeetingCreate from "./pages/meeting/MeetingCreate"
 // Redux 테스트용
 import DisplayGeolocation from "./features/geolocation/DisplayGeo"
 
@@ -87,8 +89,8 @@ const App = (): JSX.Element => {
         <Route path="/course/:id" element={<Course />} />
         <Route path="/course/register" element={<SearchPlace />} />
         <Route path="/meeting" />
+        <Route path="/meeting/register" element={<MeetingCreate />} />
         <Route path="/meeting/:id" />
-        <Route path="/meeting/:id/register" />
         <Route path="/my-info" />
         <Route path="/login" />
       </Routes>
