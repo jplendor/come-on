@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
     <AppBar
       position="sticky"
       color="primary"
-      sx={{ top: "auto", bottom: "0", padding: "0px" }}
+      sx={{ top: "auto", bottom: "0", padding: "0px", marginTop: "20px" }}
     >
       <Grid
         container

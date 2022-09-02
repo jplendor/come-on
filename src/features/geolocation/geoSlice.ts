@@ -43,5 +43,4 @@ const geoSlice = createSlice({
   },
 })
 
-export const { geoAdded } = geoSlice.actions
 export default geoSlice.reducer

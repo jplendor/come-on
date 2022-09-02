@@ -2,7 +2,7 @@ import { Alert, Box, Link } from "@mui/material"
 import { useGeolocation } from "rooks"
 import React, { FC, useEffect } from "react"
 
-import { geoAdded, UseGeolocationReturnType } from "./geoSlice"
+import { UseGeolocationReturnType } from "./geoSlice"
 import { useAppDispatch, useAppSelector } from "../../hooks/useRedux"
 
 interface DisplayProps {
@@ -44,9 +44,9 @@ const DisplayGeolocation = (): JSX.Element => {
   const geolocation = useGeolocation()
   const { isDone, info } = useAppSelector((state) => state.geolocation)
 
-  useEffect(() => {
-    if (!isDone && geolocation) dispatch(geoAdded(geolocation))
-  }, [dispatch, isDone, geolocation])
+  // useEffect(() => {
+  //   if (!isDone && geolocation) dispatch(geoAdded(geolocation))
+  // }, [dispatch, isDone, geolocation])
 
   return <DisplayMap data={info} />
 }

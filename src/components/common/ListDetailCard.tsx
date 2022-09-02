@@ -28,7 +28,7 @@ const SELECTED_NUM_CARD = {
   backgroundColor: "#FFD24C",
 }
 
-const SELECTEC_CARD = {
+const SELECTED_CARD = {
   border: "1px solid #FFD24C",
 }
 
@@ -122,7 +122,7 @@ const ListDetailCard: React.FC<ListDetailCardProps> = ({
           container
           id={String(index)}
           onClick={onClick}
-          sx={isSelected === String(index) ? SELECTEC_CARD : {}}
+          sx={isSelected === String(index) ? SELECTED_CARD : {}}
         >
           <Grid item xs={11}>
             <Box sx={TITLE_WRAP}>

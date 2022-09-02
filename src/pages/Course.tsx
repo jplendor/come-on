@@ -1,16 +1,22 @@
 import React, { useState } from "react"
 
-import { Box, Typography, makeStyles } from "@mui/material"
+import {
+  Box,
+  Typography,
+  makeStyles,
+  IconButton,
+  ImageListItem,
+  Button,
+} from "@mui/material"
 
 import FavoriteIcon from "@mui/icons-material/Favorite"
-
 import { styled } from "@mui/material/styles"
 import { SettingsInputAntennaTwoTone } from "@mui/icons-material"
 import MapContainer from "../components/common/MapContainer"
 import ListDetailCard, {
   ListDetailCardProp,
 } from "../components/common/ListDetailCard"
-
+import KakaoShare from "../components/KakaoShare"
 import { generateComponent } from "../utils"
 import KakaoIcon from "../components/common/KakaoComponent"
 
@@ -47,6 +53,20 @@ const TitleContainer = styled(Box)(() => ({
   alignItems: "center",
 }))
 
+const MainContainer = styled(Box)(() => ({
+  padding: "0px 20px",
+  display: "flex",
+  flexDirection: "column",
+}))
+
+const ImgContainer = styled(Box)(() => ({
+  margin: "0",
+  padding: "0",
+  width: "100%",
+  height: "180px",
+  objectFit: "cover",
+}))
+
 const KakaoContainer = styled(Box)(() => ({
   display: "flex",
   justifyContent: "right",
@@ -55,6 +75,15 @@ const KakaoContainer = styled(Box)(() => ({
 
 const FONT_SIZE_800 = {
   fontWeight: "800",
+}
+
+const BUTTON_STYLE = {
+  height: "50px",
+  lineHeight: "50px",
+  marginBottom: "10px",
+  color: "white",
+  fontWeight: "800",
+  fontSize: "1rem",
 }
 
 const Course = (): any => {
@@ -72,42 +101,57 @@ const Course = (): any => {
   // const onClickHeart = (event: React.MouseEvent<HTMLDivElement> | null): any => {
   //   const e: any = event?.currentTarget
   // }
+
   return (
     <>
       {/* 타이틀만들기 */}
-      <TitleContainer p={2}>
-        <Box className="Title" mt={2}>
-          <Typography variant="h5" sx={FONT_SIZE_800}>
-            {SAMPLE_DATA3.title}
-          </Typography>
-          {/* {하트버튼 만들기} */}
-          <Box className="subTitle">
-            <Typography variant="subtitle1" sx={FONT_SIZE_800}>
-              {`${SAMPLE_DATA3.author}  |  ${SAMPLE_DATA3.date}`}
-            </Typography>
-          </Box>
-        </Box>
-        <Typography fontSize="2.8rem" mt={2} color="secondary">
-          <FavoriteIcon fontSize="inherit" />
-        </Typography>
-      </TitleContainer>
-      <MapContainer selectedNumber={isSelected} />
-      <KakaoContainer p={1}>
-        <Typography mr={1} variant="subtitle1" sx={FONT_SIZE_800}>
-          카카오톡으로 공유하기
-        </Typography>
-        <KakaoIcon width="30px" height="30px" />
-      </KakaoContainer>
-      {/* 카카오톡 공유하기 */}
-      {/* 버튼만들기 */}
-      {generateComponent(SAMPLE_DATA2, (item, key) => (
-        <ListDetailCard
-          item={item}
-          key={key}
-          onClick={onClickFocus}
-          isSelected={isSelected}
+      <ImgContainer>
+        <img
+          src="https://pbs.twimg.com/media/DVT-AesUQAATx65.jpg"
+          width="100%"
+          height="100%"
+          alt="img"
         />
-      ))}
+      </ImgContainer>
+      <MainContainer>
+        <TitleContainer p={2}>
+          <Box className="Title" mt={2}>
+            <Typography variant="h5" sx={FONT_SIZE_800}>
+              {SAMPLE_DATA3.title}
+            </Typography>
+            {/* {하트버튼 만들기} */}
+            <Box className="subTitle">
+              <Typography variant="subtitle1" sx={FONT_SIZE_800}>
+                {`${SAMPLE_DATA3.author}  |  ${SAMPLE_DATA3.date}`}
+              </Typography>
+            </Box>
+          </Box>
+          <Typography fontSize="2.8rem" mt={2} color="secondary">
+            <FavoriteIcon fontSize="inherit" />
+          </Typography>
+        </TitleContainer>
+        <MapContainer selectedNumber={isSelected} />
+        <KakaoContainer p={1}>
+          <Typography mr={1} variant="subtitle1" sx={FONT_SIZE_800}>
+            <KakaoShare />
+          </Typography>
+          <KakaoIcon width="30px" height="30px" />
+        </KakaoContainer>
+        {/* 카카오톡 공유하기 */}
+        {/* 버튼만들기 */}
+        {generateComponent(SAMPLE_DATA2, (item, key) => (
+          <ListDetailCard
+            item={item}
+            key={key}
+            onClick={onClickFocus}
+            isSelected={isSelected}
+          />
+        ))}
+        {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}
+        <Button sx={BUTTON_STYLE} variant="contained">
+          이 코스로 모임 생성하기
+        </Button>
+      </MainContainer>
     </>
   )
 }
