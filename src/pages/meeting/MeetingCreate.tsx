@@ -12,9 +12,16 @@ import { PhotoCamera } from "@mui/icons-material"
 import { useTheme } from "@mui/material/styles"
 import styled from "@emotion/styled"
 
+interface MeetingInfo {
+  [key: string]: string
+  title: string
+  startDate: string
+  endDate: string
+}
+
 const MeetingCreate = (): JSX.Element => {
   const [previewImg, setPreviewImg] = useState({ src: "", name: "" })
-  const [meetingInfo, setMeetingInfo] = useState({
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>({
     title: "",
     startDate: "",
     endDate: "",
@@ -92,27 +99,42 @@ const MeetingCreate = (): JSX.Element => {
     }
   }
 
+  const checkDateValidation = (
+    name: string,
+    value: string
+  ): [boolean, string] => {
+    let isValid = true
+    let alertArr: string[] = []
+
+    if (name === "startDate") {
+      isValid = !(
+        meetingInfo.endDate.length !== 0 && value > meetingInfo.endDate
+      )
+      alertArr = ["종료일", "endDate", "이후"]
+    }
+    if (name === "endDate") {
+      isValid = !(
+        meetingInfo.startDate.length !== 0 && value < meetingInfo.startDate
+      )
+      alertArr = ["시작일", "startDate", "이전"]
+    }
+
+    return [
+      isValid,
+      isValid
+        ? ""
+        : `${alertArr[0]}(${meetingInfo[alertArr[1]]}) ${
+            alertArr[2]
+          } 날짜는 선택할 수 없습니다.`,
+    ]
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    // 시작일, 종료일 변경 시, 시작일이 종료일 이후이면 return
     const { name, value } = e.target
     if (["startDate", "endDate"].includes(name)) {
-      if (
-        name === "startDate" &&
-        meetingInfo.endDate.length !== 0 &&
-        value > meetingInfo.endDate
-      ) {
-        alert(`종료일(${meetingInfo.endDate}) 이후 날짜는 선택할 수 없습니다.`)
-        return
-      }
-
-      if (
-        name === "endDate" &&
-        meetingInfo.startDate.length !== 0 &&
-        value < meetingInfo.startDate
-      ) {
-        alert(
-          `시작일(${meetingInfo.startDate}) 이전 날짜는 선택할 수 없습니다.`
-        )
+      const [isValid, message] = checkDateValidation(name, value)
+      if (!isValid) {
+        alert(message)
         return
       }
     }
