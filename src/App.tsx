@@ -25,6 +25,7 @@ const App = (): JSX.Element => {
       {/* <Route path="/course/:id" element={<Course />} />
         <Route path="/course/register" />
         <Route path="/meeting" />
+        <Route path="/meeting/register" element={<MeetingCreate />} />
         <Route path="/meeting/:id" />
         <Route path="/meeting/:id/register" />
         <Route path="/my-info" /> */}

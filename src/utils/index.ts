@@ -5,6 +5,7 @@
 export * from "./cookies"
 export * from "./crypto"
 export * from "./generateComponent"
+export * from "./date"
 export * from "./pullingProperty"
 export * from "./trueCallBack"
 export * from "./url"
