@@ -21,11 +21,18 @@ interface SelectedDateStyle {
   bgcolor: string
 }
 
-const CalendarRangePicker = (): JSX.Element => {
+interface CalendarRangePickerProps {
+  startDate: string
+  endDate: string
+  setStartDate: (value: string) => void
+  setEndDate: (value: string) => void
+}
+
+const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
+  const { startDate, endDate, setStartDate, setEndDate } = props
+
   const [ymInfo, setYmInfo] = useState<YmInfo[]>()
   const [dateInfo, setDateInfo] = useState<DateInfo[]>()
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
 
   const theme = useTheme()
 
