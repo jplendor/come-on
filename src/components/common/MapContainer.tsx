@@ -11,11 +11,6 @@ import KakaoComponent from "./KakaoComponent"
 import MarkerOveray from "./MarkerOveray"
 
 const { kakao } = window
-declare global {
-  interface Window {
-    kakao: any
-  }
-}
 
 export interface MapProps {
   title: string
@@ -62,10 +57,10 @@ export interface MapContainerProps {
 // {첫번째 데이터를 중심으로 잡기}
 
 const MapContainer = ({ selectedNumber }: MapContainerProps): JSX.Element => {
-  const contain = useRef<HTMLDivElement>(null) // 지도를 표시할 div
+  const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
+
   useEffect(() => {
-    // const container = document.getElementById("map") // 지도를 표시할 div
-    const container = contain.current
+    const container = mapContainer.current
 
     const options = {
       center: SAMPLE_DATA3[0].position, // 지도의 중심좌표
@@ -98,7 +93,7 @@ const MapContainer = ({ selectedNumber }: MapContainerProps): JSX.Element => {
       // 커스텀 오버레이가 표시될 위치입니다
       const customContent = ReactDOMServer.renderToString(markerOveray)
       // 커스텀 오버레이를 생성합니다
-      const customOverlay = new kakao.maps.CustomOverlay({
+      const customOverlay = new window.kakao.maps.CustomOverlay({
         map,
         position,
         content: customContent,
@@ -108,7 +103,11 @@ const MapContainer = ({ selectedNumber }: MapContainerProps): JSX.Element => {
   }, [selectedNumber])
 
   return (
-    <div id="map" ref={contain} style={{ width: "100%", height: "20rem" }} />
+    <div
+      id="map"
+      ref={mapContainer}
+      style={{ width: "100%", height: "20rem" }}
+    />
   )
 }
 export default MapContainer

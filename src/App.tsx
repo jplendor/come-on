@@ -7,16 +7,17 @@ import MapContainer from "./components/common/MapContainer"
 import Navbar from "./components/common/Navbar"
 import Guide from "./components/common/Guide"
 import KakaoShare from "./components/KakaoShare"
-
+import Layout from "./components/Layout"
 import ListDetailCard, {
   ListDetailCardProp,
 } from "./components/common/ListDetailCard"
 import Listitem, { ListItemProp } from "./components/common/Listitem"
 
+// course 관련 페이지
 import Course from "./pages/Course"
-import Layout from "./components/Layout"
-import CourseRegiDetail from "./pages/CourseRegiDetail"
+import CourseRegiDetail from "./pages/CourseRegiDetail1"
 import CourseRegiDetail2 from "./pages/CourseRegiDetail2"
+import SearchPlace from "./pages/SearchPlace"
 // Redux 테스트용
 import DisplayGeolocation from "./features/geolocation/DisplayGeo"
 
@@ -84,7 +85,7 @@ const App = (): JSX.Element => {
       <Routes>
         <Route path="/" element={<DisplayGeolocation />} />
         <Route path="/course/:id" element={<Course />} />
-        <Route path="/course/register" element={<CourseRegiDetail2 />} />
+        <Route path="/course/register" element={<SearchPlace />} />
         <Route path="/meeting" />
         <Route path="/meeting/:id" />
         <Route path="/meeting/:id/register" />

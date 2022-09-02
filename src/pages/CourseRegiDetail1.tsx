@@ -61,7 +61,23 @@ const IconContainer = styled(Box)(() => ({
 
 const CourseRegiDetail = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const selectFile = useRef<any>(null)
+  const selectFile = useRef<any>()
+  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
+
+  const encodeFileToBase64 = (fileBlob: Blob): any => {
+    const reader = new FileReader()
+    reader.readAsDataURL(fileBlob)
+    return new Promise<void>((resolve) => {
+      reader.onload = () => {
+        if (!reader.result) {
+          throw new Error("No img result")
+        }
+        setImageSrc(reader.result)
+        resolve()
+      }
+    })
+  }
+
   return (
     <>
       <NabvigationBar
@@ -73,13 +89,15 @@ const CourseRegiDetail = (): JSX.Element => {
       <Guide guideStr=" 코스정보를 입력해 주세요!" />
       {/*  */}
       <ImgContainer>
-        <img
-          src="https://pbs.twimg.com/media/DVT-AesUQAATx65.jpg"
-          alt="img"
-          width="100%"
-          height="100%"
-          z-index="0"
-        />
+        {imageSrc && (
+          <img
+            src={String(imageSrc)}
+            alt="img"
+            width="100%"
+            height="100%"
+            z-index="0"
+          />
+        )}
         <IconContainer>
           <Fab
             color="secondary"
@@ -88,7 +106,15 @@ const CourseRegiDetail = (): JSX.Element => {
             component="label"
           >
             <PhotoCamera sx={ICON_STYLE} />
-            <input hidden accept="image/*" type="file" ref={selectFile} />
+            <input
+              hidden
+              accept="image/*"
+              type="file"
+              ref={selectFile}
+              onChange={(e) => {
+                encodeFileToBase64(selectFile.current.files[0])
+              }}
+            />
           </Fab>
         </IconContainer>
       </ImgContainer>
