@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 
-import geoSlice from "../features/geolocation/geoSlice"
+import authSlice from "features/auth/authSlice"
+import geoSlice from "features/geolocation/geoSlice"
 
 const rootReducer = combineReducers({
   geolocation: geoSlice,
+  auth: authSlice,
 })
 
 export const store = configureStore({
