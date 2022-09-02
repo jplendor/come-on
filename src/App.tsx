@@ -15,6 +15,8 @@ import Listitem, { ListItemProp } from "./components/common/Listitem"
 import Course from "./pages/Course"
 import Layout from "./components/Layout"
 import MeetingCreate from "./pages/meeting/MeetingCreate"
+// Redux 테스트용
+import DisplayGeolocation from "./features/geolocation/DisplayGeo"
 
 const SAMPLE_DATA1: ListItemProp[] = [
   {
@@ -78,7 +80,7 @@ const App = (): JSX.Element => {
         <ListDetailCard item={item} key={key} />
       ))} */}
       <Routes>
-        <Route path="/" />
+        <Route path="/" element={<DisplayGeolocation />} />
         <Route path="/course/:id" element={<Course />} />
         <Route path="/course/register" />
         <Route path="/meeting" />
