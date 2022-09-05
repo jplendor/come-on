@@ -3,17 +3,25 @@ import { Box } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { getYyyymmddArray, toStringYyyymmdd } from "../utils/date"
 import { generateComponent } from "../utils/generateComponent"
+import { MeetingInfoType } from "../pages/CalendarRangePickerTest"
 
 interface YmInfo {
   y: number
   m: number
 }
 
+enum selectedType {
+  s = "start",
+  e = "end",
+  b = "between",
+  n = "no",
+}
+
 interface DateInfo {
   y: number
   m: number
   d: number
-  selected: string // "start", "end", "between", "no"
+  selected: selectedType
 }
 
 interface SelectedDateStyle {
@@ -22,14 +30,15 @@ interface SelectedDateStyle {
 }
 
 interface CalendarRangePickerProps {
-  startDate: string
-  endDate: string
-  setStartDate: (value: string) => void
-  setEndDate: (value: string) => void
+  meetingInfo: MeetingInfoType
+  setMeetingInfo: (value: MeetingInfoType) => void
 }
 
-const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
-  const { startDate, endDate, setStartDate, setEndDate } = props
+const CalendarRangePicker = ({
+  meetingInfo,
+  setMeetingInfo,
+}: CalendarRangePickerProps): JSX.Element => {
+  const { startDate, endDate } = meetingInfo
 
   const [ymInfo, setYmInfo] = useState<YmInfo[]>()
   const [dateInfo, setDateInfo] = useState<DateInfo[]>()
@@ -116,21 +125,20 @@ const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
 
     if (ymd) {
       if (startDate.length === 0 && endDate.length === 0) {
-        setStartDate(ymd)
+        setMeetingInfo({ ...meetingInfo, startDate: ymd })
       } else if (startDate.length !== 0 && endDate.length === 0) {
         if (startDate < ymd) {
-          setEndDate(ymd)
+          setMeetingInfo({ ...meetingInfo, endDate: ymd })
         } else {
-          setStartDate(ymd)
+          setMeetingInfo({ ...meetingInfo, startDate: ymd })
         }
       } else if (startDate.length !== 0 && endDate.length !== 0) {
-        setStartDate(ymd)
-        setEndDate("")
+        setMeetingInfo({ ...meetingInfo, startDate: ymd, endDate: "" })
       }
     }
   }
 
-  const initialize = (): void => {
+  const setOneYearDateInfo = (): void => {
     const [y, m, d] = getYyyymmddArray(new Date())
 
     const YmArr = []
@@ -151,13 +159,13 @@ const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
       i.setDate(i.getDate() + 1)
     ) {
       const [iY, iM, iD] = getYyyymmddArray(i)
-      dateArr.push({ y: iY, m: iM, d: iD, selected: "no" })
+      dateArr.push({ y: iY, m: iM, d: iD, selected: selectedType.n })
     }
 
     setDateInfo(dateArr)
   }
 
-  const changeStyle = useCallback((): void => {
+  const changeDateStyle = useCallback((): void => {
     if (startDate.length === 0 && endDate.length === 0) {
       return
     }
@@ -167,24 +175,25 @@ const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
       if (startDate.length !== 0 && endDate.length === 0) {
         newDateInfo = dateInfo.map((item) => {
           const itemDate = toStringYyyymmdd(new Date(item.y, item.m, item.d))
+
           if (startDate === itemDate) {
-            return { ...item, selected: "start" }
+            return { ...item, selected: selectedType.s }
           }
-          return { ...item, selected: "no" }
+          return { ...item, selected: selectedType.n }
         })
       } else if (startDate.length !== 0 && endDate.length !== 0) {
         newDateInfo = dateInfo.map((item) => {
           const itemDate = toStringYyyymmdd(new Date(item.y, item.m, item.d))
           if (startDate === itemDate) {
-            return { ...item, selected: "start" }
+            return { ...item, selected: selectedType.s }
           }
           if (startDate < itemDate && itemDate < endDate) {
-            return { ...item, selected: "between" }
+            return { ...item, selected: selectedType.b }
           }
           if (itemDate === endDate) {
-            return { ...item, selected: "end" }
+            return { ...item, selected: selectedType.e }
           }
-          return { ...item, selected: "no" }
+          return { ...item, selected: selectedType.n }
         })
       }
       setDateInfo(newDateInfo)
@@ -192,13 +201,13 @@ const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
   }, [startDate, endDate])
 
   const getStyle = (selected: string): SelectedDateStyle => {
-    if (selected === "start") {
+    if (selected === selectedType.s) {
       return START
     }
-    if (selected === "end") {
+    if (selected === selectedType.e) {
       return END
     }
-    if (selected === "between") {
+    if (selected === selectedType.b) {
       return BETWEEN
     }
     return NO
@@ -214,7 +223,12 @@ const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
       const startIndex = new Date(startDay.y, startDay.m, startDay.d).getDay()
 
       currentMonthDateInfo = [
-        ...new Array(startIndex).fill({ y: 10000, m: 0, d: 0, selected: "no" }),
+        ...new Array(startIndex).fill({
+          y: 10000,
+          m: 0,
+          d: 0,
+          selected: selectedType.n,
+        }),
         ...currentMonthDateInfo,
       ]
     }
@@ -223,12 +237,9 @@ const CalendarRangePicker = (props: CalendarRangePickerProps): JSX.Element => {
   }
 
   useEffect((): void => {
-    initialize()
-  }, [])
-
-  useEffect((): void => {
-    changeStyle()
-  }, [startDate, endDate, changeStyle])
+    setOneYearDateInfo()
+    changeDateStyle()
+  }, [changeDateStyle])
 
   return (
     <Box sx={CALENDAR}>

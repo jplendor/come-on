@@ -1,6 +1,12 @@
 import React, { useState } from "react"
 import CalendarRangePicker from "../components/CalendarRangePicker "
 
+export interface MeetingInfoType {
+  startDate: string
+  endDate: string
+  title: string
+}
+
 const CalendarRangePickerTest = (): JSX.Element => {
   const [meetingInfo, setMeetingInfo] = useState({
     startDate: "",
@@ -10,14 +16,8 @@ const CalendarRangePickerTest = (): JSX.Element => {
 
   return (
     <CalendarRangePicker
-      startDate={meetingInfo.startDate}
-      endDate={meetingInfo.endDate}
-      setStartDate={(startDate: string) =>
-        setMeetingInfo({ ...meetingInfo, startDate })
-      }
-      setEndDate={(endDate: string) =>
-        setMeetingInfo({ ...meetingInfo, endDate })
-      }
+      meetingInfo={meetingInfo}
+      setMeetingInfo={setMeetingInfo}
     />
   )
 }
