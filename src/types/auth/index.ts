@@ -20,6 +20,7 @@ export type Navigate = {
   url: Url
   option?: {
     state?: any
+    replace?: boolean
   }
 }
 
@@ -33,6 +34,7 @@ export type GoUrl = (navigate: Navigate) => void
 export interface AuthParams {
   token: string
   expiry: string
+  userId: string
 }
 
 export interface Location {

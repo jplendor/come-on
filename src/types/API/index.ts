@@ -1,7 +1,13 @@
 // Auth-Service API Docs 참고
+// providerName
+
+export enum Login {
+  KAKAO = "kakao",
+  REDIRECT_URI = "/auth/login-verification",
+}
 
 interface TokenValidation {
-  message: string
+  userId: number
 }
 
 interface Logout {
@@ -73,4 +79,16 @@ export interface ServerResponse {
   responseTime: string
   code: Code
   data: Exception | ReissueToken | Logout | TokenValidation
+}
+
+export interface LogoutResponse extends ServerResponse {
+  data: Logout
+}
+
+export interface ExceptionResponse extends ServerResponse {
+  data: Exception
+}
+
+export interface TokenValidationResponse extends ServerResponse {
+  data: TokenValidation
 }
