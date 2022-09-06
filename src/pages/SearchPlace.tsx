@@ -8,7 +8,13 @@ import React, {
 } from "react"
 
 import ReactDOMServer from "react-dom/server"
-import { Input, InputAdornment, TextField, Box } from "@mui/material"
+import {
+  Input,
+  InputAdornment,
+  TextField,
+  Box,
+  Pagination,
+} from "@mui/material"
 import { Search, Edit as EditIcon } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { generateComponent } from "../utils"
@@ -63,10 +69,18 @@ const SearchPlace = (): JSX.Element => {
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
+  const [selectedPage, setSelectedPage] = useState(0)
+  const [lastPage, setLastPage] = useState(0)
+  const refPagenation = useRef<any>()
+
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
   const handleSearchBar = (): void => {
     setSearchKeyword(inputedKeyword)
+  }
+
+  const handlePagenation = (page: number): void => {
+    setSelectedPage(page)
   }
 
   const onKeyPress = (e: React.KeyboardEvent): void => {
@@ -115,27 +129,36 @@ const SearchPlace = (): JSX.Element => {
       })
     }
 
+    const setPageCount = (page: number): void => {
+      setLastPage(page)
+    }
+
     const placesSearchCB = (data: any, status: any, pagination: any): any => {
+      pagination.gotoPage(selectedPage)
       console.log(data)
       // "" 일때 다섯개의 값이 들어오는 경우가 있어서 예외처리
-      if (data !== "ERROR") {
-        setSearchedData(data)
-      }
+      // if (data !== "ERROR") {
+      //   setSearchedData(data)
+      // }
 
-      if (status === kakao.maps.services.Status.OK) {
-        const bounds = new kakao.maps.LatLngBounds()
-        for (let i = 0; i < data.length; i += 1) {
-          displayMarker(data[i])
-          bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x))
-        }
-        map.setBounds(bounds)
-      }
+      setPageCount(pagination.last)
+
+      // if (status === kakao.maps.services.Status.OK) {
+      //   const bounds = new kakao.maps.LatLngBounds()
+      //   for (let i = 0; i < data.length; i += 1) {
+      //     displayMarker(data[i])
+      //     bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x))
+      //   }
+      //   map.setBounds(bounds)
+      // }
+      // pagenation 구현
     }
 
     const ps = new kakao.maps.services.Places()
+    const pageOptions = { size: 5 }
     const value = searchKeyword
-    ps.keywordSearch(value, placesSearchCB)
-  }, [searchKeyword])
+    ps.keywordSearch(value, placesSearchCB, pageOptions)
+  }, [searchKeyword, selectedPage])
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
@@ -168,7 +191,6 @@ const SearchPlace = (): JSX.Element => {
         style={{ width: "100%", height: "20rem" }}
       />
 
-      {console.log(searchedData.length)}
       <ListContainer>
         {searchedData?.length !== 0 &&
           generateComponent(searchedData, (item, key) => (
@@ -180,6 +202,14 @@ const SearchPlace = (): JSX.Element => {
             />
           ))}
       </ListContainer>
+      <Pagination
+        page={selectedPage}
+        count={lastPage}
+        onChange={(e, v) => {
+          handlePagenation(v)
+        }}
+        ref={refPagenation}
+      />
     </>
   )
 }
