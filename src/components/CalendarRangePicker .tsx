@@ -138,7 +138,37 @@ const CalendarRangePicker = ({
     }
   }
 
-  const setOneYearDateInfo = (): void => {
+  const getSelectedType = useCallback(
+    (y: number, m: number, d: number): selectedType => {
+      const itemDate = toStringYyyymmdd(new Date(y, m, d))
+
+      if (startDate.length === 0 && endDate.length === 0) {
+        return selectedType.n
+      }
+
+      if (startDate.length !== 0 && endDate.length === 0) {
+        if (startDate === itemDate) {
+          return selectedType.s
+        }
+        return selectedType.n
+      }
+      if (startDate.length !== 0 && endDate.length !== 0) {
+        if (startDate === itemDate) {
+          return selectedType.s
+        }
+        if (startDate < itemDate && itemDate < endDate) {
+          return selectedType.b
+        }
+        if (itemDate === endDate) {
+          return selectedType.e
+        }
+      }
+      return selectedType.n
+    },
+    [startDate, endDate]
+  )
+
+  const setOneYearDateInfo = useCallback((): void => {
     const [y, m, d] = getYyyymmddArray(new Date())
 
     const YmArr = []
@@ -159,46 +189,16 @@ const CalendarRangePicker = ({
       i.setDate(i.getDate() + 1)
     ) {
       const [iY, iM, iD] = getYyyymmddArray(i)
-      dateArr.push({ y: iY, m: iM, d: iD, selected: selectedType.n })
+      dateArr.push({
+        y: iY,
+        m: iM,
+        d: iD,
+        selected: getSelectedType(iY, iM, iD),
+      })
     }
 
     setDateInfo(dateArr)
-  }
-
-  const changeDateStyle = useCallback((): void => {
-    if (startDate.length === 0 && endDate.length === 0) {
-      return
-    }
-
-    if (dateInfo) {
-      let newDateInfo
-      if (startDate.length !== 0 && endDate.length === 0) {
-        newDateInfo = dateInfo.map((item) => {
-          const itemDate = toStringYyyymmdd(new Date(item.y, item.m, item.d))
-
-          if (startDate === itemDate) {
-            return { ...item, selected: selectedType.s }
-          }
-          return { ...item, selected: selectedType.n }
-        })
-      } else if (startDate.length !== 0 && endDate.length !== 0) {
-        newDateInfo = dateInfo.map((item) => {
-          const itemDate = toStringYyyymmdd(new Date(item.y, item.m, item.d))
-          if (startDate === itemDate) {
-            return { ...item, selected: selectedType.s }
-          }
-          if (startDate < itemDate && itemDate < endDate) {
-            return { ...item, selected: selectedType.b }
-          }
-          if (itemDate === endDate) {
-            return { ...item, selected: selectedType.e }
-          }
-          return { ...item, selected: selectedType.n }
-        })
-      }
-      setDateInfo(newDateInfo)
-    }
-  }, [startDate, endDate])
+  }, [getSelectedType])
 
   const getStyle = (selected: string): SelectedDateStyle => {
     if (selected === selectedType.s) {
@@ -238,8 +238,7 @@ const CalendarRangePicker = ({
 
   useEffect((): void => {
     setOneYearDateInfo()
-    changeDateStyle()
-  }, [changeDateStyle])
+  }, [setOneYearDateInfo])
 
   return (
     <Box sx={CALENDAR}>
