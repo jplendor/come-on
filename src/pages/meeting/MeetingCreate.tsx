@@ -11,9 +11,10 @@ import {
 import { PhotoCamera } from "@mui/icons-material"
 import { useTheme } from "@mui/material/styles"
 import styled from "@emotion/styled"
+import CalendarRangePicker from "../../components/CalendarRangePicker "
 import * as Api from "../../api"
 
-interface MeetingInfo {
+export interface MeetingInfoType {
   [key: string]: string
   title: string
   startDate: string
@@ -22,7 +23,7 @@ interface MeetingInfo {
 
 const MeetingCreate = (): JSX.Element => {
   const [previewImg, setPreviewImg] = useState({ src: "", name: "" })
-  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>({
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoType>({
     title: "",
     startDate: "",
     endDate: "",
@@ -153,7 +154,10 @@ const MeetingCreate = (): JSX.Element => {
     e: React.FormEvent<HTMLFormElement>
   ): Promise<any> => {
     e.preventDefault()
+
     const data = new FormData(e.currentTarget)
+    data.append("startDate", meetingInfo.startDate)
+    data.append("endDate", meetingInfo.endDate)
     const imageFile = await changeObjectUrlToFile()
     data.append("image", imageFile)
 
@@ -227,27 +231,10 @@ const MeetingCreate = (): JSX.Element => {
               onChange={handleChange}
             />
           </Grid>
-          <Grid item xs={12}>
-            <InputLabel>모임 날짜</InputLabel>
-            <InputSubLabel>시작일</InputSubLabel>
-            <TextField
-              required
-              variant="standard"
-              type="date"
-              name="startDate"
-              value={meetingInfo.startDate}
-              onChange={handleChange}
-            />
-            <InputSubLabel>종료일</InputSubLabel>
-            <TextField
-              required
-              variant="standard"
-              type="date"
-              name="endDate"
-              value={meetingInfo.endDate}
-              onChange={handleChange}
-            />
-          </Grid>
+          <CalendarRangePicker
+            meetingInfo={meetingInfo}
+            setMeetingInfo={setMeetingInfo}
+          />
           <Grid item xs={12}>
             <ButtonGroup>
               <Button

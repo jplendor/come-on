@@ -1,9 +1,15 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react"
 import { Box } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import { getYyyymmddArray, toStringYyyymmdd } from "../utils/date"
 import { generateComponent } from "../utils/generateComponent"
-import { MeetingInfoType } from "../pages/CalendarRangePickerTest"
+import { MeetingInfoType } from "../pages/meeting/MeetingCreate"
 
 interface YmInfo {
   y: number
@@ -31,7 +37,7 @@ interface SelectedDateStyle {
 
 interface CalendarRangePickerProps {
   meetingInfo: MeetingInfoType
-  setMeetingInfo: (value: MeetingInfoType) => void
+  setMeetingInfo: Dispatch<SetStateAction<MeetingInfoType>>
 }
 
 const CalendarRangePicker = ({
@@ -66,7 +72,7 @@ const CalendarRangePicker = ({
   }
 
   const CALENDAR = {
-    height: "700px",
+    height: "300px",
     px: "10px",
     overflow: "auto",
     backgroundColor: "#ffffff",
