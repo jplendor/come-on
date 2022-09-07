@@ -9,10 +9,12 @@ import DisplayGeolocation from "features/geolocation/DisplayGeo"
 // Auth 테스트용
 import Temporary from "pages/auth/Temporary"
 
+import MeetingCreate from "pages/meeting/MeetingCreate"
+
 const App = (): JSX.Element => {
   return (
     <Routes>
-      <Route
+      {/* <Route
         path="/"
         element={
           <>
@@ -21,14 +23,13 @@ const App = (): JSX.Element => {
           </>
         }
       />
-      <Route path="auth/*" element={<Auth />} />
-      {/* <Route path="/course/:id" element={<Course />} />
-        <Route path="/course/register" />
-        <Route path="/meeting" />
-        <Route path="/meeting/register" element={<MeetingCreate />} />
-        <Route path="/meeting/:id" />
-        <Route path="/meeting/:id/register" />
-        <Route path="/my-info" /> */}
+      <Route path="auth/*" element={<Auth />} /> */}
+      {/* <Route path="/course/:id" element={<Course />} /> */}
+      <Route path="/course/register" />
+      <Route path="/meeting" />
+      <Route path="/meeting/register" element={<MeetingCreate />} />
+      <Route path="/meeting/:id" />
+      <Route path="/my-info" />
     </Routes>
   )
 }

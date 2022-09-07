@@ -11,6 +11,7 @@ import {
 import { PhotoCamera } from "@mui/icons-material"
 import { useTheme } from "@mui/material/styles"
 import styled from "@emotion/styled"
+import * as Api from "../../api"
 
 interface MeetingInfo {
   [key: string]: string
@@ -88,14 +89,14 @@ const MeetingCreate = (): JSX.Element => {
     justify-content: center;
   `
 
-  const saveFileImage = (file: File): void => {
+  const changeFileToObjectUrl = (file: File): void => {
     const fileUrl = URL.createObjectURL(file)
     setPreviewImg({ name: file.name, src: fileUrl })
   }
 
   const handleChangeImg = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files) {
-      saveFileImage(e.target.files[0])
+      changeFileToObjectUrl(e.target.files[0])
     }
   }
 
@@ -143,13 +144,35 @@ const MeetingCreate = (): JSX.Element => {
     setMeetingInfo(newMeetingInfo)
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const changeObjectUrlToFile = async (): Promise<Blob> => {
+    const file = await fetch(previewImg.src).then((r) => r.blob())
+    return file
+  }
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<any> => {
     e.preventDefault()
-    // const data = new FormData(e.currentTarget)
-    // const res = post (이미지, 모임 이름, 시작일, 종료일)
-    // const { meetingId } = res
-    // if(res.ok) { navigate(`/meeting/${meetingId}`) }
-    // throw new Error("모임 생성에 실패했습니다.")
+    const data = new FormData(e.currentTarget)
+    const imageFile = await changeObjectUrlToFile()
+    data.append("image", imageFile)
+
+    try {
+      const res = await Api.post("/meetings", data, true)
+
+      if (res.data.code !== "SUCCESS") {
+        throw new Error(`error code: ${res.code}`)
+      }
+
+      const meetingId = res.data.data
+      navigate(`/meetings/${meetingId}`)
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message)
+      } else {
+        alert(`unexpected error: ${error}`)
+      }
+    }
   }
 
   return (
