@@ -1,6 +1,9 @@
 import React, { useState } from "react"
 
-import { Login } from "types/API"
+import { Login } from "types/API/auth-service"
+import KakaoIcon from "assets/nav/KakaoIcon"
+import { KakaoBtnText, ThemeKaKaoButton } from "components/login/KakaoLogin"
+
 import RedirectURL from "./RedirectURL"
 
 /**
@@ -18,12 +21,14 @@ const KakaoLogin = (): JSX.Element => {
   const KAKAO_LOGIN = `${SERVER}/oauth2/authorize/${KAKAO}?redirect_uri=${CLIENT}${REDIRECT_URI}`
   if (isClick) return <RedirectURL url={KAKAO_LOGIN} />
   return (
-    <>
-      <div>카카오 로그인 페이지</div>
-      <button type="button" onClick={onClickHandler}>
-        카카오 버튼
-      </button>
-    </>
+    <ThemeKaKaoButton
+      fullWidth
+      disableElevation
+      onClick={onClickHandler}
+      startIcon={<KakaoIcon />}
+    >
+      <KakaoBtnText>카카오 1초 로그인/회원가입</KakaoBtnText>
+    </ThemeKaKaoButton>
   )
 }
 

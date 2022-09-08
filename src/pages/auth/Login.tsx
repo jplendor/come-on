@@ -7,9 +7,9 @@ import { conversionToUrl } from "utils"
 import useAuth from "hooks/auth/useAuth"
 import useSavePath from "hooks/auth/useSavePath"
 import useUrlRoute from "hooks/auth/useUrlRoute"
+import SocialLogin from "components/login/SocialLogin"
 
 import KakaoLogin from "./KakaoLogin"
-import SocialLogin from "./SocialLogin"
 
 const Login = (): JSX.Element => {
   const location = useLocation()
@@ -40,12 +40,9 @@ const Login = (): JSX.Element => {
   }, [urlRoute, LoginStatus, getPreviousPathName, removePreviousPathName])
 
   return (
-    <main>
-      <SocialLogin>
-        <KakaoLogin />
-      </SocialLogin>
-      <p>유저 권한이 없습니다. 로그인 하세요</p>
-    </main>
+    <SocialLogin>
+      <KakaoLogin />
+    </SocialLogin>
   )
 }
 
