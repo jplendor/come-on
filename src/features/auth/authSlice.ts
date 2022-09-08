@@ -5,7 +5,7 @@ import type {
   ServerResponse,
   ExceptionResponse,
   TokenValidationResponse,
-} from "types/API"
+} from "types/API/auth-service"
 import {
   setCookie,
   CookieName,
@@ -59,6 +59,10 @@ export const authApiSlice = api.injectEndpoints({
   }),
 })
 
+const {
+  endpoints: { validation, logout },
+} = authApiSlice
+
 export const tokenValidation = createAsyncThunk<
   ReturnType,
   string,
@@ -83,9 +87,7 @@ export const tokenValidation = createAsyncThunk<
 
   async (encryptedText: string, { rejectWithValue, dispatch }) => {
     const { token } = encryptedTextConvToParamObj(encryptedText)
-    const { data, isError } = await dispatch(
-      authApiSlice.endpoints.validation.initiate(token)
-    )
+    const { data, isError } = await dispatch(validation.initiate(token))
     if (isError) return rejectWithValue(data as ExceptionResponse)
     const userId = pullingProperty(data as TokenValidationResponse, [
       "data",
@@ -133,13 +135,13 @@ const authSlice = createSlice({
       state.isloggedin = false
       state.status = "failed"
     })
-    builder.addMatcher(
-      authApiSlice.endpoints.logout.matchFulfilled,
-      (state) => {
-        removeCookie(CookieName.auth)
-        state.isloggedin = false
-      }
-    )
+    builder.addMatcher(logout.matchFulfilled, (state) => {
+      removeCookie(CookieName.auth)
+      state.isloggedin = false
+    })
+    builder.addMatcher(logout.matchRejected, (state) => {
+      state.isloggedin = false
+    })
   },
 })
 
