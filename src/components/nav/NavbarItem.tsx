@@ -17,7 +17,7 @@ const ThemeAvatar = styled(Avatar)<AvatarProps>(() => ICON)
 const NavbarText = styled(Typography)<TypographyProps>(
   ({
     theme: {
-      grayscale: { text },
+      grayscale,
       textStyles: {
         caption: { regular },
       },
@@ -25,7 +25,7 @@ const NavbarText = styled(Typography)<TypographyProps>(
   }) => ({
     userSelect: "none",
     textAlign: "center",
-    color: text["700_txt2"],
+    color: grayscale[700],
     fontSize: regular.fontSize,
     lineHeight: regular.lineHeight,
   })
@@ -65,7 +65,7 @@ const {
 const isActive = (index: number, indexState: number) =>
   index === indexState
     ? { color: primary.main, fontWeight: 700 }
-    : { color: grayscale.text["700_txt2"] }
+    : { color: grayscale[700] }
 
 export const NavbarItem = ({
   Icon,

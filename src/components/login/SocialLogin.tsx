@@ -10,7 +10,7 @@ interface SocialLoginProps {
 const ThemeText = styled(Typography)<TypographyProps>(
   ({ theme: { grayscale } }) => ({
     userSelect: "none",
-    color: grayscale.text["900_txt1"],
+    color: grayscale[900],
   })
 )
 
@@ -31,13 +31,13 @@ const LoginTitle = styled(ThemeText)<TypographyProps>(
 const LoginBody = styled(ThemeText)<TypographyProps>(
   ({
     theme: {
-      grayscale: { text },
+      grayscale,
       textStyles: {
         body1: { regular },
       },
     },
   }) => ({
-    color: text["700_txt2"],
+    color: grayscale[700],
     fontSize: regular.fontSize,
     lineHeight: regular.lineHeight,
   })
