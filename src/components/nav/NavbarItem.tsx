@@ -1,18 +1,17 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import React from "react"
-
 import { styled } from "@mui/material/styles"
 import { SvgIconComponent } from "@mui/icons-material"
 import type { AvatarProps, TypographyProps } from "@mui/material"
 import { Grid, Box, Avatar, BoxProps, Typography } from "@mui/material"
+
 import theme from "theme"
 
-const ICON = {
+const ICON_SIZE = {
   width: "32px",
   height: "32px",
 }
 
-const ThemeAvatar = styled(Avatar)<AvatarProps>(() => ICON)
+const ThemeAvatar = styled(Avatar)<AvatarProps>(() => ICON_SIZE)
 
 const NavbarText = styled(Typography)<TypographyProps>(
   ({
@@ -58,24 +57,33 @@ interface NavbarAvatarProps extends NavbarCommonProps {
     alt: string
   }
 }
+
 const {
   grayscale,
   palette: { primary },
 } = theme
-const isActive = (index: number, indexState: number) =>
+const isActiveText = (index: number, indexState: number): object =>
   index === indexState
     ? { color: primary.main, fontWeight: 700 }
     : { color: grayscale[700] }
+
+const isActiveAvatar = (index: number, indexState: number): object =>
+  index === indexState ? { filter: "none" } : { filter: "grayscale(1)" }
 
 export const NavbarItem = ({
   Icon,
   text,
   index,
   currentIndex: { indexState, onClickHandler },
-}: NavbarItemProps) => (
+}: NavbarItemProps): JSX.Element => (
   <NavbarContent onClick={() => onClickHandler(index)}>
-    <Icon sx={ICON} />
-    <NavbarText sx={isActive(index, indexState)}>{text}</NavbarText>
+    <Icon
+      sx={{
+        ...ICON_SIZE,
+        ...isActiveText(index, indexState),
+      }}
+    />
+    <NavbarText sx={isActiveText(index, indexState)}>{text}</NavbarText>
   </NavbarContent>
 )
 
@@ -84,12 +92,12 @@ export const NavbarAvatar = ({
   index,
   img: { src, alt },
   currentIndex: { indexState, onClickHandler },
-}: NavbarAvatarProps) => (
+}: NavbarAvatarProps): JSX.Element => (
   <NavbarContent onClick={() => onClickHandler(index)}>
     <Grid container justifyContent="center">
-      <ThemeAvatar src={src} alt={alt} />
+      <ThemeAvatar src={src} alt={alt} sx={isActiveAvatar(index, indexState)} />
     </Grid>
-    <NavbarText sx={{ paddingTop: "7px", ...isActive(index, indexState) }}>
+    <NavbarText sx={{ paddingTop: "7px", ...isActiveText(index, indexState) }}>
       {text}
     </NavbarText>
   </NavbarContent>

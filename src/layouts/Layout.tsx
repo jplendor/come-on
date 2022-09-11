@@ -14,13 +14,23 @@ const temporaryArea = {
 const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
     // 메인 영역 #1
-    <Container maxWidth="xs" sx={{ maxHeight: "735px", ...temporaryArea }}>
+    // 45.938em -> 735px
+    <Container
+      maxWidth="xs"
+      sx={{
+        height: "45.938em",
+        touchAction: "pan-x pinch-zoom",
+        ...temporaryArea,
+      }}
+    >
       {/* 콘텐츠 영역 #1 */}
       <Box
+        // 41.875em -> 670px
         sx={{
-          height: `670px`,
+          height: "41.875em",
           overflowY: "auto",
           overflowX: "hidden",
+          touchAction: "pan-x pinch-zoom",
         }}
       >
         {children}
@@ -29,7 +39,15 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
       <AppBar
         color="inherit"
         position="sticky"
-        sx={{ top: "auto", bottom: 0, height: "83px", boxShadow: "none" }}
+        component="footer"
+        // 5.188em -> 83px
+        sx={{
+          top: "auto",
+          bottom: 0,
+          height: "5.188em",
+          boxShadow: "none",
+          touchAction: "pan-x pinch-zoom",
+        }}
       >
         <Box
           sx={{
@@ -39,14 +57,16 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
         />
         <Grid
           container
+          wrap="nowrap"
           component="nav"
           direction="row"
           alignItems="center"
           justifyContent="space-between"
+          // 2.875em -> 46px
           sx={{
             mt: "5px",
             px: "20px",
-            maxHeight: "46px",
+            height: "2.875em",
           }}
         >
           <Navbar />
