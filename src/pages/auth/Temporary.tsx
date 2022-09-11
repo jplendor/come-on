@@ -17,6 +17,8 @@ const Temporary = (): JSX.Element => {
       <br />
       <Link to="/auth/test-needed-token2">로그인권한이 필요한 링크2</Link>
       <br />
+      <Link to="/user/my-page">마이페이지 가기</Link>
+      <br />
       <Link to="/auth/login">로그인 페이지 가기</Link> <br />
       <Link to="/">홈</Link>
       <button type="button" onClick={() => loggedInDispatch()}>
