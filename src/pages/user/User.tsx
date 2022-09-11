@@ -1,7 +1,7 @@
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 
-import RequireAuth from "pages/auth/RequireAuth"
+import RequireAuth from "components/auth/RequireAuth"
 
 import MyPage from "./MyPage"
 

@@ -1,10 +1,9 @@
 import React, { useState } from "react"
 
-import { Login } from "types/API/auth-service"
 import KakaoIcon from "assets/nav/KakaoIcon"
+import { Login } from "types/API/auth-service"
+import RedirectURL from "components/auth/RedirectURL"
 import { KakaoBtnText, ThemeKaKaoButton } from "components/login/KakaoLogin"
-
-import RedirectURL from "./RedirectURL"
 
 /**
  * 서버에 kakao API를 보내기 위해 특정 URL로 전송시키고 token을 받아온다.
