@@ -83,8 +83,8 @@ const App = (): JSX.Element => {
         <ListDetailCard item={item} key={key} />
       ))} */}
       <Routes>
-        <Route path="/" element={<DisplayGeolocation />} />
-        <Route path="/course/:id" element={<Course />} />
+        <Route path="/" element={<Course />} />
+        <Route path="/course/:id" />
         <Route path="/course/register" element={<SearchPlace />} />
         <Route path="/meeting" />
         <Route path="/meeting/:id" />
