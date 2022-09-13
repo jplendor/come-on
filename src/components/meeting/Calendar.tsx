@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react"
 import { Box, Dialog, DialogTitle, Grid, Avatar, Button } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
-import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "../utils"
+import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "utils"
 
 interface SelectedDateModalProps {
   open: boolean

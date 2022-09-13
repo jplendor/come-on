@@ -17,8 +17,8 @@ import {
 } from "@mui/material"
 import { Search, Edit as EditIcon } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
-import { generateComponent } from "../utils"
-import SearchCard from "../components/common/SearchCard"
+import { generateComponent } from "utils"
+import SearchCard from "components/common/SearchCard"
 
 const { kakao } = window
 

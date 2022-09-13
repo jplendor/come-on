@@ -11,7 +11,7 @@ import {
 import { PhotoCamera } from "@mui/icons-material"
 import { useTheme } from "@mui/material/styles"
 import styled from "@emotion/styled"
-import CalendarRangePicker from "../../components/CalendarRangePicker "
+import CalendarRangePicker from "components/meeting/CalendarRangePicker "
 import * as Api from "../../api"
 
 export interface MeetingInfoType {

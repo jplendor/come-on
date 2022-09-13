@@ -12,13 +12,13 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite"
 import { styled } from "@mui/material/styles"
 import { SettingsInputAntennaTwoTone } from "@mui/icons-material"
-import MapContainer from "../components/common/MapContainer"
+import MapContainer from "components/common/MapContainer"
+import KakaoShare from "components/KakaoShare"
 import ListDetailCard, {
   ListDetailCardProp,
-} from "../components/common/ListDetailCard"
-import KakaoShare from "../components/KakaoShare"
-import { generateComponent } from "../utils"
-import KakaoIcon from "../components/common/KakaoComponent"
+} from "components/common/ListDetailCard"
+import { generateComponent } from "utils"
+import KakaoIcon from "assets/nav/KakaoIcon"
 
 const SAMPLE_DATA2: ListDetailCardProp[] = [
   {

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { Grid, Typography, Stack, Avatar, Box, Button } from "@mui/material"
 import { generateComponent } from "utils"
 import { useTheme } from "@mui/material/styles"
-import Calendar from "../../components/Calendar"
+import Calendar from "components/meeting/Calendar"
 
 const MeetingEdit = (): JSX.Element => {
   const { meetingId } = useParams()

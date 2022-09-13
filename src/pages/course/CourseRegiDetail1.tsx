@@ -9,8 +9,8 @@ import React, {
 import { styled } from "@mui/material/styles"
 import { Box, Input, Typography, TextField, Fab } from "@mui/material"
 import { PhotoCamera } from "@mui/icons-material"
-import NabvigationBar from "../components/common/NavigationBar"
-import Guide from "../components/common/Guide"
+import NabvigationBar from "components/common/NavigationBar"
+import Guide from "components/common/Guide"
 
 interface NavigationBarProps {
   currentPage: number

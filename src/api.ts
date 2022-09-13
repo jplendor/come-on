@@ -1,5 +1,4 @@
 import axios from "axios"
-import { ServerResponse } from "types/API"
 
 // 임시 사용자 토큰 (로그인 가정)
 const tempUserToken =

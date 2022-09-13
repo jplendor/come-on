@@ -9,13 +9,13 @@ import React, {
 import { styled } from "@mui/material/styles"
 import { Box, Typography, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import NabvigationBar from "../components/common/NavigationBar"
-import Guide from "../components/common/Guide"
-import { generateComponent } from "../utils"
-import MapContainer from "../components/common/MapContainer"
+import NabvigationBar from "components/common/NavigationBar"
+import Guide from "components/common/Guide"
+import { generateComponent } from "utils"
+import MapContainer from "components/common/MapContainer"
 import ListDetailCard, {
   ListDetailCardProp,
-} from "../components/common/ListDetailCard"
+} from "components/common/ListDetailCard"
 
 interface NavigationBarProps {
   currentPage: number

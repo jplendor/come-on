@@ -10,12 +10,17 @@ import DisplayGeolocation from "features/geolocation/DisplayGeo"
 import User from "pages/user/User"
 import Temporary from "pages/auth/Temporary"
 
+// 모임
 import MeetingCreate from "pages/meeting/MeetingCreate"
+import MeetingEdit from "pages/meeting/MeetingEdit"
+
+// 코스
+import SearchPlace from "pages/course/SearchPlace"
 
 const App = (): JSX.Element => {
   return (
-      <Routes>
-            <Route
+    <Routes>
+      <Route
         path="/"
         element={
           <>
@@ -25,18 +30,15 @@ const App = (): JSX.Element => {
         }
       />
       <Route path="auth/*" element={<Auth />} />
-      <Route path="user/*" element={<User />} />  
-        <Route path="/course/:id" />
-        <Route path="/course/register" element={<SearchPlace />} />
+      <Route path="user/*" element={<User />} />
+      <Route path="/course/:id" />
+      <Route path="/course/register" element={<SearchPlace />} />
       <Route path="/meeting" />
       <Route path="/meeting/register" element={<MeetingCreate />} />
-      <Route path="/meeting/:id" />
+      <Route path="/meeting/:id" element={<MeetingEdit />} />
       <Route path="/my-info" />
-        <Route path="/login" />
-      </Routes>
-      <Navbar />
-    </BrowserRouter>
-
+      <Route path="/login" />
+    </Routes>
   )
 }
 
