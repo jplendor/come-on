@@ -21,6 +21,6 @@ export const KakaoBtnText = styled(Typography)<TypographyProps>(
     fontSize: bold.fontSize,
     lineHeight: bold.lineHeight,
     fontWeight: bold.fontWeight,
-    color: grayscale.text["900_txt1"],
+    color: grayscale[900],
   })
 )

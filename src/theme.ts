@@ -1,19 +1,16 @@
 import { createTheme } from "@mui/material/styles"
 
-interface Text {
-  "900_txt1": "#212121"
-  "700_txt2": "#616161"
-  "500_txt3": "#9E9E9E"
-}
-
-interface Line {
-  "400_line2": "#BDBDBD"
-  "200_line2": "#EEEEEE"
-}
-
-interface Bg {
-  "100_bg2": "#F5F5F5"
-  "50_bg1": "#FAFAFA"
+interface Grayscale {
+  "900": "#212121"
+  "800": "#424242"
+  "700": "#616161"
+  "600": "#757575"
+  "500": "#9E9E9E"
+  "400": "#BDBDBD"
+  "300": "#E0E0E0"
+  "200": "#EEEEEE"
+  "100": "#F5F5F5"
+  "50": "#FAFAFA"
 }
 
 type Typography =
@@ -128,29 +125,22 @@ const TYPOGRAPHYS = {
   },
 } as const
 
-const GRAYSCALES = {
-  text: {
-    "900_txt1": "#212121",
-    "700_txt2": "#616161",
-    "500_txt3": "#9E9E9E",
-  },
-  line: {
-    "400_line2": "#BDBDBD",
-    "200_line2": "#EEEEEE",
-  },
-  bg: {
-    "100_bg2": "#F5F5F5",
-    "50_bg1": "#FAFAFA",
-  },
+const GRAYSCALES: Grayscale = {
+  "900": "#212121",
+  "800": "#424242",
+  "700": "#616161",
+  "600": "#757575",
+  "500": "#9E9E9E",
+  "400": "#BDBDBD",
+  "300": "#E0E0E0",
+  "200": "#EEEEEE",
+  "100": "#F5F5F5",
+  "50": "#FAFAFA",
 } as const
 
 declare module "@mui/material/styles" {
   interface Theme {
-    grayscale: {
-      text: Text
-      line: Line
-      bg: Bg
-    }
+    grayscale: Grayscale
     textStyles: {
       [Key in Typography]: {
         regular: regular
@@ -160,11 +150,7 @@ declare module "@mui/material/styles" {
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
-    grayscale: {
-      text: Text
-      line: Line
-      bg: Bg
-    }
+    grayscale: Grayscale
     textStyles: {
       [Key in Typography]: {
         regular: regular
