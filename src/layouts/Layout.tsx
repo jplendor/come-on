@@ -1,26 +1,58 @@
 import React, { ReactNode } from "react"
-import { Box, Container, Grid } from "@mui/material"
-import Navbar from "../components/common/Navbar"
+import { AppBar, Box, Container, Grid } from "@mui/material"
 
-type Props = {
-  children: ReactNode
+import Navbar from "./Navbar"
+
+const temporaryArea = {
+  marginTop: "20px",
+  border: "2px solid black",
+  borderRadius: "5px",
+  borderTop: "none",
+  borderBottom: "none",
 }
 
-const Layout: React.FC<Props> = ({ children }) => {
+const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
-    <Grid sm={12} item>
-      <Container maxWidth="sm">
+    // 메인 영역 #1
+    <Container maxWidth="xs" sx={{ maxHeight: "735px", ...temporaryArea }}>
+      {/* 콘텐츠 영역 #1 */}
+      <Box
+        sx={{
+          height: `670px`,
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      >
+        {children}
+      </Box>
+      {/* 콘텐츠 영역 #2 */}
+      <AppBar
+        color="inherit"
+        position="sticky"
+        sx={{ top: "auto", bottom: 0, height: "83px", boxShadow: "none" }}
+      >
         <Box
           sx={{
-            height: "800px",
-            backgroundColor: "powderblue",
+            height: "1px",
+            backgroundColor: "#EEEEEE",
+          }}
+        />
+        <Grid
+          container
+          component="nav"
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{
+            mt: "5px",
+            px: "20px",
+            maxHeight: "46px",
           }}
         >
-          {children}
-        </Box>
-        <Navbar />
-      </Container>
-    </Grid>
+          <Navbar />
+        </Grid>
+      </AppBar>
+    </Container>
   )
 }
 

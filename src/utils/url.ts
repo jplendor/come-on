@@ -12,6 +12,7 @@ import {
 
 import { AuthParams, Url } from "types/auth"
 
+import { decryptValue } from "./crypto"
 import { CookieName, decryptCookie } from "./cookies"
 import { LeafPath, pullingProperty } from "./pullingProperty"
 
@@ -46,5 +47,10 @@ export const paramConversionToObj = (data: string, sep1 = "&", sep2 = "=") =>
     fromEntries as any
   )
 
-export const encryptedParamConversionToObj = () =>
-  pipe(decryptCookie(CookieName.auth), paramConversionToObj) as AuthParams
+const conversionToObj = (f: any) => pipe(f, paramConversionToObj) as AuthParams
+
+export const encryptedTextConvToParamObj = (text: string) =>
+  conversionToObj(decryptValue(text))
+
+export const encryptedCookieConvToParamObj = () =>
+  conversionToObj(decryptCookie(CookieName.auth))
