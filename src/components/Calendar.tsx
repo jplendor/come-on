@@ -1,28 +1,37 @@
 import React, { useEffect, useState, useCallback } from "react"
 import { Box, Dialog, DialogTitle, Grid, Avatar, Button } from "@mui/material"
+import { useTheme } from "@mui/material/styles"
 
 import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "../utils"
 
-interface Selection {
-  date: string
-  idList: string[]
-}
-interface SelectionDataModalProps {
+interface SelectedDateModalProps {
   open: boolean
   onClose: () => void
-  targetDateData: Selection
-  totalNumberMembers: number
+  meetingId: number
+  meetingDates: Array<any>
+  selectedDate: string
+  totalMemberNumber: number
 }
 
-const SelectionDataModal = (props: SelectionDataModalProps): JSX.Element => {
+interface DateInfoType {
+  id: number | null
+  date: string
+  userCount: number
+  dateStatus: string | null
+  dateUsers: Array<any>
+}
+
+const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
   const {
     open,
     onClose,
-    targetDateData: { date, idList },
-    totalNumberMembers,
+    meetingId,
+    meetingDates,
+    selectedDate,
+    totalMemberNumber,
   } = props
 
-  const IDLIST_LENGTH = idList.length
+  const [dateInfo, setDateInfo] = useState<DateInfoType>()
 
   const DIALOG_TITLE = {
     backgroundColor: "#8E8E8E",
@@ -33,37 +42,79 @@ const SelectionDataModal = (props: SelectionDataModalProps): JSX.Element => {
     display: "flex",
   }
 
+  const hasDateId = useCallback((): boolean => {
+    const filteredMeetingDates = meetingDates.filter(
+      (item: any) => item.date === selectedDate
+    )
+
+    return filteredMeetingDates.length !== 0
+  }, [meetingDates, selectedDate])
+
+  useEffect(() => {
+    if (hasDateId()) {
+      // 날짜 단건 조회
+      // get("/meetings/{meetingId}/dates/{dateId}")
+      // 임시 데이터
+      setDateInfo({
+        id: 10,
+        date: "2022-06-30",
+        userCount: 2,
+        dateStatus: "UNFIXED",
+        dateUsers: [
+          {
+            id: 10,
+            nickname: "마라탕마스터",
+            imageLink:
+              "https://cdn.pixabay.com/photo/2017/11/19/07/30/girl-2961959_960_720.jpg",
+            meetingRole: "HOST",
+          },
+          {
+            id: 11,
+            nickname: "옥수수수염남",
+            imageLink:
+              "https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_960_720.jpg",
+            meetingRole: "PARTICIPANT",
+          },
+        ],
+      })
+    } else {
+      setDateInfo({
+        id: null,
+        date: selectedDate,
+        userCount: 0,
+        dateStatus: null,
+        dateUsers: [],
+      })
+    }
+  }, [selectedDate, hasDateId])
+
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle sx={DIALOG_TITLE}>{date}</DialogTitle>
-      <Grid container>
-        {IDLIST_LENGTH === 0
-          ? "해당 날짜를 선택한 멤버가 없습니다"
-          : generateComponent(idList, (data, key) => (
-              <Grid item key={key} sx={GRID_ITEM} xs={12}>
-                <Avatar
-                  alt="프로필 이미지"
-                  src="https://cdn.pixabay.com/photo/2015/03/03/18/58/woman-657753_960_720.jpg"
-                />
-                <Box>{data}</Box>
-              </Grid>
-            ))}
-      </Grid>
-      <Box>{`가능 인원 : ${IDLIST_LENGTH} / ${totalNumberMembers}`}</Box>
+      {dateInfo && (
+        <>
+          <DialogTitle sx={DIALOG_TITLE}>{dateInfo.date}</DialogTitle>
+          <Grid container>
+            {dateInfo.userCount === 0
+              ? "해당 날짜를 선택한 멤버가 없습니다"
+              : generateComponent(dateInfo.dateUsers, (data, key) => (
+                  <Grid item key={key} sx={GRID_ITEM} xs={12}>
+                    <Avatar alt="프로필 이미지" src={data.imageLink} />
+                    <Box>{data.nickname}</Box>
+                  </Grid>
+                ))}
+          </Grid>
+          <Box>{`가능 인원 : ${dateInfo.userCount} / ${totalMemberNumber}`}</Box>
+        </>
+      )}
+
       <Button variant="contained" onClick={onClose}>
         닫기
       </Button>
     </Dialog>
   )
 }
-interface CalendarProps {
-  fromDate: string
-  toDate: string
-  selectionData: Selection[]
-  totalNumberMembers: number
-}
 
-interface dateData {
+interface dateInfo {
   date: number
   percentage: number
 }
@@ -71,7 +122,7 @@ interface dateData {
 interface CalendarData {
   year: number
   month: number
-  dateData: dateData[]
+  dateData: dateInfo[]
 }
 
 const getLastDate = (date: Date): number => {
@@ -80,18 +131,21 @@ const getLastDate = (date: Date): number => {
   return lastDate
 }
 
-const Calendar = ({
-  fromDate,
-  toDate,
-  selectionData: selectionDataProp,
-  totalNumberMembers: totalNumberMembersProp,
-}: CalendarProps): JSX.Element => {
+enum Mode {
+  View = "VIEW",
+  Select = "SELECT",
+}
+
+const Calendar = ({ meetingInfo }: any): JSX.Element => {
+  const { meetingId, startDate, endDate, meetingUsers, meetingDates } =
+    meetingInfo
+  const totalMemberNumber = meetingUsers.length
   const [allDates, setAllDates] = useState<CalendarData[]>([])
   const [open, setOpen] = useState(false)
-  const [targetDateData, setTargetDateData] = useState<Selection>({
-    date: "",
-    idList: [],
-  })
+  const [selectedDate, setSelectedDate] = useState("")
+  const [mode, setMode] = useState<Mode>(Mode.View)
+
+  const theme = useTheme()
 
   const CALENDAR = {
     height: "500px",
@@ -142,7 +196,6 @@ const Calendar = ({
     textAlign: "center",
   }
 
-  // 모든 날짜 구하기
   const getAllDates = useCallback(
     (fromString: string, toString: string): CalendarData[] => {
       const newAllDates: CalendarData[] = []
@@ -152,23 +205,22 @@ const Calendar = ({
       const to = new Date(toString)
       const [toY, toM, toD] = getYyyymmddArray(to)
 
-      // 월별 날짜정보(날짜, 선택율) 구하기
-      const getDates = (year: number, month: number): dateData[] => {
-        let newData: dateData[] = []
+      const getDateInfoByMonth = (year: number, month: number): dateInfo[] => {
+        let newData: dateInfo[] = []
 
-        const loop = (start: number, end: number, arr: dateData[]): void => {
+        const loop = (start: number, end: number, arr: dateInfo[]): void => {
           for (let i = start; i <= end; i += 1) {
-            const filteredSelectionData = selectionDataProp.filter(
-              (item) => item.date === toStringYyyymmdd(new Date(year, month, i))
+            const filteredMeetingDates = meetingDates.filter(
+              (item: any) =>
+                item.date === toStringYyyymmdd(new Date(year, month, i))
             )
-            const selectionCount =
-              filteredSelectionData.length === 0
-                ? 0
-                : filteredSelectionData[0].idList.length
 
             arr.push({
               date: i,
-              percentage: selectionCount / totalNumberMembersProp,
+              percentage:
+                filteredMeetingDates.length === 0
+                  ? 0
+                  : filteredMeetingDates[0].userCount / totalMemberNumber,
             })
           }
         }
@@ -208,13 +260,13 @@ const Calendar = ({
         newAllDates.push({
           year: iY,
           month: iM,
-          dateData: getDates(iY, iM),
+          dateData: getDateInfoByMonth(iY, iM),
         })
       }
 
       return newAllDates
     },
-    [selectionDataProp, totalNumberMembersProp]
+    [meetingDates, totalMemberNumber]
   )
 
   const handleDateClick = (e: React.MouseEvent<HTMLDivElement>): void => {
@@ -226,70 +278,92 @@ const Calendar = ({
     }
 
     const targetDate = e.target.dataset.date
-    const filteredSelectionData = selectionDataProp.filter(
-      (item) => item.date === targetDate
-    )[0]
 
-    setTargetDateData(
-      filteredSelectionData === undefined
-        ? {
-            date: targetDate,
-            idList: [],
-          }
-        : filteredSelectionData
-    )
-    setOpen(true)
+    if (mode === Mode.Select) {
+      // 날짜 생성
+      // post("/meetings/{meetingId}/dates")
+    }
+
+    if (mode === Mode.View) {
+      setSelectedDate(targetDate)
+      setOpen(true)
+    }
   }
 
   const handleClose = (): void => {
     setOpen(false)
   }
 
+  const toggleMode = (): void => {
+    setMode(mode === Mode.View ? Mode.Select : Mode.View)
+  }
+
   useEffect(() => {
-    setAllDates(getAllDates(fromDate, toDate))
-  }, [fromDate, toDate, getAllDates])
+    setAllDates(getAllDates(startDate, endDate))
+  }, [startDate, endDate, getAllDates])
 
   return (
-    <Box sx={CALENDAR}>
-      <Box sx={DAYOFTHEWEEK_CONTAINER}>
-        {generateComponent(["S", "M", "T", "W", "T", "F", "S"], (data, key) => (
-          <Box key={key} sx={DAYOFTHEWEEK}>
-            {data}
+    <Box>
+      <Box sx={CALENDAR}>
+        <Box sx={DAYOFTHEWEEK_CONTAINER}>
+          {generateComponent(
+            ["S", "M", "T", "W", "T", "F", "S"],
+            (data, key) => (
+              <Box key={key} sx={DAYOFTHEWEEK}>
+                {data}
+              </Box>
+            )
+          )}
+        </Box>
+        {generateComponent(allDates, (allData, key1) => (
+          <Box key={key1} sx={MONTH_CONTAINER}>
+            <Box sx={MONTH_NUMBER}>{`${allData.month + 1}`}</Box>
+            <Box sx={MONTH}>
+              {generateComponent(allData.dateData, (monthData, key2) => (
+                <Box
+                  key={key2}
+                  sx={{
+                    ...DATE,
+                    backgroundColor: `rgba(255, 165, 165, ${monthData.percentage})`,
+                  }}
+                  data-date={
+                    monthData.date === 0
+                      ? null
+                      : toStringYyyymmdd(
+                          new Date(allData.year, allData.month, monthData.date)
+                        )
+                  }
+                  onClick={handleDateClick}
+                >
+                  {monthData.date === 0 ? "" : monthData.date}
+                </Box>
+              ))}
+            </Box>
           </Box>
         ))}
+        <SelectedDateModal
+          open={open}
+          onClose={handleClose}
+          meetingId={meetingId}
+          meetingDates={meetingDates}
+          selectedDate={selectedDate}
+          totalMemberNumber={totalMemberNumber}
+        />
       </Box>
-      {generateComponent(allDates, (allData, key1) => (
-        <Box key={key1} sx={MONTH_CONTAINER}>
-          <Box sx={MONTH_NUMBER}>{`${allData.month + 1}`}</Box>
-          <Box sx={MONTH}>
-            {generateComponent(allData.dateData, (monthData, key2) => (
-              <Box
-                key={key2}
-                sx={{
-                  ...DATE,
-                  backgroundColor: `rgba(255, 165, 165, ${monthData.percentage})`,
-                }}
-                data-date={
-                  monthData.date === 0
-                    ? null
-                    : toStringYyyymmdd(
-                        new Date(allData.year, allData.month, monthData.date)
-                      )
-                }
-                onClick={handleDateClick}
-              >
-                {monthData.date === 0 ? "" : monthData.date}
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      ))}
-      <SelectionDataModal
-        open={open}
-        onClose={handleClose}
-        targetDateData={targetDateData}
-        totalNumberMembers={totalNumberMembersProp}
-      />
+      <Button
+        type="button"
+        variant="contained"
+        sx={{
+          bgcolor: theme.palette.secondary.main,
+          color: "white",
+          "&:hover": {
+            bgcolor: theme.palette.secondary.main,
+          },
+        }}
+        onClick={toggleMode}
+      >
+        {mode}
+      </Button>
     </Box>
   )
 }
