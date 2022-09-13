@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "assets/*": ["./src/assets/*"],
+        "components/*": ["./src/components/*"],
+        "store": ["./src/app/store.ts"],
+        "features/*": ["./src/features/*"],
+        "hooks/*": ["./src/hooks/*"],
+        "pages/*": ["./src/pages/*"],
+        "types/*": ["./src/types/*"],
+        "utils": ["./src/utils/index.ts"],
+        "theme":["./src/theme.ts"]
+      }
+    }
+  }

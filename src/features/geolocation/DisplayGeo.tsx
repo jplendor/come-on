@@ -1,9 +1,10 @@
-import { Alert, Box, Link } from "@mui/material"
-import { useGeolocation } from "rooks"
 import React, { FC, useEffect } from "react"
+import { Alert, Box, Link as MuiLink } from "@mui/material"
 
-import { UseGeolocationReturnType } from "./geoSlice"
-import { useAppDispatch, useAppSelector } from "../../hooks/useRedux"
+import { useGeolocation } from "rooks"
+import { useAppDispatch, useAppSelector } from "hooks/redux/useRedux"
+
+import { geoUpdate, UseGeolocationReturnType } from "./geoSlice"
 
 interface DisplayProps {
   data: UseGeolocationReturnType
@@ -20,12 +21,12 @@ const DisplayMap: FC<DisplayProps> = ({ data }) => {
     >
       {data && !isError ? (
         <div>
-          <Link
+          <MuiLink
             href={`https://www.openstreetmap.org/#map=18/${lat}/${lng}`}
             underline="hover"
           >
             당신의 지역을 맞춰보죠
-          </Link>
+          </MuiLink>
           <Alert severity="success">Latitude: {lat}</Alert>
           <Alert severity="success">Longitude: {lng}</Alert>
         </div>
@@ -44,9 +45,9 @@ const DisplayGeolocation = (): JSX.Element => {
   const geolocation = useGeolocation()
   const { isDone, info } = useAppSelector((state) => state.geolocation)
 
-  // useEffect(() => {
-  //   if (!isDone && geolocation) dispatch(geoAdded(geolocation))
-  // }, [dispatch, isDone, geolocation])
+  useEffect(() => {
+    if (!isDone && geolocation) dispatch(geoUpdate(geolocation))
+  }, [dispatch, isDone, geolocation])
 
   return <DisplayMap data={info} />
 }
