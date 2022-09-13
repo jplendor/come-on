@@ -1,7 +1,12 @@
 // Auth-Service API Docs 참고
 
+export enum Login {
+  KAKAO = "kakao",
+  REDIRECT_URI = "/auth/login-verification",
+}
+
 interface TokenValidation {
-  message: string
+  userId: number
 }
 
 interface Logout {
@@ -27,9 +32,9 @@ interface ReissueToken {
  * 705 : Access Token이 만료되지 않아 재발급 할 수 없습니다.
  */
 
-export type ErrorCode = 700 | 701 | 702 | 703 | 704 | 705
+type ErrorCode = 700 | 701 | 702 | 703 | 704 | 705
 
-export interface Exception {
+interface Exception {
   code: ErrorCode
   message: string
 }
@@ -50,7 +55,7 @@ export interface Exception {
  * UNAUTHORIZED    : 인증에 실패하였습니다.
  */
 
-export enum Code {
+enum Code {
   BAD_PARAMETER = "BAD_PARAMETER",
   BAD_REQUEST = "BAD_REQUEST",
   NOT_FOUND = "NOT_FOUND",
@@ -69,8 +74,21 @@ export enum Code {
  * data         : 결과 데이터를 반환합니다.
  */
 
+// TODO: 인터페이스 이름명 좀더 고민해보기 []
 export interface ServerResponse {
   responseTime: string
   code: Code
   data: Exception | ReissueToken | Logout | TokenValidation
+}
+
+export interface LogoutResponse extends ServerResponse {
+  data: Logout
+}
+
+export interface ExceptionResponse extends ServerResponse {
+  data: Exception
+}
+
+export interface TokenValidationResponse extends ServerResponse {
+  data: TokenValidation
 }

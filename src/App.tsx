@@ -7,6 +7,7 @@ import Auth from "pages/auth/Auth"
 import DisplayGeolocation from "features/geolocation/DisplayGeo"
 
 // Auth 테스트용
+import User from "pages/user/User"
 import Temporary from "pages/auth/Temporary"
 
 import MeetingCreate from "pages/meeting/MeetingCreate"
@@ -14,7 +15,7 @@ import MeetingCreate from "pages/meeting/MeetingCreate"
 const App = (): JSX.Element => {
   return (
     <Routes>
-      {/* <Route
+      <Route
         path="/"
         element={
           <>
@@ -23,7 +24,8 @@ const App = (): JSX.Element => {
           </>
         }
       />
-      <Route path="auth/*" element={<Auth />} /> */}
+      <Route path="auth/*" element={<Auth />} />
+      <Route path="user/*" element={<User />} />
       {/* <Route path="/course/:id" element={<Course />} /> */}
       <Route path="/course/register" />
       <Route path="/meeting" />

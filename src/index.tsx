@@ -6,10 +6,10 @@ import { BrowserRouter } from "react-router-dom"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
 
+import theme from "theme"
 import checkLoginStatus from "features/auth/checkLoginStatus"
 
 import App from "./App"
-import theme from "./theme"
 import { store } from "./app/store"
 import Layout from "./layouts/Layout"
 import reportWebVitals from "./reportWebVitals"

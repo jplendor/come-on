@@ -1,5 +1,5 @@
 import { store } from "store"
-import { CookieName, decryptCookie } from "utils"
+import { CookieName, getCookie } from "utils"
 
 import { loggedIn, tokenValidation } from "./authSlice"
 
@@ -9,10 +9,10 @@ import { loggedIn, tokenValidation } from "./authSlice"
 // 그리고 정말 해당 토큰 쿠키가 올바른지 검증작업을 거친다.
 
 const checkLoginStatus = (): void => {
-  const tokenCookie = decryptCookie(CookieName.auth)
-  if (!tokenCookie) return
+  const encryptedText = getCookie(CookieName.auth)
+  if (!encryptedText) return
   store.dispatch(loggedIn())
-  store.dispatch(tokenValidation(tokenCookie))
+  store.dispatch(tokenValidation(encryptedText))
 }
 
 export default checkLoginStatus

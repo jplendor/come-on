@@ -1,10 +1,10 @@
-import { Alert } from "@mui/material"
 import React from "react"
-
+import { Alert } from "@mui/material"
 import { Route, Routes } from "react-router-dom"
 
+import RequireAuth from "components/auth/RequireAuth"
+
 import Login from "./Login"
-import RequireAuth from "./RequireAuth"
 import Verification from "./Verification"
 
 /**

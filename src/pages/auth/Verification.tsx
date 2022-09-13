@@ -4,7 +4,7 @@ import { Url } from "types/auth"
 import useAuth from "hooks/auth/useAuth"
 import useUrlRoute from "hooks/auth/useUrlRoute"
 import useSavePath from "hooks/auth/useSavePath"
-import { conversionToUrl, trueCallBack } from "utils"
+import { conversionToUrl, encryptValue, trueCallBack } from "utils"
 import useSearchParam from "hooks/auth/useSearchParam"
 
 /**
@@ -42,7 +42,7 @@ const Verification = (): JSX.Element => {
     const authParam = getParamAll()
     trueCallBack(Boolean(authParam), () => {
       removeParam()
-      dispatchTokenValidation(authParam)
+      dispatchTokenValidation(encryptValue(authParam))
     })
   }, [dispatchTokenValidation, getParamAll, removeParam])
 
