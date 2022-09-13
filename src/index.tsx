@@ -17,6 +17,7 @@ import reportWebVitals from "./reportWebVitals"
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 checkLoginStatus()
 root.render(
+
   <React.StrictMode>
     <CssBaseline />
     <ThemeProvider theme={theme}>
