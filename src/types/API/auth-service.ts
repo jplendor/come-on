@@ -74,7 +74,6 @@ enum Code {
  * data         : 결과 데이터를 반환합니다.
  */
 
-// TODO: 인터페이스 이름명 좀더 고민해보기 []
 export interface ServerResponse {
   responseTime: string
   code: Code
@@ -82,13 +81,13 @@ export interface ServerResponse {
 }
 
 export interface LogoutResponse extends ServerResponse {
-  data: Logout
+  data: Logout | Exception
 }
 
 export interface ExceptionResponse extends ServerResponse {
-  data: Exception
+  data: Exception | Exception
 }
 
 export interface TokenValidationResponse extends ServerResponse {
-  data: TokenValidation
+  data: TokenValidation | Exception
 }

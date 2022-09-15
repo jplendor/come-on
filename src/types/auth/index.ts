@@ -2,11 +2,13 @@
 
 export enum LocalstorageName {
   path = "previous-pathname",
+  Img = "previous-profile-img",
 }
 
 export enum Url {
   home = "/",
   login = "/auth/login",
+  myPage = "/user/my-page",
 }
 
 export enum ParamName {
@@ -30,6 +32,10 @@ export type UrlRoute = <T>(
 ) => void
 
 export type GoUrl = (navigate: Navigate) => void
+
+export interface SliceStatus {
+  status: "idle" | "pending" | "succeeded" | "failed"
+}
 
 export interface AuthParams {
   token: string
