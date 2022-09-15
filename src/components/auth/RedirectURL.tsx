@@ -1,7 +1,9 @@
 import React, { useEffect } from "react"
 
+import useAuth from "hooks/auth/useAuth"
 import KakaoIcon from "assets/nav/KakaoIcon"
-import { RedirectURLProps } from "types/auth"
+import { RedirectURLProps, Url } from "types/auth"
+import useNavigateUrl from "hooks/auth/useNavigateUrl"
 import { ThemeLoadingButton } from "components/common/Buttons"
 
 /**
@@ -10,9 +12,13 @@ import { ThemeLoadingButton } from "components/common/Buttons"
  */
 
 const RedirectURL = ({ url }: RedirectURLProps): JSX.Element => {
+  const { goUrl } = useNavigateUrl()
+  const {
+    LoginStatus: { isloggedin },
+  } = useAuth()
   useEffect(() => {
-    window.location.href = url
-  }, [url])
+    return isloggedin ? goUrl({ url: Url.home }) : window.location.replace(url)
+  }, [isloggedin, goUrl, url])
 
   return (
     <ThemeLoadingButton
