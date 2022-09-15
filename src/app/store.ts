@@ -3,9 +3,11 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import { api } from "features/api/apiSlice"
 import authSlice from "features/auth/authSlice"
 import geoSlice from "features/geolocation/geoSlice"
+import navigateSlice from "features/navigate/navigateSlice"
 
 const rootReducer = combineReducers({
   [api.reducerPath]: api.reducer,
+  navigate: navigateSlice,
   geolocation: geoSlice,
   auth: authSlice,
 })
