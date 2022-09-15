@@ -3,6 +3,9 @@ import { styled } from "@mui/material/styles"
 import type { TypographyProps } from "@mui/material"
 import { Button, Grid, Typography } from "@mui/material"
 
+import useAuth from "hooks/auth/useAuth"
+import UploadButton from "components/upload"
+
 const HeaderText = styled(Typography)<TypographyProps>(
   ({
     theme: {
@@ -49,9 +52,7 @@ const LogoutButton = ({
 )
 
 const ProfileHeader = (): JSX.Element => {
-  const onClickHandler = (): void => {
-    console.log("onClickHandler:로그아웃")
-  }
+  const { loggedOutDispatch } = useAuth()
   return (
     <Grid
       item
@@ -67,12 +68,14 @@ const ProfileHeader = (): JSX.Element => {
         borderBottom: "0.5px solid #EEEEEE",
       }}
     >
-      <Grid item xs />
+      <Grid item xs>
+        <UploadButton />
+      </Grid>
       <Grid item xs={7}>
         <HeaderText>마이페이지</HeaderText>
       </Grid>
       <Grid item xs>
-        <LogoutButton onClickHandler={onClickHandler} />
+        <LogoutButton onClickHandler={loggedOutDispatch} />
       </Grid>
     </Grid>
   )

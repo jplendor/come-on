@@ -1,7 +1,14 @@
 import React from "react"
 import { styled } from "@mui/material/styles"
-import { Avatar, Grid, Stack, Typography } from "@mui/material"
+import {
+  Avatar,
+  CircularProgress,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material"
 import type { AvatarProps, TypographyProps } from "@mui/material"
+import { green } from "@mui/material/colors"
 
 const ThemeAvatar = styled(Avatar)<AvatarProps>(() => ({
   // 3.500em -> 56px

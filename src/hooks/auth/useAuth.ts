@@ -13,7 +13,7 @@ const useAuth = () => {
   const LoginStatus = useAppSelector(stateAuth)
   const loggedInDispatch = () => dispatch(loggedIn())
   const loggedOutDispatch = () =>
-    dispatch(authApiSlice.endpoints.logout.initiate(undefined))
+    dispatch(authApiSlice.endpoints.logout.initiate())
 
   /**
    * @param encryptedText 암호화된 텍스트를 전달합니다.
