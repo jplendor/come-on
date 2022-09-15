@@ -3,6 +3,7 @@
 export enum LocalstorageName {
   path = "previous-pathname",
   Img = "previous-profile-img",
+  navigate = "previous-navigate",
 }
 
 export enum Url {

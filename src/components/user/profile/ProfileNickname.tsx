@@ -1,16 +1,6 @@
-import React, { ChangeEvent, useEffect, useState } from "react"
+import React, { ChangeEvent, useState } from "react"
 import { styled } from "@mui/material/styles"
-import {
-  FormHelperText,
-  Grid,
-  OutlinedInput,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material"
-
-import FormControl, { useFormControl } from "@mui/material/FormControl"
-
+import { Grid, Stack, TextField, Typography } from "@mui/material"
 import type { TypographyProps, TextFieldProps } from "@mui/material"
 
 const NicknameTitle = styled(Typography)<TypographyProps>(

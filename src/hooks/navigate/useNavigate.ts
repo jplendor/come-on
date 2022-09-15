@@ -1,5 +1,6 @@
 import { useCallback } from "react"
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { LocalstorageName } from "types/auth"
 import { useAppDispatch, useAppSelector } from "hooks/redux/useRedux"
 import { setCurrentIndex, stateNavigate } from "features/navigate/navigateSlice"
 
@@ -10,7 +11,7 @@ const useNavigate = () => {
   } = useAppSelector(stateNavigate)
   const setIndexDispatch = useCallback(
     (index: number) => {
-      localStorage.setItem("index", `${index}`)
+      localStorage.setItem(LocalstorageName.navigate, `${index}`)
       dispatch(setCurrentIndex(index))
     },
     [dispatch]

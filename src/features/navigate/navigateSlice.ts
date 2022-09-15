@@ -1,6 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { loggedIn } from "features/auth/authSlice"
+
 import { RootState } from "store"
+import { LocalstorageName } from "types/auth"
+import { loggedIn } from "features/auth/authSlice"
 
 interface NavigateState {
   navbar: {
@@ -24,7 +26,7 @@ const navigateSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(loggedIn.type, (state) => {
-      const index = localStorage.getItem("index") || "0"
+      const index = localStorage.getItem(LocalstorageName.navigate) || "0"
       state.navbar.currentIndex = parseInt(index, 10)
     })
   },

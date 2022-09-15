@@ -10,11 +10,12 @@ import {
   CookieName,
   removeCookie,
   encryptedTextConvToParamObj,
+  removeItems,
 } from "utils"
 import { RootState } from "store"
-import { LocalstorageName, SliceStatus } from "types/auth"
 import { api } from "features/api/apiSlice"
 import { myDetial } from "features/user/userSlice"
+import { LocalstorageName, SliceStatus } from "types/auth"
 
 export interface ProfileImg {
   id: number
@@ -165,7 +166,7 @@ const authSlice = createSlice({
     })
     builder.addMatcher(logout.matchFulfilled, () => {
       removeCookie(CookieName.auth)
-      localStorage.removeItem(LocalstorageName.Img)
+      removeItems([LocalstorageName.Img, LocalstorageName.navigate])
       return initialState
     })
     builder.addMatcher(logout.matchRejected, () => {
