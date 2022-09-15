@@ -10,20 +10,21 @@ import DisplayGeolocation from "features/geolocation/DisplayGeo"
 import User from "pages/user/User"
 import Temporary from "pages/auth/Temporary"
 
+export const Home = (): JSX.Element => {
+  return (
+    <>
+      <Temporary />
+      <DisplayGeolocation />
+    </>
+  )
+}
 const App = (): JSX.Element => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <>
-            <Temporary />
-            <DisplayGeolocation />
-          </>
-        }
-      />
+      <Route path="/" element={<Home />} />
       <Route path="auth/*" element={<Auth />} />
       <Route path="user/*" element={<User />} />
+      <Route path="*" element={<Home />} />
     </Routes>
   )
 }

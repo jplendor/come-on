@@ -16,6 +16,7 @@ const User = (): JSX.Element => {
     <Routes>
       <Route index element={<RequireAuthMyPage />} />
       <Route path="my-page" element={<RequireAuthMyPage />} />
+      <Route path="*" element={<RequireAuthMyPage />} />
     </Routes>
   )
 }
