@@ -12,7 +12,7 @@ import { PhotoCamera } from "@mui/icons-material"
 import { useTheme } from "@mui/material/styles"
 import styled from "@emotion/styled"
 import CalendarRangePicker from "components/meeting/CalendarRangePicker "
-import * as Api from "../../api"
+import { useCreateMeetingMutation } from "features/meeting/meetingSlice"
 
 export interface MeetingInfoType {
   [key: string]: string
@@ -22,12 +22,17 @@ export interface MeetingInfoType {
 }
 
 const MeetingCreate = (): JSX.Element => {
-  const [previewImg, setPreviewImg] = useState({ src: "", name: "" })
+  const [previewImg, setPreviewImg] = useState<null | string>(null)
   const [meetingInfo, setMeetingInfo] = useState<MeetingInfoType>({
     title: "",
     startDate: "",
     endDate: "",
   })
+
+  const [createMeeting, { isLoading }] = useCreateMeetingMutation()
+  const canSubmit =
+    [previewImg, meetingInfo.startDate, meetingInfo.endDate].every(Boolean) &&
+    !isLoading
 
   const theme = useTheme()
 
@@ -92,7 +97,7 @@ const MeetingCreate = (): JSX.Element => {
 
   const changeFileToObjectUrl = (file: File): void => {
     const fileUrl = URL.createObjectURL(file)
-    setPreviewImg({ name: file.name, src: fileUrl })
+    setPreviewImg(fileUrl)
   }
 
   const handleChangeImg = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -146,13 +151,13 @@ const MeetingCreate = (): JSX.Element => {
   }
 
   const changeObjectUrlToFile = async (): Promise<Blob> => {
-    const file = await fetch(previewImg.src).then((r) => r.blob())
+    const file = await fetch(previewImg || "").then((r) => r.blob())
     return file
   }
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
-  ): Promise<any> => {
+  ): Promise<void> => {
     e.preventDefault()
 
     const data = new FormData(e.currentTarget)
@@ -161,29 +166,36 @@ const MeetingCreate = (): JSX.Element => {
     const imageFile = await changeObjectUrlToFile()
     data.append("image", imageFile)
 
-    try {
-      const res = await Api.post("/meetings", data, true)
+    if (canSubmit) {
+      try {
+        const res = await createMeeting(data).unwrap()
 
-      if (res.data.code !== "SUCCESS") {
-        throw new Error(`error code: ${res.code}`)
-      }
+        if (res.code !== "SUCCESS") {
+          throw new Error(res.code)
+        }
 
-      const meetingId = res.data.data
-      navigate(`/meetings/${meetingId}`)
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message)
-      } else {
-        alert(`unexpected error: ${error}`)
+        const meetingId = res.data
+        navigate(`/meeting/${meetingId}`)
+      } catch (error) {
+        // error 처리
       }
+    } else {
+      let alertMessage = ""
+      if (!previewImg) {
+        alertMessage = "모임 대표 사진을 추가해보세요."
+      }
+      if (!meetingInfo.startDate || !meetingInfo.endDate) {
+        alertMessage = "모임 시작 날짜와 종료 날짜를 모두 선택해주세요."
+      }
+      alert(alertMessage)
     }
   }
 
   return (
     <>
-      {previewImg.src ? (
+      {previewImg ? (
         <ImgWrapper>
-          <PreviewImg src={previewImg.src} alt="모임 대표 사진" />
+          <PreviewImg src={previewImg} alt="모임 대표 사진" />
           <IconButton
             aria-label="upload picture"
             component="label"
