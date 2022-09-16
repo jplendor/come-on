@@ -12,9 +12,11 @@ const useNavigate = () => {
   const setIndexDispatch = useCallback(
     (index: number) => {
       localStorage.setItem(LocalstorageName.navigate, `${index}`)
-      dispatch(setCurrentIndex(index))
+      if (currentIndex !== index) {
+        dispatch(setCurrentIndex(index))
+      }
     },
-    [dispatch]
+    [dispatch, currentIndex]
   )
 
   return {

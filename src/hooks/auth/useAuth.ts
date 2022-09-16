@@ -1,3 +1,4 @@
+import { useCallback } from "react"
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { CookieName, getCookie } from "utils"
 import {
@@ -11,9 +12,11 @@ import { useAppDispatch, useAppSelector } from "hooks/redux/useRedux"
 const useAuth = () => {
   const dispatch = useAppDispatch()
   const LoginStatus = useAppSelector(stateAuth)
-  const loggedInDispatch = () => dispatch(loggedIn())
-  const loggedOutDispatch = () =>
-    dispatch(authApiSlice.endpoints.logout.initiate())
+  const loggedInDispatch = useCallback(() => dispatch(loggedIn()), [dispatch])
+  const loggedOutDispatch = useCallback(
+    () => dispatch(authApiSlice.endpoints.logout.initiate()),
+    [dispatch]
+  )
 
   /**
    * @param encryptedText 암호화된 텍스트를 전달합니다.
@@ -23,9 +26,11 @@ const useAuth = () => {
   // 암호화된 텍스트를 전달하지 않는 경우가 있는가? -> Yes
   // 어떤경우에? -> 암호화쿠키를 갖고있다고 판단될때
 
-  const dispatchTokenValidation = (
-    encryptedText: string = getCookie(CookieName.auth)
-  ) => dispatch(tokenValidation(encryptedText))
+  const dispatchTokenValidation = useCallback(
+    (encryptedText: string = getCookie(CookieName.auth)) =>
+      dispatch(tokenValidation(encryptedText)),
+    [dispatch]
+  )
 
   return {
     LoginStatus,
