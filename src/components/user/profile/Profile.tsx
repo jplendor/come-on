@@ -1,4 +1,7 @@
 import React from "react"
+import { isObject } from "@fxts/core"
+
+import { pullingProperty } from "utils"
 import { Mydetail } from "types/API/user-service"
 
 import ProfileInfo from "./ProfileInfo"
@@ -9,20 +12,16 @@ interface ProfileProps {
 }
 
 const Profile = ({
-  info: {
-    name,
-    email,
-    nickname,
-    profileImg: { imageUrl },
-  },
+  info: { name, email, nickname, profileImg },
 }: ProfileProps): JSX.Element => {
+  const src = pullingProperty(profileImg, ["imageUrl"])
   return (
     <>
       {/* 프로필 영역 #1-2 */}
       <ProfileInfo
         info={{
           img: {
-            src: imageUrl,
+            src: isObject(src) ? "" : src,
             alt: name,
           },
           title: `어서오세요. ${name}님!`,
