@@ -7,9 +7,7 @@ import useNavigate from "hooks/navigate/useNavigate"
 
 const MyPage = (): JSX.Element => {
   const { setIndexDispatch } = useNavigate()
-  useEffect(() => {
-    setIndexDispatch(2)
-  })
+  useEffect(() => setIndexDispatch(2))
   return (
     // 콘텐츠 영역 #1
     <Grid container component="main" direction="column" minHeight={1}>

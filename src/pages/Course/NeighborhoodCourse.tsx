@@ -1,11 +1,11 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Grid } from "@mui/material"
 
+import img from "assets/course/course2.jpg"
+import useNavigate from "hooks/navigate/useNavigate"
 import Header from "components/user/course/ourNeighborhood/Header"
 import SpeedDial from "components/user/course/ourNeighborhood/SpeedDial"
 import CourseList from "components/user/course/ourNeighborhood/NeighborhoodCourseList"
-
-import img from "assets/course/course2.jpg"
 
 const testPorsp = {
   img: {
@@ -21,6 +21,8 @@ const testPorsp = {
 }
 
 const NeighborhoodCourse = (): JSX.Element => {
+  const { setIndexDispatch } = useNavigate()
+  useEffect(() => setIndexDispatch(0))
   return (
     // 콘텐츠 영역 #1
     <Grid container component="main" direction="column" minHeight={1}>
