@@ -1,8 +1,5 @@
 import React from "react"
-import { Alert } from "@mui/material"
 import { Route, Routes } from "react-router-dom"
-
-import RequireAuth from "components/auth/RequireAuth"
 
 import Login from "./Login"
 import Verification from "./Verification"
@@ -35,27 +32,6 @@ const Auth = (): JSX.Element => {
       <Route index element={<Login />} />
       <Route path="login" element={<Login />} />
       <Route path="login-verification" element={<Verification />} />
-      {/* 추후 삭제할 임시 페이지 */}
-      <Route
-        path="test-needed-token"
-        element={
-          <RequireAuth>
-            <Alert severity="success">
-              로그인 성공했을때만 보여주는 페이지1
-            </Alert>
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="test-needed-token2"
-        element={
-          <RequireAuth>
-            <Alert severity="success">
-              로그인 성공했을때만 보여주는 페이지2
-            </Alert>
-          </RequireAuth>
-        }
-      />
     </Routes>
   )
 }
