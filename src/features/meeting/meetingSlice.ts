@@ -1,6 +1,6 @@
 import { api } from "features/api/apiSlice"
 
-import { ServerResponse } from "types/API/meeting-service"
+import { ServerResponse, Meeting } from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -12,7 +12,14 @@ export const meetingApiSlice = api.injectEndpoints({
         body: meeting,
       }),
     }),
+    // 모임 단건 조회
+    getMeeting: builder.query<ServerResponse<Meeting>, number>({
+      query: (meetingId) => ({
+        url: `/meetings/${meetingId}`,
+        method: "GET",
+      }),
+    }),
   }),
 })
 
-export const { useCreateMeetingMutation } = meetingApiSlice
+export const { useCreateMeetingMutation, useGetMeetingQuery } = meetingApiSlice

@@ -35,7 +35,7 @@ const App = (): JSX.Element => {
       <Route path="/course/register" element={<SearchPlace />} />
       <Route path="/meeting" />
       <Route path="/meeting/register" element={<MeetingCreate />} />
-      <Route path="/meeting/:id" element={<MeetingEdit />} />
+      <Route path="/meeting/:meetingId" element={<MeetingEdit />} />
       <Route path="/my-info" />
       <Route path="/login" />
     </Routes>
