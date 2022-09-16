@@ -83,9 +83,10 @@ const HeaderGPS = (): JSX.Element => {
     enableHighAccuracy: true,
   })
 
-  useEffect(() => {
-    if (geolocation) geoUpdateDispatch(geolocation)
-  }, [geolocation, geoUpdateDispatch])
+  useEffect(
+    () => geoUpdateDispatch(geolocation),
+    [geolocation, geoUpdateDispatch]
+  )
 
   return (
     <Grid container justifyContent="center" alignItems="center">
