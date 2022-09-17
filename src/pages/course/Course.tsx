@@ -11,7 +11,6 @@ import {
 
 import FavoriteIcon from "@mui/icons-material/Favorite"
 import { styled } from "@mui/material/styles"
-import { SettingsInputAntennaTwoTone } from "@mui/icons-material"
 import MapContainer from "components/common/MapContainer"
 import KakaoShare from "components/KakaoShare"
 import ListDetailCard, {
@@ -148,9 +147,6 @@ const Course = (): any => {
           />
         ))}
         {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}
-        <Button sx={BUTTON_STYLE} variant="contained">
-          이 코스로 모임 생성하기
-        </Button>
       </MainContainer>
     </>
   )

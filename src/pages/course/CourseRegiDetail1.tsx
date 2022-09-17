@@ -7,10 +7,12 @@ import React, {
 } from "react"
 
 import { styled } from "@mui/material/styles"
-import { Box, Input, Typography, TextField, Fab } from "@mui/material"
+import { Box, Input, Typography, TextField, Fab, Button } from "@mui/material"
 import { PhotoCamera } from "@mui/icons-material"
 import NabvigationBar from "components/common/NavigationBar"
 import Guide from "components/common/Guide"
+
+import { useGetCourseListMutation } from "features/course/courseSlice"
 
 interface NavigationBarProps {
   currentPage: number
@@ -74,8 +76,18 @@ const CourseRegiDetail = (): JSX.Element => {
         }
         setImageSrc(reader.result)
         resolve()
+
+        console.log(reader)
       }
     })
+  }
+
+  // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
+  const [uploadData, { data }] = useGetCourseListMutation()
+
+  const onClickHandle = (): void => {
+    uploadData()
+    console.log(data)
   }
 
   return (
@@ -90,13 +102,7 @@ const CourseRegiDetail = (): JSX.Element => {
       {/*  */}
       <ImgContainer>
         {imageSrc && (
-          <img
-            src={String(imageSrc)}
-            alt="img"
-            width="100%"
-            height="100%"
-            z-index="0"
-          />
+          <img src={String(imageSrc)} alt="img" width="100%" height="100%" />
         )}
         <IconContainer>
           <Fab
@@ -130,8 +136,11 @@ const CourseRegiDetail = (): JSX.Element => {
           <Typography variant="h6" sx={LABEL_STYLE}>
             코스설명
           </Typography>
-          <TextField multiline maxRows="10" sx={INPUT_STYLE} rows={10} />
+          <TextField multiline sx={INPUT_STYLE} rows={10} />
         </DetailContainer>
+        <Button variant="contained" onClick={onClickHandle}>
+          코스등록 테스트 버튼
+        </Button>
       </FormBox>
     </>
   )

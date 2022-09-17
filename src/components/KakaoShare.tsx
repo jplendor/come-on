@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
 declare global {
   interface Window {
@@ -20,18 +20,22 @@ const initialKakao = (kakao: any): boolean => {
 }
 
 const KakaoShare = (): JSX.Element => {
+  const [isInitial, setisInitial] = useState(false)
   const kakao = window.Kakao
 
-  if (initialKakao(kakao)) {
-    kakao.Share.createCustomButton({
-      container: "#kakao-link-btn",
-      templateId: 82080,
-      templateArgs: {
-        title: "제목 영역입니다.",
-        description: "설명 영역입니다.",
-      },
-    })
-  }
+  useEffect(() => {
+    setisInitial(initialKakao(kakao))
+    if (isInitial) {
+      kakao.Share.createCustomButton({
+        container: "#kakao-link-btn",
+        templateId: 82080,
+        templateArgs: {
+          title: "제목 영역입니다.",
+          description: "설명 영역입니다.",
+        },
+      })
+    }
+  }, [isInitial, kakao])
 
   return (
     <button type="button" id="kakao-link-btn">
