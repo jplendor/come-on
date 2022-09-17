@@ -43,7 +43,7 @@ const Navbar = (): JSX.Element => {
         </LinkComponent>
       </Grid>
       <Grid item>
-        <LinkComponent to={Url.home}>
+        <LinkComponent to={Url.myMeetings}>
           <NavbarItem
             index={1}
             text="모임관리"

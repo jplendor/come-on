@@ -10,6 +10,7 @@ export enum Url {
   home = "/",
   login = "/auth/login",
   myPage = "/user/my-page",
+  myMeetings = "/user/my-meetings",
 }
 
 export enum ParamName {
