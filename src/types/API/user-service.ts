@@ -1,6 +1,16 @@
 // User-Service API Docs 참고
 
 /**
+ * 회원 정보 수정
+ *
+ * PATCH /users/me
+ */
+
+export interface ModifyName {
+  message: string
+}
+
+/**
  * 내 상세 정보 조회
  *
  * GET /users/me
@@ -65,10 +75,15 @@ enum Code {
 export interface ServerResponse {
   responseTime: string
   code: Code
-  data: Exception | Mydetail
+  data: Exception | Mydetail | ModifyName
 }
 
 // GET /users/me
 export interface MydetailResponse extends ServerResponse {
   data: Mydetail
+}
+
+// PATCH /users/me
+export interface ModifyNameResponse extends ServerResponse {
+  data: ModifyName
 }
