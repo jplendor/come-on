@@ -1,34 +1,17 @@
 import React from "react"
-import CardItem from "components/common/card/CardItem"
-
-import img from "assets/course/course1.jpg"
+import { CardItemSkeletons } from "components/common/card/CardItemSkeleton"
 import CourseTap from "./CourseTap"
 
 interface CourseLikedProps {
   value: number
 }
 
-const testPorsp = {
-  img: {
-    src: img,
-    alt: "Breakfast1",
-  },
-  isLike: true,
-  texts: {
-    title: "사진찍기 좋은 부산 여행 코스",
-    userName: "여행마스터",
-    time: "2022.08.03",
-  },
-}
+// TODO: 좋아요한 코스 API 연동하기 [] -> 현재 테스트할 데이터가 없음
 
 const CourseLiked = ({ value }: CourseLikedProps): JSX.Element => {
   return (
     <CourseTap value={value} index={1}>
-      <CardItem info={testPorsp} />
-      <CardItem info={testPorsp} />
-      <CardItem info={testPorsp} />
-      <CardItem info={testPorsp} />
-      <CardItem info={testPorsp} />
+      <CardItemSkeletons />
     </CourseTap>
   )
 }
