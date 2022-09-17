@@ -1,7 +1,18 @@
 import React, { ChangeEvent, useState } from "react"
 import { styled } from "@mui/material/styles"
-import { Grid, Stack, TextField, Typography } from "@mui/material"
+import {
+  Grid,
+  Stack,
+  TextField,
+  Typography,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+} from "@mui/material"
 import type { TypographyProps, TextFieldProps } from "@mui/material"
+
+import EditIcon from "@mui/icons-material/Edit"
+import { useModifyNameMutation } from "features/user/userSlice"
 
 const NicknameTitle = styled(Typography)<TypographyProps>(
   ({
@@ -38,7 +49,7 @@ const NicknameLength = styled(Typography)<TypographyProps>(
   })
 )
 
-const NicknameTextField = styled(TextField)<TextFieldProps>(
+export const NicknameTextField = styled(TextField)<TextFieldProps>(
   ({
     theme: {
       textStyles: {
@@ -69,10 +80,25 @@ const NicknameTextField = styled(TextField)<TextFieldProps>(
   })
 )
 
+const ICON_SIZE = 14
+
 interface ProfileNickname {
   info: {
     nickname: string
   }
+}
+
+const EditNameButton = ({ value }: { value: string }): JSX.Element => {
+  const [modify, { isLoading }] = useModifyNameMutation()
+  return (
+    <IconButton disabled={isLoading} onClick={() => modify(value)}>
+      {isLoading ? (
+        <CircularProgress size={ICON_SIZE} />
+      ) : (
+        <EditIcon sx={{ fontSize: ICON_SIZE }} />
+      )}
+    </IconButton>
+  )
 }
 
 const ProfileNickname = ({
@@ -108,6 +134,13 @@ const ProfileNickname = ({
         fullWidth
         value={userName}
         onChange={onChangeHandler}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <EditNameButton value={userName} />
+            </InputAdornment>
+          ),
+        }}
       />
     </Stack>
   )
