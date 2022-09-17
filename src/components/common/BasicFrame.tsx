@@ -22,8 +22,8 @@ const Basicframe: <T extends BasicframeProps>(
   arg1: [() => JSX.Element, (arg0: any) => JSX.Element]
 ) => JSX.Element = (
   { data: info, isLoading, isSuccess, isError },
-  [Skeleton, Component]: [() => JSX.Element, (arg0: any) => JSX.Element]
-): JSX.Element => {
+  [Skeleton, Component]
+) => {
   let content
   if (isError || isLoading) content = <Skeleton />
   if (isSuccess) content = <Component info={info.data} />
