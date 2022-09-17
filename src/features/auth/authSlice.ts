@@ -145,6 +145,7 @@ const authSlice = createSlice({
       removeCookie(CookieName.auth)
       state.isloggedin = false
       state.status = "failed"
+      state.user = initialUserState
     })
     builder.addMatcher(
       myDetial.matchFulfilled,
