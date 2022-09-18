@@ -87,6 +87,8 @@ const BUTTON_STYLE = {
 
 const Course = (): any => {
   const [isSelected, setSelected] = useState("")
+  const [courseData, setCourseData] =
+    useState<ListDetailCardProp[]>(SAMPLE_DATA2)
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
@@ -94,6 +96,10 @@ const Course = (): any => {
     if (e) {
       setSelected(e.id)
     } else setSelected("")
+  }
+
+  const onRemove = (index: number): void => {
+    setCourseData(courseData.filter((place) => place.index !== index))
   }
 
   // heart버튼 클릭시 이벤트
@@ -144,6 +150,7 @@ const Course = (): any => {
             key={key}
             onClick={onClickFocus}
             isSelected={isSelected}
+            onRemove={onRemove}
           />
         ))}
         {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}

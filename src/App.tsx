@@ -18,6 +18,7 @@ import MeetingEdit from "pages/meeting/MeetingEdit"
 import SearchPlace from "pages/course/SearchPlace"
 import Course from "pages/course/Course"
 import CourseRegiLayout from "pages/course/CourseRegiLayout"
+import CourseRegiDetail2 from "pages/course/CourseRegiDetail2"
 
 const App = (): JSX.Element => {
   return (
@@ -34,6 +35,7 @@ const App = (): JSX.Element => {
       <Route path="auth/*" element={<Auth />} />
       <Route path="user/*" element={<User />} />
       <Route path="/course" element={<CourseRegiLayout />} />
+      <Route path="/course/:id" element={<CourseRegiDetail2 />} />
       <Route path="/course/register" element={<SearchPlace />} />
       <Route path="/meeting" />
       <Route path="/meeting/register" element={<MeetingCreate />} />

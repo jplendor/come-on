@@ -16,6 +16,7 @@ import MapContainer from "components/common/MapContainer"
 import ListDetailCard, {
   ListDetailCardProp,
 } from "components/common/ListDetailCard"
+import { ObjectType } from "typescript"
 
 interface NavigationBarProps {
   currentPage: number
@@ -39,7 +40,7 @@ const ICON_STYLE = {
   margin: "5px 0",
 }
 
-const SAMPLE_DATA2: ListDetailCardProp[] = [
+let SAMPLE_DATA2: ListDetailCardProp[] = [
   {
     index: 1,
     titleTop: "음식점",
@@ -60,16 +61,36 @@ const SAMPLE_DATA2: ListDetailCardProp[] = [
   },
 ]
 
-const CourseRegiDetail = (): JSX.Element => {
+const CourseRegiDetail2 = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const selectFile = useRef<any>(null)
   const [isSelected, setSelected] = useState("")
+  const [courseData, setCourseData] =
+    useState<ListDetailCardProp[]>(SAMPLE_DATA2)
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
     if (e) {
       setSelected(e.id)
     } else setSelected("")
+  }
+
+  const onRemove = (index: number): void => {
+    const filteredData = courseData.filter((place) => place.index !== index)
+    SAMPLE_DATA2 = filteredData
+    /* eslint array-callback-return: "error" */
+    // eslint-disable-next-line array-callback-return
+    const data = SAMPLE_DATA2.map((place: ListDetailCardProp): any => {
+      const temp = place
+      if (place.index > index) {
+        temp.index -= 1
+        return temp
+      }
+      return temp
+    })
+
+    console.log(data)
+    setCourseData(data)
   }
 
   return (
@@ -90,12 +111,13 @@ const CourseRegiDetail = (): JSX.Element => {
         </IconContainer>
         {/* 카카오톡 공유하기 */}
         {/* 버튼만들기 */}
-        {generateComponent(SAMPLE_DATA2, (item, key) => (
+        {generateComponent(courseData, (item, key) => (
           <ListDetailCard
             item={item}
             key={key}
             onClick={onClickFocus}
             isSelected={isSelected}
+            onRemove={onRemove}
           />
         ))}
       </MainContainer>
@@ -103,4 +125,4 @@ const CourseRegiDetail = (): JSX.Element => {
   )
 }
 
-export default CourseRegiDetail
+export default CourseRegiDetail2

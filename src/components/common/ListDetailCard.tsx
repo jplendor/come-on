@@ -90,12 +90,14 @@ interface ListDetailCardProps {
   item: ListDetailCardProp
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: string
+  onRemove: (index: number) => void
 }
 
 const ListDetailCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
   item: { index, titleBody, titleBottom, titleTop },
+  onRemove,
 }) => {
   // API
   const deleteCard = (): any => {
@@ -145,7 +147,14 @@ const ListDetailCard: React.FC<ListDetailCardProps> = ({
             </Box>
           </Grid>
           <Grid item xs={1}>
-            <IconButton aria-label="close this" color="secondary" size="small">
+            <IconButton
+              onClick={() => {
+                onRemove(index)
+              }}
+              aria-label="close this"
+              color="secondary"
+              size="small"
+            >
               <CloseIcon />
             </IconButton>
           </Grid>
