@@ -1,6 +1,11 @@
 import { api } from "features/api/apiSlice"
 
-import { ServerResponse, Meeting } from "types/API/meeting-service"
+import {
+  ServerResponse,
+  Meeting,
+  MeetingDateForCreate,
+  MeetingDateForDelete,
+} from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,7 +24,33 @@ export const meetingApiSlice = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    // 모임 날짜 생성
+    createMeetingDate: builder.mutation<
+      ServerResponse<number>,
+      MeetingDateForCreate
+    >({
+      query: (meetingDate) => ({
+        url: `/meetings/${meetingDate.meetingId}/dates`,
+        method: "POST",
+        body: { date: meetingDate.date },
+      }),
+    }),
+    // 모임 날짜 삭제
+    deleteMeetingDate: builder.mutation<
+      ServerResponse<number>,
+      MeetingDateForDelete
+    >({
+      query: (meetingDate) => ({
+        url: `/meetings/${meetingDate.meetingId}/dates/${meetingDate.dateId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 })
 
-export const { useCreateMeetingMutation, useGetMeetingQuery } = meetingApiSlice
+export const {
+  useCreateMeetingMutation,
+  useGetMeetingQuery,
+  useCreateMeetingDateMutation,
+  useDeleteMeetingDateMutation,
+} = meetingApiSlice

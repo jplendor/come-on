@@ -3,6 +3,10 @@ import { Box, Dialog, DialogTitle, Grid, Avatar, Button } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
 import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "utils"
+import {
+  useCreateMeetingDateMutation,
+  useDeleteMeetingDateMutation,
+} from "features/meeting/meetingSlice"
 
 interface SelectedDateModalProps {
   open: boolean
@@ -145,6 +149,9 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
   const [selectedDate, setSelectedDate] = useState("")
   const [mode, setMode] = useState<Mode>(Mode.View)
 
+  const [createMeetingDate] = useCreateMeetingDateMutation()
+  const [deleteMeetingDate] = useDeleteMeetingDateMutation()
+
   const theme = useTheme()
 
   const CALENDAR = {
@@ -269,7 +276,9 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     [meetingDates, totalMemberNumber]
   )
 
-  const handleDateClick = (e: React.MouseEvent<HTMLDivElement>): void => {
+  const handleDateClick = async (
+    e: React.MouseEvent<HTMLDivElement>
+  ): Promise<void> => {
     if (!(e.target instanceof HTMLDivElement)) {
       return
     }
@@ -280,8 +289,39 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     const targetDate = e.target.dataset.date
 
     if (mode === Mode.Select) {
-      // 날짜 생성
-      // post("/meetings/{meetingId}/dates")
+      const filteredMeetingDates = meetingDates.filter(
+        (item: any) => item.date === targetDate
+      )
+      const isSelected =
+        filteredMeetingDates.length === 0
+          ? false
+          : filteredMeetingDates[0].isSelected
+
+      try {
+        let res
+
+        if (isSelected) {
+          res = await deleteMeetingDate({
+            meetingId,
+            dateId: filteredMeetingDates[0].id,
+          }).unwrap()
+        } else {
+          res = await createMeetingDate({
+            meetingId,
+            date: targetDate,
+          }).unwrap()
+        }
+
+        if (res.code !== "SUCCESS") {
+          throw new Error(`error code: ${res.code}`)
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(error.message)
+        } else {
+          alert(`unexpected error: ${error}`)
+        }
+      }
     }
 
     if (mode === Mode.View) {

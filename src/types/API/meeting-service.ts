@@ -52,3 +52,13 @@ export interface Meeting {
   meetingDates: MeetingDate[]
   meetingPlaces: Place[]
 }
+
+export interface MeetingDateForCreate {
+  meetingId: number
+  date: string
+}
+
+export interface MeetingDateForDelete {
+  meetingId: number
+  dateId: number
+}
