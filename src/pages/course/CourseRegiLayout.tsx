@@ -1,4 +1,6 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+
+import { useLocation } from "react-router-dom"
 
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import { Tab, Box, Typography } from "@mui/material"
@@ -15,6 +17,10 @@ import CourseRegiDetail3 from "./CourseRegiDetail3"
 작성자 : 강예정
 issue : 중간에 코스등록이 취소 될 시 데이터를 기억해서 다시 불러오는 기능을 추가할 수 있을지 고민 */
 
+interface PageState {
+  state: number
+}
+
 const CourseRegiLayout = (): JSX.Element => {
   const [page, setPage] = React.useState(1)
 
@@ -24,6 +30,13 @@ const CourseRegiLayout = (): JSX.Element => {
   ): void => {
     setPage(newValue)
   }
+  const { state: pageState } = useLocation() as PageState
+
+  useEffect(() => {
+    if (pageState === 200) {
+      setPage(2)
+    }
+  }, [pageState])
 
   const onClickNextStep = (): void => {
     if (page < 3) {

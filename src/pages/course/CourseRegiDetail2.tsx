@@ -17,6 +17,8 @@ import ListDetailCard, {
   ListDetailCardProp,
 } from "components/common/ListDetailCard"
 import { ObjectType } from "typescript"
+import { Link, useLocation } from "react-router-dom"
+import SearchPlace from "./SearchPlace"
 
 interface NavigationBarProps {
   currentPage: number
@@ -106,7 +108,9 @@ const CourseRegiDetail2 = (): JSX.Element => {
         <MapContainer selectedNumber={isSelected} />
         <IconContainer>
           <IconButton type="button">
-            <Add sx={ICON_STYLE} color="secondary" fontSize="large" />
+            <Link to="/course/register">
+              <Add sx={ICON_STYLE} color="secondary" fontSize="large" />
+            </Link>
           </IconButton>
         </IconContainer>
         {/* 카카오톡 공유하기 */}

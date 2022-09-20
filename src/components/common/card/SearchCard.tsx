@@ -1,11 +1,6 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-} from "react"
-
+import React, { SetStateAction, useEffect, useState, useRef } from "react"
+import { useSelector, useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
 import {
   Input,
   InputAdornment,
@@ -17,8 +12,16 @@ import {
   Typography,
   TypographyProps,
 } from "@mui/material"
-import { Search, Edit as EditIcon } from "@mui/icons-material"
+import {
+  Search,
+  Edit as EditIcon,
+  Add as AddIcon,
+  AlignVerticalTopRounded,
+} from "@mui/icons-material"
+
 import { styled } from "@mui/material/styles"
+import state from "sweetalert/typings/modules/state"
+import { addCoursePlace } from "features/course/courseSlice"
 
 const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
   "&.MuiGrid-root": {
@@ -55,7 +58,9 @@ const TITLE_WRAP = {
 const SELECTED_CARD = {
   border: "1px solid #FFD24C",
 }
-
+const ICON_STYLE = {
+  // relative로 상위 컴포넌트의 우측에 배정되게 할 것.
+}
 // exaddress_name: "강원 속초시 교동 799-173"
 // {category_group_code: "FD6"
 // category_group_name: "음식점"
@@ -78,6 +83,7 @@ interface ListDetailCardProp {
   category_name: string
   place_name: string
   place_url: string
+  phone: string
   road_address_name: string
   x: string
   y: string
@@ -107,10 +113,29 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   item,
 }) => {
   const obj = {
-    index: item.index,
-    cateName: item.category_group_name,
-    placeName: item.place_name,
-    addressName: item.address_name,
+    index: item.index, // 순서
+    cateName: item.category_group_name, // 카테고리네임
+    placeName: item.place_name, // 장소이름
+    addressName: item.address_name, // 주소
+    x: item.x, // 위도,경도
+    y: item.y, // place_url
+    phoneNumber: item.phone, // phone
+  }
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const onAddClick = (): void => {
+    // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
+    const result: boolean = window.confirm(
+      `${obj.placeName}을 코스로 추가하시겠습니까?`
+    )
+    if (result === true) {
+      alert(`${obj.placeName}이 코스로 추가되었습니다.`)
+      dispatch(addCoursePlace(obj))
+      navigate("/course", { state: 200 })
+    }
+    console.log(obj)
   }
 
   return (
@@ -130,6 +155,9 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
               </Typography>
               <Typography variant="h6" sx={TITLE_BODY}>
                 {obj.placeName}
+                <IconButton type="button" onClick={onAddClick}>
+                  <AddIcon sx={ICON_STYLE} color="secondary" fontSize="large" />
+                </IconButton>
               </Typography>
               <Typography variant="subtitle2" sx={TITLE_BOTTOM}>
                 {obj.addressName}
