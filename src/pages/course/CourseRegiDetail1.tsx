@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   useRef,
+  ChangeEvent,
 } from "react"
 
 import { styled } from "@mui/material/styles"
@@ -12,7 +13,11 @@ import { PhotoCamera } from "@mui/icons-material"
 import NabvigationBar from "components/common/NavigationBar"
 import Guide from "components/common/Guide"
 
-import { useGetCourseListMutation } from "features/course/courseSlice"
+import {
+  useAddCourseMutation,
+  useGetCourseListQuery,
+} from "features/course/courseSlice"
+import { CourseData } from "types/API/course-service"
 
 interface NavigationBarProps {
   currentPage: number
@@ -66,6 +71,17 @@ const CourseRegiDetail = (): JSX.Element => {
   const selectFile = useRef<any>()
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
 
+  const [changeInput, setChangeInput] = useState<CourseData>({
+    title: "",
+    description: "",
+    imgFile: null,
+  })
+
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const newState = { ...changeInput, [e.target.name]: e.target.value }
+    setChangeInput(newState)
+    console.log(changeInput)
+  }
   const encodeFileToBase64 = (fileBlob: Blob): any => {
     const reader = new FileReader()
     reader.readAsDataURL(fileBlob)
@@ -76,18 +92,39 @@ const CourseRegiDetail = (): JSX.Element => {
         }
         setImageSrc(reader.result)
         resolve()
-
+        setChangeInput(selectFile.current.files[0])
         console.log(reader)
       }
     })
   }
 
-  // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
-  const [uploadData, { data }] = useGetCourseListMutation()
+  const makeFormData = (): FormData => {
+    const formData = new FormData()
+    formData.append("title", changeInput.title)
+    formData.append("description", changeInput.description)
+    formData.append("imgFile", selectFile.current.files[0])
 
-  const onClickHandle = (): void => {
-    uploadData()
-    console.log(data)
+    return formData
+  }
+  // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
+  const [addCourse, { data: result, isSuccess }] = useAddCourseMutation()
+
+  const { data, error, isLoading } = useGetCourseListQuery()
+
+  // 클릭을 두번해야 전송되는 오류가 있음
+  const onClickHandle = async (): Promise<boolean> => {
+    try {
+      const submitData = makeFormData()
+      await addCourse(submitData).unwrap()
+    } catch (err) {
+      console.log(err)
+    }
+
+    return Promise.resolve(true)
+  }
+  if (isSuccess) {
+    // 리턴받은 코스의 상태
+    console.log("courseId", result)
   }
 
   return (
@@ -117,6 +154,7 @@ const CourseRegiDetail = (): JSX.Element => {
               accept="image/*"
               type="file"
               ref={selectFile}
+              name="imgFile"
               onChange={(e) => {
                 encodeFileToBase64(selectFile.current.files[0])
               }}
@@ -130,13 +168,26 @@ const CourseRegiDetail = (): JSX.Element => {
           <Typography variant="h6" sx={LABEL_STYLE}>
             코스이름
           </Typography>
-          <Input type="text" sx={INPUT_STYLE} />
+          <Input
+            type="text"
+            sx={INPUT_STYLE}
+            name="title"
+            value={changeInput.title}
+            onChange={onChangeInput}
+          />
         </TitleContainer>
         <DetailContainer>
           <Typography variant="h6" sx={LABEL_STYLE}>
             코스설명
           </Typography>
-          <TextField multiline sx={INPUT_STYLE} rows={10} />
+          <TextField
+            multiline
+            sx={INPUT_STYLE}
+            rows={10}
+            name="description"
+            value={changeInput.description}
+            onChange={onChangeInput}
+          />
         </DetailContainer>
         <Button variant="contained" onClick={onClickHandle}>
           코스등록 테스트 버튼

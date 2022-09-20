@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { CourseId } from "types/API/course-service"
+import { CourseId, CourseData } from "types/API/course-service"
 import { api } from "features/api/apiSlice"
 import { ServerResponse } from "http"
 
@@ -8,16 +8,29 @@ import { ServerResponse } from "http"
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getCourseList: builder.mutation<ServerResponse, void>({
+    getCourseList: builder.query<ServerResponse, void>({
       query: () => ({
         url: "/courses",
-        method: "POST",
-        body: "",
       }),
+    }),
+    addCourse: builder.mutation<ServerResponse, FormData>({
+      query: (data) => ({
+        url: "/courses",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response: any, meta, args): any => {
+        console.log(
+          "courseId : %d courseStatus : %s",
+          response.data.courseId,
+          response.data.courseStatus
+        )
+        return response.data.courseId
+      },
     }),
   }),
 })
 
-export const { useGetCourseListMutation } = courseApi
+export const { useGetCourseListQuery, useAddCourseMutation } = courseApi
 // why?
 export default courseApi.reducer
