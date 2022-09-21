@@ -9,7 +9,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { encryptedCookieConvToParamObj } from "utils"
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "/",
+  baseUrl: process.env.REACT_APP_SERVER_URL,
   prepareHeaders: (header) => {
     const { token } = encryptedCookieConvToParamObj()
     if (token) header.set("Authorization", `Bearer ${token}`)

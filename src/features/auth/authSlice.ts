@@ -55,7 +55,7 @@ export const authApiSlice = api.injectEndpoints({
     validation: builder.query<TokenValidationResponse, string>({
       query: (token) => ({
         url: "/auth/validate",
-        method: "POST",
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
