@@ -16,7 +16,7 @@ const SpeedDial = (): JSX.Element => {
   return (
     <ThemeSpeedDial
       ariaLabel="SpeedDial basic example"
-      sx={{ position: "absolute", bottom: 20, right: 8 }}
+      sx={{ position: "absolute", bottom: 80, right: 3 }}
       icon={<SpeedDialIcon />}
       onOpen={handleOpen}
       onClose={handleClose}

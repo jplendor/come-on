@@ -36,7 +36,8 @@ const NeighborhoodCourseList = ({
       <Stack
         spacing={2}
         sx={{
-          padding: "21px",
+          // padding: "21px",
+          py: "21px",
         }}
       >
         <CardItem info={info} />

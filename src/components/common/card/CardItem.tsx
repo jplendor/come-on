@@ -26,7 +26,8 @@ const CardItem = ({
   return (
     <Box
       sx={{
-        height: "240px",
+        // height: "240px",
+        height: "250px",
         maxHeight: "350px",
       }}
     >

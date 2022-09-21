@@ -4,7 +4,6 @@ import { Grid } from "@mui/material"
 import img from "assets/course/course2.jpg"
 import useNavigate from "hooks/navigate/useNavigate"
 import Header from "components/user/course/ourNeighborhood/Header"
-import SpeedDial from "components/user/course/ourNeighborhood/SpeedDial"
 import CourseList from "components/user/course/ourNeighborhood/NeighborhoodCourseList"
 
 const testPorsp = {
@@ -28,7 +27,6 @@ const NeighborhoodCourse = (): JSX.Element => {
     <Grid container component="main" direction="column" minHeight={1}>
       <Header />
       <CourseList info={testPorsp} />
-      <SpeedDial />
     </Grid>
   )
 }

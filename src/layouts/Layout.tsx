@@ -1,15 +1,20 @@
 import React, { ReactNode } from "react"
 import { AppBar, Box, Container, Grid } from "@mui/material"
 
+import SpeedDial from "components/user/course/ourNeighborhood/SpeedDial"
+
 import Navbar from "./Navbar"
 
-const temporaryArea = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let temporaryArea: any = {
   marginTop: "20px",
   border: "2px solid black",
   borderRadius: "5px",
   borderTop: "none",
   borderBottom: "none",
 }
+
+if (process.env.NODE_ENV === "production") temporaryArea = {}
 
 const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
@@ -30,7 +35,6 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
           height: "41.875em",
           overflowY: "auto",
           overflowX: "hidden",
-          touchAction: "pan-x pinch-zoom",
         }}
       >
         {children}
@@ -71,6 +75,7 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
         >
           <Navbar />
         </Grid>
+        <SpeedDial />
       </AppBar>
     </Container>
   )
