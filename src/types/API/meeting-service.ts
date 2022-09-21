@@ -62,3 +62,12 @@ export interface MeetingDateForDelete {
   meetingId: number
   dateId: number
 }
+
+export interface meetingDateForRead {
+  meetingId: number
+  dateId: number
+}
+
+export interface MeetingDateDetail extends MeetingDate {
+  dateUsers: Array<User>
+}

@@ -5,6 +5,8 @@ import {
   Meeting,
   MeetingDateForCreate,
   MeetingDateForDelete,
+  meetingDateForRead,
+  MeetingDateDetail,
 } from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
@@ -37,12 +39,22 @@ export const meetingApiSlice = api.injectEndpoints({
     }),
     // 모임 날짜 삭제
     deleteMeetingDate: builder.mutation<
-      ServerResponse<number>,
+      ServerResponse<null>,
       MeetingDateForDelete
     >({
       query: (meetingDate) => ({
         url: `/meetings/${meetingDate.meetingId}/dates/${meetingDate.dateId}`,
         method: "DELETE",
+      }),
+    }),
+    // 모임 날짜 단건 조회
+    getMeetingDate: builder.query<
+      ServerResponse<MeetingDateDetail>,
+      meetingDateForRead
+    >({
+      query: (meetingDate) => ({
+        url: `/meetings/${meetingDate.meetingId}/dates/${meetingDate.dateId}`,
+        method: "GET",
       }),
     }),
   }),
@@ -53,4 +65,5 @@ export const {
   useGetMeetingQuery,
   useCreateMeetingDateMutation,
   useDeleteMeetingDateMutation,
+  useGetMeetingDateQuery,
 } = meetingApiSlice

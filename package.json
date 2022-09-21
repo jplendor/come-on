@@ -32,7 +32,7 @@
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://3.39.218.41:8080",
+  "proxy": "https://api.come-on.ml",
   "browserslist": {
     "production": [
       ">0.2%",
