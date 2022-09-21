@@ -9,6 +9,7 @@ import { ThemeProvider } from "@mui/material/styles"
 import theme from "theme"
 import checkLoginStatus from "features/auth/checkLoginStatus"
 
+import "./index.css"
 import App from "./App"
 import { store } from "./app/store"
 import Layout from "./layouts/Layout"
