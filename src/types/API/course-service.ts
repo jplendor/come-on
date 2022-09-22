@@ -13,8 +13,10 @@ export interface AddCourse {
 
 /**
  * 내가 등록한 코스 리스트 조회
+ * 내가 좋아요한 코스 리스트 조회
  *
  * GET /courses/my
+ * GET /courses/like
  */
 
 export interface MyCourses {
@@ -104,11 +106,20 @@ export interface ServerResponse {
 }
 
 // GET /courses/my
-
 export interface MyCoursesResponse extends ServerResponse {
   data: MyCoursesSliceResponse
 }
 
+// GET /courses/like
 export interface AddCourseResponse extends ServerResponse {
   data: AddCourse
+}
+
+export interface OptionalQueryString {
+  page?: string
+  size?: string
+}
+
+export interface GetMyCourseListQS extends OptionalQueryString {
+  courseStatus: "COMPLETE" | "WRITING"
 }
