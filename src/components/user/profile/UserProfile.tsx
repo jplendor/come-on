@@ -19,16 +19,7 @@ const UserProfile = (): JSX.Element => {
 
   return (
     // 프로필 영역 #1
-    <Grid
-      item
-      xs={4}
-      container
-      component="section"
-      direction="column"
-      sx={{
-        height: "300px",
-      }}
-    >
+    <Grid item xs={4} container component="section" direction="column">
       {/* 프로필 영역 #1-1 */}
       <ProfileHeader />
       {/* 프로필 영역 #1-2, #1-3 */}

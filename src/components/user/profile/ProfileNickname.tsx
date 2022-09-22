@@ -1,18 +1,22 @@
-import React, { ChangeEvent, useState } from "react"
+import React, { useEffect, useState } from "react"
+import type {
+  Dispatch,
+  ChangeEvent,
+  KeyboardEvent,
+  SetStateAction,
+} from "react"
 import { styled } from "@mui/material/styles"
 import {
   Grid,
   Stack,
   TextField,
   Typography,
-  IconButton,
   InputAdornment,
-  CircularProgress,
 } from "@mui/material"
 import type { TypographyProps, TextFieldProps } from "@mui/material"
 
-import EditIcon from "@mui/icons-material/Edit"
 import { useModifyNameMutation } from "features/user/userSlice"
+import NameEditButton from "./EditNameButton"
 
 const NicknameTitle = styled(Typography)<TypographyProps>(
   ({
@@ -53,7 +57,7 @@ export const NicknameTextField = styled(TextField)<TextFieldProps>(
   ({
     theme: {
       textStyles: {
-        body1: { regular },
+        title4: { regular },
       },
       grayscale,
     },
@@ -80,37 +84,40 @@ export const NicknameTextField = styled(TextField)<TextFieldProps>(
   })
 )
 
-const ICON_SIZE = 14
-
 interface ProfileNickname {
   info: {
     nickname: string
+    setOpen: Dispatch<SetStateAction<boolean>>
   }
 }
 
-const EditNameButton = ({ value }: { value: string }): JSX.Element => {
-  const [modify, { isLoading }] = useModifyNameMutation()
-  return (
-    <IconButton disabled={isLoading} onClick={() => modify(value)}>
-      {isLoading ? (
-        <CircularProgress size={ICON_SIZE} />
-      ) : (
-        <EditIcon sx={{ fontSize: ICON_SIZE }} />
-      )}
-    </IconButton>
-  )
-}
-
 const ProfileNickname = ({
-  info: { nickname },
+  info: { nickname, setOpen },
 }: ProfileNickname): JSX.Element => {
+  const [modify, { isLoading, isSuccess }] = useModifyNameMutation()
   const [userName, setUserName] = useState(nickname)
+  const [isSubmit, setIsSubmit] = useState(false)
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(true)
+      setIsSubmit(false)
+    }
+  }, [isSuccess, setOpen])
+
+  useEffect(() => {
+    if (isSubmit) modify(userName)
+  }, [modify, isSubmit, userName])
 
   const onChangeHandler = ({
     target: { value },
   }: ChangeEvent<HTMLInputElement>): void => {
     if (value.length > 20) return
     setUserName(value)
+  }
+
+  const onKeyUpHandler = (e: KeyboardEvent<HTMLDivElement>): void => {
+    if (e.key === "Enter") setIsSubmit(true)
   }
 
   return (
@@ -137,10 +144,11 @@ const ProfileNickname = ({
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <EditNameButton value={userName} />
+              <NameEditButton isLoading={isLoading} setIsSubmit={setIsSubmit} />
             </InputAdornment>
           ),
         }}
+        onKeyUp={onKeyUpHandler}
       />
     </Stack>
   )
