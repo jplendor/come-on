@@ -13,7 +13,7 @@ import {
 import { AuthParams, Url } from "types/auth"
 
 import { decryptValue } from "./crypto"
-import { CookieName, decryptCookie } from "./cookies"
+import { CookieName, decryptCookie, encryptCookie } from "./cookies"
 import { LeafPath, pullingProperty } from "./pullingProperty"
 
 type CheckURL = (url: string | object) => Url
@@ -38,7 +38,7 @@ const getSeparatorByString = curry((separator: string, target: string) =>
   pipe(split(separator, target), toArray)
 )
 
-export const paramConversionToObj = (data: string, sep1 = "&", sep2 = "=") =>
+const paramConversionToObj = (data: string, sep1 = "&", sep2 = "=") =>
   pipe(
     data,
     getSeparatorByString(sep1),
@@ -54,3 +54,14 @@ export const encryptedTextConvToParamObj = (text: string) =>
 
 export const encryptedCookieConvToParamObj = () =>
   conversionToObj(decryptCookie(CookieName.auth))
+
+const converToQueryString = (values: (string | number)[], key: string[]) =>
+  values.map((value, i) => `${key[i]}=${value}`).join("&")
+
+export const converToQueryStrAndSetEncryptCookie = (
+  values: (string | number)[],
+  key: string[]
+): void =>
+  pipe(converToQueryString(values, key), (queryString) =>
+    encryptCookie(CookieName.auth, queryString)
+  )
