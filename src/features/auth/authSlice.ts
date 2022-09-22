@@ -38,10 +38,11 @@ export const authApiSlice = api.injectEndpoints({
     validation: builder.query<ServerResponse, string>({
       query: (token) => ({
         url: "/auth/validate",
-        method: "POST",
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
       }),
     }),
     logout: builder.query<ServerResponse, void>({
