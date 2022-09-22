@@ -1,5 +1,10 @@
 import { api } from "features/api/apiSlice"
-import { AddCourseResponse, MyCoursesResponse } from "types/API/course-service"
+import type {
+  AddCourseResponse,
+  GetMyCourseListQS,
+  MyCoursesResponse,
+  OptionalQueryString,
+} from "types/API/course-service"
 
 const courseApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,9 +16,16 @@ const courseApiSlice = api.injectEndpoints({
       }),
       invalidatesTags: ["Course"],
     }),
-    getMyCourseList: builder.query<MyCoursesResponse, void>({
-      query: () => ({
-        url: "/courses/my",
+    getMyCourseList: builder.query<MyCoursesResponse, GetMyCourseListQS>({
+      query: ({ courseStatus, page = "0", size = "10" }) => ({
+        url: `/courses/my?courseStatus=${courseStatus}&page=${page}&size=${size}`,
+        method: "GET",
+      }),
+      providesTags: ["Course"],
+    }),
+    getCourseLikeList: builder.query<MyCoursesResponse, OptionalQueryString>({
+      query: ({ page = "0", size = "10" }) => ({
+        url: `/courses/like?page=${page}&size=${size}`,
         method: "GET",
       }),
       providesTags: ["Course"],
@@ -21,4 +33,8 @@ const courseApiSlice = api.injectEndpoints({
   }),
 })
 
-export const { useAddCourseMutation, useGetMyCourseListQuery } = courseApiSlice
+export const {
+  useAddCourseMutation,
+  useGetMyCourseListQuery,
+  useGetCourseLikeListQuery,
+} = courseApiSlice

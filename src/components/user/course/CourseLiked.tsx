@@ -1,17 +1,29 @@
 import React from "react"
+import Basicframe from "components/common/BasicFrame"
+import CardItems from "components/common/card/CardItems"
+import { MyCoursesResponse } from "types/API/course-service"
+import type { QueryProps } from "components/common/BasicFrame"
+import { useGetCourseLikeListQuery } from "features/course/courseSlice"
 import { CardItemSkeletons } from "components/common/card/CardItemSkeleton"
+
 import CourseTap from "./CourseTap"
 
 interface CourseLikedProps {
   value: number
 }
 
-// TODO: 좋아요한 코스 API 연동하기 [] -> 현재 테스트할 데이터가 없음
+interface MyCoursesQueryProps extends QueryProps {
+  data: MyCoursesResponse
+}
 
 const CourseLiked = ({ value }: CourseLikedProps): JSX.Element => {
+  const getLikeCourseQuery = useGetCourseLikeListQuery(
+    {}
+  ) as MyCoursesQueryProps
+  const Content = Basicframe(getLikeCourseQuery, [CardItemSkeletons, CardItems])
   return (
     <CourseTap value={value} index={1}>
-      <CardItemSkeletons />
+      {Content}
     </CourseTap>
   )
 }

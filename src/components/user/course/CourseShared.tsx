@@ -17,7 +17,9 @@ interface MyCoursesQueryProps extends QueryProps {
 }
 
 const CourseShared = ({ value }: CourseSharedProps): JSX.Element => {
-  const getCourseQuery = useGetMyCourseListQuery() as MyCoursesQueryProps
+  const getCourseQuery = useGetMyCourseListQuery({
+    courseStatus: "COMPLETE",
+  }) as MyCoursesQueryProps
   const Content = Basicframe(getCourseQuery, [CardItemSkeletons, CardItems])
   return (
     <CourseTap value={value} index={0}>
