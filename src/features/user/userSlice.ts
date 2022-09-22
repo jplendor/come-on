@@ -19,7 +19,7 @@ export const userApiSlice = api.injectEndpoints({
           nickname: name,
         },
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["User", "Course"],
     }),
   }),
 })
