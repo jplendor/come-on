@@ -1,14 +1,13 @@
-import React from "react"
+import React, { SyntheticEvent } from "react"
 import { Grid } from "@mui/material"
 
+import CourseTaps from "./CourseTaps"
 import CourseLiked from "./CourseLiked"
 import CourseShared from "./CourseShared"
-import CourseTaps from "./CourseTaps"
 
 const UserCourse = (): JSX.Element => {
   const [currentIndex, setIndex] = React.useState(0)
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number): void =>
+  const handleChange = (_event: SyntheticEvent, newValue: number): void =>
     setIndex(newValue)
 
   return (

@@ -16,23 +16,26 @@ interface Logout {
 interface ReissueToken {
   accessToken: string
   expiry: number
+  userId: number
 }
 
 /**
- * 700 : 서버 내부 에러입니다.
+ * 600 : 서버 내부 에러입니다.
  *
- * 701 : 인증 헤더를 찾을 수 없습니다.
+ * 601 : 인증 헤더를 찾을 수 없습니다.
  *
- * 702 : 리프레시 토큰을 찾을 수 없습니다.
+ * 602 : 인증 헤더 검증에 실패하였습니다.
  *
- * 703 : Access Token이 유효하지 않습니다.
+ * 603 : 인증 헤더의 토큰 타입이 유효하지 않습니다.
  *
- * 704 : Refresh Token이 유효하지 않습니다.
+ * 661 : 리프레시 토큰을 찾을 수 없습니다.
  *
- * 705 : Access Token이 만료되지 않아 재발급 할 수 없습니다.
+ * 662 : Refresh Token이 유효하지 않습니다.
+ *
+ * 663 : Access Token이 만료되지 않아 재발급 할 수 없습니다.
  */
 
-type ErrorCode = 700 | 701 | 702 | 703 | 704 | 705
+type ErrorCode = 600 | 601 | 602 | 603 | 661 | 662 | 663
 
 interface Exception {
   code: ErrorCode
@@ -46,6 +49,8 @@ interface Exception {
  *
  * BAD_REQUEST     : 잘못된 요청입니다.
  *
+ * FORBIDDEN       : 권한이 없습니다.
+ *
  * NOT_FOUND       : 리소스를 찾지 못했습니다.
  *
  * SERVER_ERROR    : 서버 에러입니다.
@@ -58,6 +63,7 @@ interface Exception {
 enum Code {
   BAD_PARAMETER = "BAD_PARAMETER",
   BAD_REQUEST = "BAD_REQUEST",
+  FORBIDDEN = "FORBIDDEN",
   NOT_FOUND = "NOT_FOUND",
   SERVER_ERROR = "SERVER_ERROR",
   SUCCESS = "SUCCESS",
@@ -74,21 +80,24 @@ enum Code {
  * data         : 결과 데이터를 반환합니다.
  */
 
-// TODO: 인터페이스 이름명 좀더 고민해보기 []
 export interface ServerResponse {
   responseTime: string
   code: Code
   data: Exception | ReissueToken | Logout | TokenValidation
 }
 
+export interface ReissueResponse extends ServerResponse {
+  data: ReissueToken
+}
+
 export interface LogoutResponse extends ServerResponse {
-  data: Logout
+  data: Logout | Exception
 }
 
 export interface ExceptionResponse extends ServerResponse {
-  data: Exception
+  data: Exception | Exception
 }
 
 export interface TokenValidationResponse extends ServerResponse {
-  data: TokenValidation
+  data: TokenValidation | Exception
 }

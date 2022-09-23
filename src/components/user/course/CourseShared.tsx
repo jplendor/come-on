@@ -1,33 +1,29 @@
 import React from "react"
-import CardItem from "components/common/card/CardItem"
 
-import img from "assets/course/course2.jpg"
+import CardItems from "components/common/card/CardItems"
+import { MyCoursesResponse } from "types/API/course-service"
+import Basicframe, { QueryProps } from "components/common/BasicFrame"
+import { useGetMyCourseListQuery } from "features/course/courseSlice"
+import { CardItemSkeletons } from "components/common/card/CardItemSkeleton"
+
 import CourseTap from "./CourseTap"
 
 interface CourseSharedProps {
   value: number
 }
 
-const testPorsp = {
-  img: {
-    src: img,
-    alt: "Breakfast2",
-  },
-  isLike: false,
-  texts: {
-    title: "사진찍기 좋은 부산 여행 코스2",
-    userName: "여행마스터",
-    time: "2022.08.03",
-  },
+interface MyCoursesQueryProps extends QueryProps {
+  data: MyCoursesResponse
 }
 
 const CourseShared = ({ value }: CourseSharedProps): JSX.Element => {
+  const getCourseQuery = useGetMyCourseListQuery({
+    courseStatus: "COMPLETE",
+  }) as MyCoursesQueryProps
+  const Content = Basicframe(getCourseQuery, [CardItemSkeletons, CardItems])
   return (
     <CourseTap value={value} index={0}>
-      <CardItem info={testPorsp} />
-      <CardItem info={testPorsp} />
-      <CardItem info={testPorsp} />
-      <CardItem info={testPorsp} />
+      {Content}
     </CourseTap>
   )
 }

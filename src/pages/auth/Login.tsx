@@ -1,7 +1,6 @@
 import React, { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
-import { useDidMount } from "rooks"
 import { Location } from "types/auth"
 import { conversionToUrl } from "utils"
 import useAuth from "hooks/auth/useAuth"
@@ -18,7 +17,7 @@ const Login = (): JSX.Element => {
   const { getPreviousPathName, setPreviousPathName, removePreviousPathName } =
     useSavePath()
 
-  useDidMount(() => {
+  useEffect(() => {
     setPreviousPathName({
       from: {
         pathname: conversionToUrl(location as Location, [
@@ -28,7 +27,7 @@ const Login = (): JSX.Element => {
         ]),
       },
     })
-  })
+  }, [location, setPreviousPathName])
 
   useEffect(() => {
     urlRoute(LoginStatus, ({ isloggedin }, go) =>

@@ -1,4 +1,6 @@
+import { LinkProps } from "@mui/material"
 import { createTheme } from "@mui/material/styles"
+import { LinkBehavior } from "components/nav/Link"
 
 interface Grayscale {
   "900": "#212121"
@@ -161,6 +163,18 @@ declare module "@mui/material/styles" {
 }
 
 const theme = createTheme({
+  components: {
+    MuiLink: {
+      defaultProps: {
+        component: LinkBehavior,
+      } as LinkProps,
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        LinkComponent: LinkBehavior,
+      },
+    },
+  },
   grayscale: GRAYSCALES,
   textStyles: TYPOGRAPHYS,
   typography: {

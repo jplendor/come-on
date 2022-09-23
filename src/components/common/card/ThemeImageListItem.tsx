@@ -8,7 +8,8 @@ export const ThemeImageListItem = styled((props: ImageListItemProps) => (
   <ImageListItem {...props} component="article" />
 ))(() => ({
   "& .MuiImageListItem-img": {
-    height: "180px",
+    // height: "180px",
+    height: "190px",
     borderRadius: "6px",
   },
 }))

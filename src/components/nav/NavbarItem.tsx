@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import { styled } from "@mui/material/styles"
 import { SvgIconComponent } from "@mui/icons-material"
 import type { AvatarProps, TypographyProps } from "@mui/material"
@@ -70,7 +70,7 @@ const isActiveText = (index: number, indexState: number): object =>
 const isActiveAvatar = (index: number, indexState: number): object =>
   index === indexState ? { filter: "none" } : { filter: "grayscale(1)" }
 
-export const NavbarItem = ({
+const NavbarItem = ({
   Icon,
   text,
   index,
@@ -87,18 +87,29 @@ export const NavbarItem = ({
   </NavbarContent>
 )
 
-export const NavbarAvatar = ({
+const NavbarAvatar = ({
   text,
   index,
   img: { src, alt },
   currentIndex: { indexState, onClickHandler },
-}: NavbarAvatarProps): JSX.Element => (
-  <NavbarContent onClick={() => onClickHandler(index)}>
-    <Grid container justifyContent="center">
-      <ThemeAvatar src={src} alt={alt} sx={isActiveAvatar(index, indexState)} />
-    </Grid>
-    <NavbarText sx={{ paddingTop: "7px", ...isActiveText(index, indexState) }}>
-      {text}
-    </NavbarText>
-  </NavbarContent>
-)
+}: NavbarAvatarProps): JSX.Element => {
+  return (
+    <NavbarContent onClick={() => onClickHandler(index)}>
+      <Grid container justifyContent="center">
+        <ThemeAvatar
+          src={src}
+          alt={alt}
+          sx={isActiveAvatar(index, indexState)}
+        />
+      </Grid>
+      <NavbarText
+        sx={{ paddingTop: "7px", ...isActiveText(index, indexState) }}
+      >
+        {text}
+      </NavbarText>
+    </NavbarContent>
+  )
+}
+
+export const MemoNavbarItem = memo(NavbarItem)
+export const MemoNavbarAvatar = memo(NavbarAvatar)

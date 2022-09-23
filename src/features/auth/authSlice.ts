@@ -1,4 +1,3 @@
-import { isObject } from "@fxts/core"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 import type {
@@ -10,32 +9,50 @@ import {
   setCookie,
   CookieName,
   removeCookie,
-  pullingProperty,
   encryptedTextConvToParamObj,
+  removeItems,
 } from "utils"
 import { RootState } from "store"
 import { api } from "features/api/apiSlice"
+import { myDetial } from "features/user/userSlice"
+import { LocalstorageName, SliceStatus } from "types/auth"
 
-interface AuthSliceState {
-  userId: string
-  isloggedin: boolean
-  status: "idle" | "pending" | "succeeded" | "failed"
+export interface ProfileImg {
+  id: number
+  imageUrl: string
 }
 
-interface ReturnType {
-  userId: string
-  encryptedText: string
+export interface User {
+  userId: number
+  role: string
+  profileImg: ProfileImg
+}
+
+interface AuthSliceState extends SliceStatus {
+  isloggedin: boolean
+  user: User
+}
+
+const initialImg: ProfileImg = {
+  id: 0,
+  imageUrl: "",
+}
+
+const initialUserState: User = {
+  userId: 0,
+  role: "",
+  profileImg: initialImg,
 }
 
 const initialState: AuthSliceState = {
-  userId: "",
   isloggedin: false,
   status: "idle",
+  user: initialUserState,
 }
 
 export const authApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
-    validation: builder.query<ServerResponse, string>({
+    validation: builder.query<TokenValidationResponse, string>({
       query: (token) => ({
         url: "/auth/validate",
         method: "GET",
@@ -65,7 +82,7 @@ const {
 } = authApiSlice
 
 export const tokenValidation = createAsyncThunk<
-  ReturnType,
+  TokenValidationResponse,
   string,
   { state: RootState }
 >(
@@ -86,18 +103,15 @@ export const tokenValidation = createAsyncThunk<
   // FINISH: token 값이 없다면 에러 디스패치 [v]
   // 에러 디스패치 조건 -> 암호화된 쿠키값이 변조되었을때.
 
-  async (encryptedText: string, { rejectWithValue, dispatch }) => {
+  async (encryptedText, { rejectWithValue, dispatch }) => {
     const { token } = encryptedTextConvToParamObj(encryptedText)
-    const { data, isError } = await dispatch(validation.initiate(token))
-    if (isError) return rejectWithValue(data as ExceptionResponse)
-    const userId = pullingProperty(data as TokenValidationResponse, [
-      "data",
-      "userId",
-    ])
-    return {
-      encryptedText,
-      userId: isObject(userId) ? "null" : userId,
-    }
+    const { data: validationData, isError } = await dispatch(
+      validation.initiate(token)
+    )
+    if (isError) return rejectWithValue(validationData as ExceptionResponse)
+    setCookie(CookieName.auth, encryptedText)
+    await dispatch(myDetial.initiate())
+    return validationData as TokenValidationResponse
   },
   {
     condition: (_, { getState }) => {
@@ -115,6 +129,8 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     loggedIn: (state) => {
+      const img = localStorage.getItem(LocalstorageName.Img)
+      if (img) state.user.profileImg = JSON.parse(img)
       state.isloggedin = true
     },
   },
@@ -122,26 +138,41 @@ const authSlice = createSlice({
     builder.addCase(tokenValidation.pending, (state) => {
       state.status = "pending"
     })
-    builder.addCase(
-      tokenValidation.fulfilled,
-      (state, { payload: { encryptedText, userId } }) => {
-        setCookie(CookieName.auth, encryptedText)
-        state.userId = userId
-        state.isloggedin = true
-        state.status = "succeeded"
-      }
-    )
+    builder.addCase(tokenValidation.fulfilled, (state) => {
+      state.isloggedin = true
+      state.status = "succeeded"
+    })
     builder.addCase(tokenValidation.rejected, (state) => {
       removeCookie(CookieName.auth)
       state.isloggedin = false
       state.status = "failed"
+      state.user = initialUserState
     })
-    builder.addMatcher(logout.matchFulfilled, (state) => {
+    builder.addMatcher(
+      myDetial.matchFulfilled,
+      (state, { payload: { data } }) => {
+        const { userId, role, profileImg } = data
+        state.user = {
+          userId,
+          role,
+          profileImg: profileImg || initialImg,
+        }
+        localStorage.setItem(
+          LocalstorageName.Img,
+          JSON.stringify(profileImg || "")
+        )
+      }
+    )
+    builder.addMatcher(myDetial.matchRejected, (state) => {
+      if (state.isloggedin === false) state.user = initialUserState
+    })
+    builder.addMatcher(logout.matchFulfilled, () => {
       removeCookie(CookieName.auth)
-      state.isloggedin = false
+      removeItems([LocalstorageName.Img, LocalstorageName.navigate])
+      return initialState
     })
-    builder.addMatcher(logout.matchRejected, (state) => {
-      state.isloggedin = false
+    builder.addMatcher(logout.matchRejected, () => {
+      return initialState
     })
   },
 })

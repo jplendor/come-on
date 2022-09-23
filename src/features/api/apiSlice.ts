@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import type {
   FetchArgs,
   BaseQueryFn,
@@ -6,10 +5,25 @@ import type {
 } from "@reduxjs/toolkit/query/react"
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
-import { encryptedCookieConvToParamObj } from "utils"
+import {
+  isTimeExpired,
+  encryptedCookieConvToParamObj,
+  converToQueryStrAndSetEncryptCookie,
+} from "utils"
+import { ReissueResponse } from "types/API/auth-service"
+
+const setReissueTokenCookie = (response: ReissueResponse): void => {
+  const {
+    data: { accessToken, expiry: newExpiry, userId },
+  } = response
+  converToQueryStrAndSetEncryptCookie(
+    [accessToken, newExpiry, userId],
+    ["token", "expiry", "userId"]
+  )
+}
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "/",
+  baseUrl: process.env.REACT_APP_SERVER_URL,
   prepareHeaders: (header) => {
     const { token } = encryptedCookieConvToParamObj()
     if (token) header.set("Authorization", `Bearer ${token}`)
@@ -17,37 +31,40 @@ const baseQuery = fetchBaseQuery({
   },
 })
 
-// TODO: 토큰 만료 처리 [] -> 만료되면 서버로 보내지 말기
-//  1.TODO: 토큰이 만료되었다면 토큰 재발급 API 전송 []
-//  2.TODO: 토큰 만료 비교 함수 만들기 []
-//  토큰만료됐는지 파악 -> 만료됨 -> 토큰 재발급 API -> 토큰 검즘 API
+// FINISH: 토큰 만료 처리 [v]
+//  1.FINISH: 토큰이 만료되었다면 토큰 재발급 API 전송 [v]
+//  2.FINISH: 토큰 만료 비교 함수 만들기 [v]
+//  토큰만료됐는지 파악 -> 만료됨 -> 토큰 재발급 API -> 기존에 요청했던 API 요청 재개
 
 export const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const result = await baseQuery(args, api, extraOptions)
+  let result = await baseQuery(args, api, extraOptions)
 
-  // const { token, expiry } = encryptedCookieConversionToParamObj()
-  // const refreshResult = await baseQuery(
-  //   {
-  //     url: "/auth/reissue",
-  //     method: "POST",
-  //   },
-  //   api,
-  //   extraOptions
-  // )
+  // 토큰이 만료됐을때
+  if (isTimeExpired()) {
+    const refreshResult = await baseQuery(
+      {
+        url: "/auth/reissue",
+        method: "POST",
+        credentials: "include",
+      },
+      api,
+      extraOptions
+    )
+    if (refreshResult.data)
+      setReissueTokenCookie(refreshResult.data as ReissueResponse)
 
-  // console.log(refreshResult.error)
-  // if (refreshResult.data) {
-  //   console.log(api)
-  // }
+    result = await baseQuery(args, api, extraOptions)
+  }
 
   return result
 }
 
 export const api = createApi({
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["User", "Course"],
   endpoints: () => ({}),
 })

@@ -1,5 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
+import { encryptedCookieConvToParamObj } from "./url"
+
 /**
  * Date 객체를 인자로 받아서, 년, 월, 일(Number)을 담은 Array를 반환합니다.
  * createAt: 2022-08-25
@@ -22,3 +24,13 @@ const toStringYyyymmdd = (dateParam: Date): string => {
 }
 
 export { getYyyymmddArray, toStringYyyymmdd }
+
+export const isTimeExpired = (): boolean => {
+  const { expiry } = encryptedCookieConvToParamObj()
+
+  const now = new Date().getTime()
+  const expiryTime = new Date(parseInt(expiry, 10) * 1000).getTime()
+
+  // 토큰이 만료됐는지
+  return Boolean(now >= expiryTime)
+}

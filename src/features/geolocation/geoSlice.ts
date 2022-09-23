@@ -1,3 +1,4 @@
+import { RootState } from "store"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 export type UseGeolocationReturnType = {
@@ -26,22 +27,20 @@ const geoSlice = createSlice({
   name: "geolocation",
   initialState,
   reducers: {
-    geoUpdate: {
-      reducer: (_, action: PayloadAction<GeoSliceState>) => action.payload,
-      prepare: (geolocation: UseGeolocationReturnType) =>
-        !geolocation
-          ? {
-              payload: initialState,
-            }
-          : {
-              payload: {
-                isDone: true,
-                info: geolocation,
-              },
-            },
+    geoUpdate: (_state, action: PayloadAction<UseGeolocationReturnType>) => {
+      return {
+        isDone: true,
+        info: action.payload,
+      }
+    },
+    geoInit: (state) => {
+      state.isDone = false
     },
   },
 })
 
-export const { geoUpdate } = geoSlice.actions
+export const { geoUpdate, geoInit } = geoSlice.actions
+
+export const stateGeo = (state: RootState): GeoSliceState => state.geolocation
+
 export default geoSlice.reducer

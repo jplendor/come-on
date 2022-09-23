@@ -7,6 +7,14 @@ import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../../app/store"
 
+import { api } from "features/api/apiSlice"
+import type {
+  AddCourseResponse,
+  GetMyCourseListQS,
+  MyCoursesResponse,
+  OptionalQueryString,
+} from "types/API/course-service"
+
 interface CourseId {
   courseId: number
 }
@@ -100,6 +108,28 @@ export default coursePlaceSlice.reducer
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
+    addCourse: builder.mutation<AddCourseResponse, FormData>({
+      query: (course) => ({
+        url: "/courses",
+        method: "POST",
+        body: course,
+      }),
+      invalidatesTags: ["Course"],
+    }),
+    getMyCourseList: builder.query<MyCoursesResponse, GetMyCourseListQS>({
+      query: ({ courseStatus, page = "0", size = "10" }) => ({
+        url: `/courses/my?courseStatus=${courseStatus}&page=${page}&size=${size}`,
+        method: "GET",
+      }),
+      providesTags: ["Course"],
+    }),
+    getCourseLikeList: builder.query<MyCoursesResponse, OptionalQueryString>({
+      query: ({ page = "0", size = "10" }) => ({
+        url: `/courses/like?page=${page}&size=${size}`,
+        method: "GET",
+      }),
+      providesTags: ["Course"],
+    }),
     getCourseList: builder.query<ServerResponse, void>({
       query: () => ({
         url: "/courses",
@@ -131,6 +161,9 @@ export const courseApi = api.injectEndpoints({
 })
 
 export const {
+  useAddCourseMutation,
+  useGetMyCourseListQuery,
+  useGetCourseLikeListQuery,
   useGetCourseListQuery,
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
