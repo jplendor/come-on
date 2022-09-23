@@ -72,18 +72,22 @@ enum Code {
  * data         : 결과 데이터를 반환합니다.
  */
 
-export interface ServerResponse {
+export interface ServerRes {
   responseTime: string
   code: Code
   data: Exception | Mydetail | ModifyName
 }
 
 // GET /users/me
-export interface MydetailResponse extends ServerResponse {
+export interface MydetailRes extends ServerRes {
   data: Mydetail
 }
 
 // PATCH /users/me
-export interface ModifyNameResponse extends ServerResponse {
+export interface ModifyNameRes extends ServerRes {
   data: ModifyName
+}
+
+export interface ExceptionRes extends ServerRes {
+  data: Exception
 }

@@ -1,20 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-
 import type {
-  ServerResponse,
-  ExceptionResponse,
-  TokenValidationResponse,
+  ReissueRes,
+  ExceptionRes,
+  TokenValidationRes,
 } from "types/API/auth-service"
 import {
   setCookie,
   CookieName,
   removeCookie,
+  setReissueTokenCookie,
   encryptedTextConvToParamObj,
-  removeItems,
 } from "utils"
 import { RootState } from "store"
 import { api } from "features/api/apiSlice"
 import { myDetial } from "features/user/userSlice"
+import { MydetailRes } from "types/API/user-service"
 import { LocalstorageName, SliceStatus } from "types/auth"
 
 export interface ProfileImg {
@@ -52,7 +52,7 @@ const initialState: AuthSliceState = {
 
 export const authApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
-    validation: builder.query<TokenValidationResponse, string>({
+    validation: builder.query<TokenValidationRes | ExceptionRes, string>({
       query: (token) => ({
         url: "/auth/validate",
         method: "GET",
@@ -61,27 +61,22 @@ export const authApiSlice = api.injectEndpoints({
         },
       }),
     }),
-    logout: builder.query<ServerResponse, void>({
-      query: () => ({
-        url: "/auth/logout",
-        method: "POST",
-      }),
-    }),
-    reissue: builder.query<ServerResponse, void>({
+    reissue: builder.query<ReissueRes | ExceptionRes, void>({
       query: () => ({
         url: "/auth/reissue",
         method: "POST",
+        credentials: "include",
       }),
     }),
   }),
 })
 
-const {
-  endpoints: { validation, logout },
+export const {
+  endpoints: { validation, reissue },
 } = authApiSlice
 
 export const tokenValidation = createAsyncThunk<
-  TokenValidationResponse,
+  TokenValidationRes,
   string,
   { state: RootState }
 >(
@@ -107,13 +102,13 @@ export const tokenValidation = createAsyncThunk<
     const { data: validationData, isError } = await dispatch(
       validation.initiate(token)
     )
-    if (isError) return rejectWithValue(validationData as ExceptionResponse)
+    if (isError) return rejectWithValue(validationData as ExceptionRes)
     setCookie(CookieName.auth, encryptedText)
     await dispatch(myDetial.initiate())
-    return validationData as TokenValidationResponse
+    return validationData as TokenValidationRes
   },
   {
-    condition: (_, { getState }) => {
+    condition: (_state, { getState }) => {
       const {
         auth: { status },
       } = getState()
@@ -147,31 +142,25 @@ const authSlice = createSlice({
       state.status = "failed"
       state.user = initialUserState
     })
-    builder.addMatcher(
-      myDetial.matchFulfilled,
-      (state, { payload: { data } }) => {
-        const { userId, role, profileImg } = data
-        state.user = {
-          userId,
-          role,
-          profileImg: profileImg || initialImg,
-        }
-        localStorage.setItem(
-          LocalstorageName.Img,
-          JSON.stringify(profileImg || "")
-        )
+    builder.addMatcher(myDetial.matchFulfilled, (state, { payload }) => {
+      const {
+        data: { userId, role, profileImg },
+      } = payload as MydetailRes
+      state.user = {
+        userId,
+        role,
+        profileImg: profileImg || initialImg,
       }
-    )
+      localStorage.setItem(
+        LocalstorageName.Img,
+        JSON.stringify(profileImg || "")
+      )
+    })
     builder.addMatcher(myDetial.matchRejected, (state) => {
       if (state.isloggedin === false) state.user = initialUserState
     })
-    builder.addMatcher(logout.matchFulfilled, () => {
-      removeCookie(CookieName.auth)
-      removeItems([LocalstorageName.Img, LocalstorageName.navigate])
-      return initialState
-    })
-    builder.addMatcher(logout.matchRejected, () => {
-      return initialState
+    builder.addMatcher(reissue.matchFulfilled, (_state, { payload }) => {
+      setReissueTokenCookie(payload as ReissueRes)
     })
   },
 })

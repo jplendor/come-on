@@ -1,7 +1,7 @@
 import React from "react"
 
 import CardItems from "components/common/card/CardItems"
-import { MyCoursesResponse } from "types/API/course-service"
+import { MyCoursesRes } from "types/API/course-service"
 import Basicframe, { QueryProps } from "components/common/BasicFrame"
 import { useGetMyCourseListQuery } from "features/course/courseSlice"
 import { CardItemSkeletons } from "components/common/card/CardItemSkeleton"
@@ -13,7 +13,7 @@ interface CourseSharedProps {
 }
 
 interface MyCoursesQueryProps extends QueryProps {
-  data: MyCoursesResponse
+  data: MyCoursesRes
 }
 
 const CourseShared = ({ value }: CourseSharedProps): JSX.Element => {

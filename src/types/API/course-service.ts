@@ -6,7 +6,7 @@
  * POST /courses
  */
 
-export interface AddCourse {
+interface AddCourse {
   courseId: number
   courseStatus: string
 }
@@ -19,7 +19,7 @@ export interface AddCourse {
  * GET /courses/like
  */
 
-export interface MyCourses {
+interface MyCourses {
   courseId: number
   title: string
   imageUrl: string
@@ -30,6 +30,21 @@ export interface MyCourses {
   writer: {
     userId: number
     nickname: string
+  }
+}
+
+/**
+ * 코스 리스트 조회
+ *
+ * GET /courses
+ */
+
+interface CourseList extends MyCourses {
+  firstPlace: {
+    coursePlaceId: number
+    lat: number
+    lng: number
+    distance: number
   }
 }
 
@@ -46,6 +61,7 @@ interface SliceResponse<T> {
 }
 
 export type MyCoursesSliceResponse = SliceResponse<MyCourses>
+export type CourseListSliceResponse = SliceResponse<CourseList>
 
 /**
  * 900 : 죄송합니다. 서버 내부 오류입니다.
@@ -99,27 +115,42 @@ enum Code {
   UNAUTHORIZED = "UNAUTHORIZED",
 }
 
-export interface ServerResponse {
+export interface ServerRes {
   responseTime: string
   code: Code
-  data: Exception | MyCoursesSliceResponse | AddCourse
+  data: Exception | MyCoursesSliceResponse | CourseListSliceResponse | AddCourse
 }
 
-// GET /courses/my
-export interface MyCoursesResponse extends ServerResponse {
+// GET /courses/my & GET /courses/like
+export interface MyCoursesRes extends ServerRes {
   data: MyCoursesSliceResponse
 }
 
-// GET /courses/like
-export interface AddCourseResponse extends ServerResponse {
+// POST /courses
+export interface AddCourseRes extends ServerRes {
   data: AddCourse
 }
 
+// GET /courses
+export interface CourseListRes extends ServerRes {
+  data: CourseListSliceResponse
+}
+
+export interface ExceptionRes extends ServerRes {
+  data: Exception
+}
+
 export interface OptionalQueryString {
-  page?: string
-  size?: string
+  page?: number
+  size?: number
 }
 
 export interface GetMyCourseListQS extends OptionalQueryString {
   courseStatus: "COMPLETE" | "WRITING"
+}
+
+export interface GetCourseListQS extends OptionalQueryString {
+  title?: string
+  lat?: number
+  lng?: number
 }
