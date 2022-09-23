@@ -1,3 +1,33 @@
 // Course-Service API Docs 참고
 
-export {}
+enum Code {
+  BAD_PARAMETER = "BAD_PARAMETER",
+  BAD_REQUEST = "BAD_REQUEST",
+  NOT_FOUND = "NOT_FOUND",
+  SERVER_ERROR = "SERVER_ERROR",
+  SUCCESS = "SUCCESS",
+  UNAUTHORIZED = "UNAUTHORIZED",
+}
+export interface CourseId {
+  courseId: string
+}
+
+export interface CourseData {
+  title: string
+  description: string
+  imgFile: string
+}
+
+type ErrorCode = 903
+
+export interface ServerResponse {
+  responseTime: string
+  code: Code
+}
+
+export interface CourseDataResponse extends ServerResponse {
+  data: {
+    code: ErrorCode
+    message: CourseData
+  }
+}

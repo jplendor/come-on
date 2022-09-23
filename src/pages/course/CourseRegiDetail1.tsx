@@ -4,13 +4,24 @@ import React, {
   useEffect,
   useState,
   useRef,
+  ChangeEvent,
 } from "react"
 
 import { styled } from "@mui/material/styles"
-import { Box, Input, Typography, TextField, Fab } from "@mui/material"
+import { Box, Input, Typography, TextField, Fab, Button } from "@mui/material"
 import { PhotoCamera } from "@mui/icons-material"
 import NabvigationBar from "components/common/NavigationBar"
 import Guide from "components/common/Guide"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
+
+import {
+  setCourseDetail,
+  useGetCourseListQuery,
+} from "features/course/courseSlice"
+import { CourseData } from "types/API/course-service"
+
+import { useSelector, useDispatch } from "react-redux"
+import { RootState } from "store"
 
 interface NavigationBarProps {
   currentPage: number
@@ -59,11 +70,26 @@ const IconContainer = styled(Box)(() => ({
   right: "25px",
 }))
 
-const CourseRegiDetail = (): JSX.Element => {
-  const [currentPage, setCurrentPage] = useState<number>(1)
+interface pageProps {
+  page: number
+  setPage: Dispatch<SetStateAction<number>>
+}
+
+const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   const selectFile = useRef<any>()
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
 
+  const [changeInput, setChangeInput] = useState<CourseData>({
+    title: "",
+    description: "",
+    imgFile: "",
+  })
+
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const newState = { ...changeInput, [e.target.name]: e.target.value }
+    setChangeInput(newState)
+    console.log(changeInput)
+  }
   const encodeFileToBase64 = (fileBlob: Blob): any => {
     const reader = new FileReader()
     reader.readAsDataURL(fileBlob)
@@ -74,29 +100,45 @@ const CourseRegiDetail = (): JSX.Element => {
         }
         setImageSrc(reader.result)
         resolve()
+        setChangeInput(selectFile.current.files[0])
+        console.log(reader)
       }
     })
   }
 
+  const makeFormData = (): FormData => {
+    const formData = new FormData()
+    formData.append("title", changeInput.title)
+    formData.append("description", changeInput.description)
+    formData.append("imgFile", selectFile.current.files[0])
+
+    return formData
+  }
+  // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
+  const dispatch = useDispatch()
+  const { data, error, isLoading } = useGetCourseListQuery()
+  const courseDetail = useSelector((state: RootState) => {
+    return state.course.courseDetails
+  })
+  // 페이지를 이동시키고 데이터를 전역상태로 저장
+  const onClicKNextPage = (): void => {
+    dispatch(
+      setCourseDetail({
+        title: changeInput.title,
+        description: changeInput.description,
+        imgFile: String(imageSrc),
+      })
+    )
+    setPage(page + 1)
+  }
+
   return (
     <>
-      <NabvigationBar
-        currentPage={1}
-        setCurrentPage={setCurrentPage}
-        minPage={1}
-        maxPage={3}
-      />
       <Guide guideStr=" 코스정보를 입력해 주세요!" />
       {/*  */}
       <ImgContainer>
         {imageSrc && (
-          <img
-            src={String(imageSrc)}
-            alt="img"
-            width="100%"
-            height="100%"
-            z-index="0"
-          />
+          <img src={String(imageSrc)} alt="img" width="100%" height="100%" />
         )}
         <IconContainer>
           <Fab
@@ -111,6 +153,7 @@ const CourseRegiDetail = (): JSX.Element => {
               accept="image/*"
               type="file"
               ref={selectFile}
+              name="imgFile"
               onChange={(e) => {
                 encodeFileToBase64(selectFile.current.files[0])
               }}
@@ -124,14 +167,28 @@ const CourseRegiDetail = (): JSX.Element => {
           <Typography variant="h6" sx={LABEL_STYLE}>
             코스이름
           </Typography>
-          <Input type="text" sx={INPUT_STYLE} />
+          <Input
+            type="text"
+            sx={INPUT_STYLE}
+            name="title"
+            value={changeInput.title}
+            onChange={onChangeInput}
+          />
         </TitleContainer>
         <DetailContainer>
           <Typography variant="h6" sx={LABEL_STYLE}>
             코스설명
           </Typography>
-          <TextField multiline maxRows="10" sx={INPUT_STYLE} rows={10} />
+          <TextField
+            multiline
+            sx={INPUT_STYLE}
+            rows={10}
+            name="description"
+            value={changeInput.description}
+            onChange={onChangeInput}
+          />
         </DetailContainer>
+        <CourseNextStepButton content="다음단계" onClick={onClicKNextPage} />
       </FormBox>
     </>
   )
