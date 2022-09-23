@@ -6,15 +6,12 @@ import Auth from "pages/auth/Auth"
 import User from "pages/user/User"
 import NeighborhoodCourse from "pages/course/NeighborhoodCourse"
 
-// 모임
-import MeetingCreate from "pages/meeting/MeetingCreate"
-import MeetingEdit from "pages/meeting/MeetingEdit"
-
 // 코스
 import SearchPlace from "pages/course/SearchPlace"
 import Course from "pages/course/Course"
 import CourseRegiLayout from "pages/course/CourseRegiLayout"
 import CourseRegiDetail2 from "pages/course/CourseRegiDetail2"
+import Meeting from "pages/meeting/Meeting"
 
 const App = (): JSX.Element => {
   return (
@@ -24,9 +21,7 @@ const App = (): JSX.Element => {
       <Route path="user/*" element={<User />} />
       <Route path="/course/:id" />
       <Route path="/course/register" element={<SearchPlace />} />
-      <Route path="/meeting" />
-      <Route path="/meeting/register" element={<MeetingCreate />} />
-      {/* <Route path="/meeting/:id" element={<MeetingEdit />} /> */}
+      <Route path="meeting/*" element={<Meeting />} />
       <Route path="*" element={<NeighborhoodCourse />} />
     </Routes>
   )
