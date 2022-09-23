@@ -38,12 +38,12 @@ const MeetingEdit = (): JSX.Element => {
             {meeting.title}
           </Typography>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <Typography variant="h5" component="h2">
             모임 멤버
           </Typography>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={8}>
           <Typography
             variant="h5"
             component="h2"
