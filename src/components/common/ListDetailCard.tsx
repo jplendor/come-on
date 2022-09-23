@@ -86,8 +86,18 @@ export interface ListDetailCardProp {
   titleBottom: string
 }
 
+interface CoursePlaceState {
+  order: number
+  name: string
+  description: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  kakaoPlaceId: number
+  placeCategory: string
+}
+
 interface ListDetailCardProps {
-  item: ListDetailCardProp
+  item: CoursePlaceState
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: string
   onRemove: (index: number) => void
@@ -96,14 +106,9 @@ interface ListDetailCardProps {
 const ListDetailCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
-  item: { index, titleBody, titleBottom, titleTop },
+  item: { order: index, name: placeName, placeCategory: cateName },
   onRemove,
 }) => {
-  // API
-  const deleteCard = (): any => {
-    // x버튼 누를 시 삭제.
-  }
-
   const modifyCard = (): any => {
     // 수정버튼 누를 시 수정
   }
@@ -129,13 +134,13 @@ const ListDetailCard: React.FC<ListDetailCardProps> = ({
           <Grid item xs={11}>
             <Box sx={TITLE_WRAP}>
               <Typography component="span" sx={TITLE_TOP}>
-                {titleTop}
+                {cateName}
               </Typography>
               <Typography variant="h6" sx={TITLE_BODY}>
-                {titleBody}
+                {placeName}
               </Typography>
               <Typography variant="subtitle2" sx={TITLE_BOTTOM}>
-                {titleBottom}
+                {placeName}
                 <IconButton
                   aria-label="edit this"
                   color="secondary"

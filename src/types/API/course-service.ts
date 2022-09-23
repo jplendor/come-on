@@ -15,7 +15,7 @@ export interface CourseId {
 export interface CourseData {
   title: string
   description: string
-  imgFile: FormData | null
+  imgFile: string
 }
 
 type ErrorCode = 903

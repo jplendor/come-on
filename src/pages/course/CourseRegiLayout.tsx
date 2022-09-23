@@ -4,7 +4,8 @@ import { useLocation } from "react-router-dom"
 
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import { Tab, Box, Typography } from "@mui/material"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
+import { useSelector } from "react-redux"
+import { RootState } from "store"
 import CourseRegiDetail1 from "./CourseRegiDetail1"
 import CourseRegiDetail2 from "./CourseRegiDetail2"
 import CourseRegiDetail3 from "./CourseRegiDetail3"
@@ -23,6 +24,9 @@ interface PageState {
 
 const CourseRegiLayout = (): JSX.Element => {
   const [page, setPage] = React.useState(1)
+  const courseList = useSelector((state: RootState) => {
+    return state.course
+  })
 
   const handleChange = (
     event: React.SyntheticEvent,
@@ -38,10 +42,12 @@ const CourseRegiLayout = (): JSX.Element => {
     }
   }, [pageState])
 
-  const onClickNextStep = (): void => {
-    if (page < 3) {
-      setPage(page + 1)
-    }
+  const onClicKPostCourse = (): void => {
+    // 해당 api로 코스등록을 두번 보냄
+    console.log(courseList)
+    // 상세설명 전송
+
+    // 코스리스트 전송
   }
 
   return (
@@ -60,19 +66,15 @@ const CourseRegiLayout = (): JSX.Element => {
           </TabList>
         </Box>
         <TabPanel value="1">
-          <CourseRegiDetail1 />
+          <CourseRegiDetail1 page={1} setPage={setPage} />
         </TabPanel>
         <TabPanel value="2">
-          <CourseRegiDetail2 />
+          <CourseRegiDetail2 page={2} setPage={setPage} />
         </TabPanel>
         <TabPanel value="3">
           <CourseRegiDetail3 />
         </TabPanel>
       </TabContext>
-      <CourseNextStepButton
-        content={page < 3 ? "다음단계" : "코스등록 완료하기"}
-        onClick={onClickNextStep}
-      />
     </Box>
   )
 }

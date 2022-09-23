@@ -12,12 +12,16 @@ import { Box, Input, Typography, TextField, Fab, Button } from "@mui/material"
 import { PhotoCamera } from "@mui/icons-material"
 import NabvigationBar from "components/common/NavigationBar"
 import Guide from "components/common/Guide"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import {
-  useAddCourseMutation,
+  setCourseDetail,
   useGetCourseListQuery,
 } from "features/course/courseSlice"
 import { CourseData } from "types/API/course-service"
+
+import { useSelector, useDispatch } from "react-redux"
+import { RootState } from "store"
 
 interface NavigationBarProps {
   currentPage: number
@@ -66,15 +70,19 @@ const IconContainer = styled(Box)(() => ({
   right: "25px",
 }))
 
-const CourseRegiDetail = (): JSX.Element => {
-  const [currentPage, setCurrentPage] = useState<number>(1)
+interface pageProps {
+  page: number
+  setPage: Dispatch<SetStateAction<number>>
+}
+
+const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   const selectFile = useRef<any>()
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
 
   const [changeInput, setChangeInput] = useState<CourseData>({
     title: "",
     description: "",
-    imgFile: null,
+    imgFile: "",
   })
 
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -107,34 +115,25 @@ const CourseRegiDetail = (): JSX.Element => {
     return formData
   }
   // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
-  const [addCourse, { data: result, isSuccess }] = useAddCourseMutation()
-
+  const dispatch = useDispatch()
   const { data, error, isLoading } = useGetCourseListQuery()
-
-  // 클릭을 두번해야 전송되는 오류가 있음
-  const onClickHandle = async (): Promise<boolean> => {
-    try {
-      const submitData = makeFormData()
-      await addCourse(submitData).unwrap()
-    } catch (err) {
-      console.log(err)
-    }
-
-    return Promise.resolve(true)
-  }
-  if (isSuccess) {
-    // 리턴받은 코스의 상태
-    console.log("courseId", result)
+  const courseDetail = useSelector((state: RootState) => {
+    return state.course.courseDetails
+  })
+  // 페이지를 이동시키고 데이터를 전역상태로 저장
+  const onClicKNextPage = (): void => {
+    dispatch(
+      setCourseDetail({
+        title: changeInput.title,
+        description: changeInput.description,
+        imgFile: String(imageSrc),
+      })
+    )
+    setPage(page + 1)
   }
 
   return (
     <>
-      <NabvigationBar
-        currentPage={1}
-        setCurrentPage={setCurrentPage}
-        minPage={1}
-        maxPage={3}
-      />
       <Guide guideStr=" 코스정보를 입력해 주세요!" />
       {/*  */}
       <ImgContainer>
@@ -189,9 +188,7 @@ const CourseRegiDetail = (): JSX.Element => {
             onChange={onChangeInput}
           />
         </DetailContainer>
-        <Button variant="contained" onClick={onClickHandle}>
-          코스등록 테스트 버튼
-        </Button>
+        <CourseNextStepButton content="다음단계" onClick={onClicKNextPage} />
       </FormBox>
     </>
   )

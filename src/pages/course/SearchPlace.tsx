@@ -36,18 +36,17 @@ const PaginationStyle = {
   display: "flex",
   justifyContent: "center",
 }
+
 interface ListDetailCardProp {
-  index: number
-  address_name: string
-  category_group_name: string
-  category_name: string
-  place_name: string
-  place_url: string
-  road_address_name: string
-  x: string
-  y: string
-  content: string
-  phone: string
+  index: number // 카드의 인덱스 넘버 - order
+  address_name: string // 주소
+  category_name: string // 플레이스 카테고리 -placeCategory
+  place_name: string // 장소 이름           -name
+  place_url: string // 플레이스 주소        -
+  x: number // 경도 longitude              -lon
+  y: number // 위도 latitude               -lat
+  description: string // 설명              -description
+  id: number // 카카오 id          -kakaoPlaceId
 }
 
 const MyMarker = (): JSX.Element => {

@@ -35,7 +35,7 @@ const App = (): JSX.Element => {
       <Route path="auth/*" element={<Auth />} />
       <Route path="user/*" element={<User />} />
       <Route path="/course" element={<CourseRegiLayout />} />
-      <Route path="/course/:id" element={<CourseRegiDetail2 />} />
+      <Route path="/course/:id" />
       <Route path="/course/register" element={<SearchPlace />} />
       <Route path="/meeting" />
       <Route path="/meeting/register" element={<MeetingCreate />} />

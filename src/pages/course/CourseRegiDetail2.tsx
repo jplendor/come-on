@@ -5,6 +5,7 @@ import React, {
   useState,
   useRef,
 } from "react"
+import { useSelector, useDispatch } from "react-redux"
 
 import { styled } from "@mui/material/styles"
 import { Box, Typography, IconButton } from "@mui/material"
@@ -18,6 +19,9 @@ import ListDetailCard, {
 } from "components/common/ListDetailCard"
 import { ObjectType } from "typescript"
 import { Link, useLocation } from "react-router-dom"
+import { RootState } from "store"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
+import { addCoursePlace } from "features/course/courseSlice"
 import SearchPlace from "./SearchPlace"
 
 interface NavigationBarProps {
@@ -42,33 +46,30 @@ const ICON_STYLE = {
   margin: "5px 0",
 }
 
-let SAMPLE_DATA2: ListDetailCardProp[] = [
-  {
-    index: 1,
-    titleTop: "음식점",
-    titleBody: "오리파는 집",
-    titleBottom: "부산 토박이만 하는 맛집",
-  },
-  {
-    index: 2,
-    titleTop: "포장마차",
-    titleBody: "39포차",
-    titleBottom: "비가오는 날이면..",
-  },
-  {
-    index: 3,
-    titleTop: "유흥주점",
-    titleBody: "와글와글노래방",
-    titleBottom: "노래방 3시간 먼저가는사람 대머리",
-  },
-]
+interface CoursePlaceState {
+  order: number
+  name: string
+  description: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  kakaoPlaceId: number
+  placeCategory: string
+}
 
-const CourseRegiDetail2 = (): JSX.Element => {
+interface pageProps {
+  page: number
+  setPage: Dispatch<SetStateAction<number>>
+}
+
+const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const selectFile = useRef<any>(null)
   const [isSelected, setSelected] = useState("")
-  const [courseData, setCourseData] =
-    useState<ListDetailCardProp[]>(SAMPLE_DATA2)
+  const placeList = useSelector((state: RootState) => {
+    return state.course.coursePlaces
+  })
+
+  const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
@@ -78,21 +79,26 @@ const CourseRegiDetail2 = (): JSX.Element => {
   }
 
   const onRemove = (index: number): void => {
-    const filteredData = courseData.filter((place) => place.index !== index)
-    SAMPLE_DATA2 = filteredData
+    const filteredData = courseData.filter((place) => place.order !== index)
+    setCourseData(filteredData)
     /* eslint array-callback-return: "error" */
     // eslint-disable-next-line array-callback-return
-    const data = SAMPLE_DATA2.map((place: ListDetailCardProp): any => {
+    const data = courseData.map((place: CoursePlaceState): any => {
       const temp = place
-      if (place.index > index) {
-        temp.index -= 1
+      if (place.order > index) {
+        temp.order -= 1
         return temp
       }
       return temp
     })
 
-    console.log(data)
     setCourseData(data)
+  }
+
+  const dispatch = useDispatch()
+
+  const onClicKNextPage = (): void => {
+    setPage(page + 1)
   }
 
   return (
@@ -115,15 +121,17 @@ const CourseRegiDetail2 = (): JSX.Element => {
         </IconContainer>
         {/* 카카오톡 공유하기 */}
         {/* 버튼만들기 */}
-        {generateComponent(courseData, (item, key) => (
-          <ListDetailCard
-            item={item}
-            key={key}
-            onClick={onClickFocus}
-            isSelected={isSelected}
-            onRemove={onRemove}
-          />
-        ))}
+        {placeList[0].order !== 0 &&
+          generateComponent(courseData, (item, key) => (
+            <ListDetailCard
+              item={item}
+              key={key}
+              onClick={onClickFocus}
+              isSelected={isSelected}
+              onRemove={onRemove}
+            />
+          ))}
+        <CourseNextStepButton content="다음단계" onClick={onClicKNextPage} />
       </MainContainer>
     </>
   )

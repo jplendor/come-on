@@ -18,27 +18,8 @@ import ListDetailCard, {
 } from "components/common/ListDetailCard"
 import { generateComponent } from "utils"
 import KakaoIcon from "assets/nav/KakaoIcon"
-
-const SAMPLE_DATA2: ListDetailCardProp[] = [
-  {
-    index: 1,
-    titleTop: "음식점",
-    titleBody: "오리파는 집",
-    titleBottom: "부산 토박이만 하는 맛집",
-  },
-  {
-    index: 2,
-    titleTop: "포장마차",
-    titleBody: "39포차",
-    titleBottom: "비가오는 날이면..",
-  },
-  {
-    index: 3,
-    titleTop: "유흥주점",
-    titleBody: "와글와글노래방",
-    titleBottom: "노래방 3시간 먼저가는사람 대머리",
-  },
-]
+import { RootState } from "store"
+import { useSelector, useDispatch } from "react-redux"
 
 const SAMPLE_DATA3 = {
   title: "사진찍기 좋은 부산여행 코스",
@@ -84,11 +65,22 @@ const BUTTON_STYLE = {
   fontWeight: "800",
   fontSize: "1rem",
 }
+interface CoursePlaceState {
+  order: number
+  name: string
+  description: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  kakaoPlaceId: number
+  placeCategory: string
+}
 
 const Course = (): any => {
   const [isSelected, setSelected] = useState("")
-  const [courseData, setCourseData] =
-    useState<ListDetailCardProp[]>(SAMPLE_DATA2)
+  const placeList = useSelector((state: RootState) => {
+    return state.course.coursePlaces
+  })
+  const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
@@ -99,7 +91,7 @@ const Course = (): any => {
   }
 
   const onRemove = (index: number): void => {
-    setCourseData(courseData.filter((place) => place.index !== index))
+    setCourseData(courseData.filter((place) => place.order !== index))
   }
 
   // heart버튼 클릭시 이벤트
@@ -144,15 +136,16 @@ const Course = (): any => {
         </KakaoContainer>
         {/* 카카오톡 공유하기 */}
         {/* 버튼만들기 */}
-        {generateComponent(SAMPLE_DATA2, (item, key) => (
-          <ListDetailCard
-            item={item}
-            key={key}
-            onClick={onClickFocus}
-            isSelected={isSelected}
-            onRemove={onRemove}
-          />
-        ))}
+        {placeList[0].order !== 0 &&
+          generateComponent(courseData, (item, key) => (
+            <ListDetailCard
+              item={item}
+              key={key}
+              onClick={onClickFocus}
+              isSelected={isSelected}
+              onRemove={onRemove}
+            />
+          ))}
         {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}
       </MainContainer>
     </>
