@@ -1,24 +1,31 @@
 import React, { useEffect } from "react"
 
+import { Url } from "types/auth"
 import useAuth from "hooks/auth/useAuth"
 import KakaoIcon from "assets/nav/KakaoIcon"
-import { RedirectURLProps, Url } from "types/auth"
+import { Login } from "types/API/auth-service"
 import useNavigateUrl from "hooks/auth/useNavigateUrl"
 import { ThemeLoadingButton } from "components/common/Buttons"
 
+const { KAKAO, REDIRECT_URI } = Login
+const { REACT_APP_CLIENT_URL: CLIENT, REACT_APP_SERVER_URL: SERVER } =
+  process.env
+const KAKAO_LOGIN = `${SERVER}/oauth2/authorize/${KAKAO}?redirect_uri=${CLIENT}${REDIRECT_URI}`
+
 /**
- * @param url 특정페이지로 이동시킬 URL을 입력한다.
- * @returns 특정 페이지로 페이지가 이동된다.
+ * @returns 카카오 로그인 페이지로 리다이렉트 된다.
  */
 
-const RedirectURL = ({ url }: RedirectURLProps): JSX.Element => {
+const KakaoRedirectURL = (): JSX.Element => {
   const { goUrl } = useNavigateUrl()
   const {
     LoginStatus: { isloggedin },
   } = useAuth()
   useEffect(() => {
-    return isloggedin ? goUrl({ url: Url.home }) : window.location.replace(url)
-  }, [isloggedin, goUrl, url])
+    return isloggedin
+      ? goUrl({ url: Url.home })
+      : window.location.replace(KAKAO_LOGIN)
+  }, [isloggedin, goUrl])
 
   return (
     <ThemeLoadingButton
@@ -33,4 +40,4 @@ const RedirectURL = ({ url }: RedirectURLProps): JSX.Element => {
   )
 }
 
-export default RedirectURL
+export default KakaoRedirectURL
