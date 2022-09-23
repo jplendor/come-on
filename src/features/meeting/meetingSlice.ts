@@ -25,6 +25,7 @@ export const meetingApiSlice = api.injectEndpoints({
         url: `/meetings/${meetingId}`,
         method: "GET",
       }),
+      providesTags: ["Meeting"],
     }),
     // 모임 날짜 생성
     createMeetingDate: builder.mutation<
@@ -36,6 +37,7 @@ export const meetingApiSlice = api.injectEndpoints({
         method: "POST",
         body: { date: meetingDate.date },
       }),
+      invalidatesTags: ["Meeting"],
     }),
     // 모임 날짜 삭제
     deleteMeetingDate: builder.mutation<
@@ -46,6 +48,7 @@ export const meetingApiSlice = api.injectEndpoints({
         url: `/meetings/${meetingDate.meetingId}/dates/${meetingDate.dateId}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Meeting"],
     }),
     // 모임 날짜 단건 조회
     getMeetingDate: builder.query<
