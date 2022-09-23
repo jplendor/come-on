@@ -1,5 +1,15 @@
 // Course-Service API Docs 참고
 
+export interface CourseData {
+  title: string
+  description: string
+  imgFile: string
+}
+
+export interface CourseId {
+  courseId: string
+}
+
 /**
  * 코스 등록
  *
@@ -123,3 +133,11 @@ export interface OptionalQueryString {
 export interface GetMyCourseListQS extends OptionalQueryString {
   courseStatus: "COMPLETE" | "WRITING"
 }
+
+export interface CourseDataResponse extends ServerResponse {
+  data: {
+    code: ErrorCode
+    message: CourseData
+  }
+}
+

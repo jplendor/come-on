@@ -1,23 +1,31 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
-const { kakao } = window
+declare global {
+  interface Window {
+    Kakao: any
+  }
+}
 
-const KakaoShare = (): JSX.Element => {
-  const initialKakao = (): boolean => {
-    if (kakao) {
-      // 중복 initialization 방지
+const initialKakao = (kakao: any): boolean => {
+  if (kakao) {
+    // 중복 initialization 방지
 
-      if (!kakao.isInitialized()) {
-        // 두번째 step 에서 가져온 javascript key 를 이용하여 initialize
-        kakao.init(process.env.REACT_APP_KAKAO_KEY)
-      }
+    if (!kakao.isInitialized()) {
+      // 두번째 step 에서 가져온 javascript key 를 이용하여 initialize
+      kakao.init(process.env.REACT_APP_KAKAO_KEY)
     }
-
-    return !!kakao
   }
 
-  const createButtonAndPopup = (): void => {
-    if (initialKakao()) {
+  return !!kakao
+}
+
+const KakaoShare = (): JSX.Element => {
+  const [isInitial, setisInitial] = useState(false)
+  const kakao = window.Kakao
+
+  useEffect(() => {
+    setisInitial(initialKakao(kakao))
+    if (isInitial) {
       kakao.Share.createCustomButton({
         container: "#kakao-link-btn",
         templateId: 82080,
@@ -27,14 +35,10 @@ const KakaoShare = (): JSX.Element => {
         },
       })
     }
-  }
-
-  useEffect(() => {
-    createButtonAndPopup()
-  }, [])
+  }, [isInitial, kakao])
 
   return (
-    <button type="button" id="kakao-link-btn" onClick={createButtonAndPopup}>
+    <button type="button" id="kakao-link-btn">
       카카오톡으로 공유하기
     </button>
   )

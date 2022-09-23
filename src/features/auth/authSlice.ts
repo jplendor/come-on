@@ -59,6 +59,7 @@ export const authApiSlice = api.injectEndpoints({
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
       }),
     }),
     logout: builder.query<ServerResponse, void>({
