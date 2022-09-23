@@ -1,7 +1,7 @@
 import React from "react"
 import Basicframe from "components/common/BasicFrame"
 import CardItems from "components/common/card/CardItems"
-import { MyCoursesResponse } from "types/API/course-service"
+import { MyCoursesRes } from "types/API/course-service"
 import type { QueryProps } from "components/common/BasicFrame"
 import { useGetCourseLikeListQuery } from "features/course/courseSlice"
 import { CardItemSkeletons } from "components/common/card/CardItemSkeleton"
@@ -13,7 +13,7 @@ interface CourseLikedProps {
 }
 
 interface MyCoursesQueryProps extends QueryProps {
-  data: MyCoursesResponse
+  data: MyCoursesRes
 }
 
 const CourseLiked = ({ value }: CourseLikedProps): JSX.Element => {

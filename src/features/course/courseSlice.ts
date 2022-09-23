@@ -6,9 +6,12 @@ import { Server, ServerResponse } from "http"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type {
-  AddCourseResponse,
+  AddCourseRes,
+  CourseListRes,
+  ExceptionRes,
+  GetCourseListQS,
   GetMyCourseListQS,
-  MyCoursesResponse,
+  MyCoursesRes,
   OptionalQueryString,
 } from "types/API/course-service"
 import type { RootState } from "../../app/store"
@@ -106,7 +109,7 @@ export default coursePlaceSlice.reducer
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    addCourse: builder.mutation<AddCourseResponse, FormData>({
+    addCourse: builder.mutation<AddCourseRes | ExceptionRes, FormData>({
       query: (course) => ({
         url: "/courses",
         method: "POST",
@@ -114,14 +117,35 @@ export const courseApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Course"],
     }),
-    getMyCourseList: builder.query<MyCoursesResponse, GetMyCourseListQS>({
+    getCourseList: builder.query<CourseListRes | ExceptionRes, GetCourseListQS>(
+      {
+        query: ({
+          page = "0",
+          size = "10",
+          title = "",
+          lat = "",
+          lng = "",
+        }) => ({
+          url: `/courses?page=${page}&size=${size}&title=${title}&lat=${lat}&lng=${lng}`,
+          method: "GET",
+        }),
+        providesTags: ["Course"],
+      }
+    ),
+    getMyCourseList: builder.query<
+      MyCoursesRes | ExceptionRes,
+      GetMyCourseListQS
+    >({
       query: ({ courseStatus, page = "0", size = "10" }) => ({
         url: `/courses/my?courseStatus=${courseStatus}&page=${page}&size=${size}`,
         method: "GET",
       }),
       providesTags: ["Course"],
     }),
-    getCourseLikeList: builder.query<MyCoursesResponse, OptionalQueryString>({
+    getCourseLikeList: builder.query<
+      MyCoursesRes | ExceptionRes,
+      OptionalQueryString
+    >({
       query: ({ page = "0", size = "10" }) => ({
         url: `/courses/like?page=${page}&size=${size}`,
         method: "GET",
@@ -160,6 +184,7 @@ export const courseApi = api.injectEndpoints({
 
 export const {
   useAddCourseMutation,
+  useGetCourseListQuery,
   useGetMyCourseListQuery,
   useGetCourseLikeListQuery,
   useGetCourseListQuery,

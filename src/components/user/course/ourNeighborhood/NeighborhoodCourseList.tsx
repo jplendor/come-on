@@ -1,25 +1,29 @@
 import React from "react"
 import { Grid, Stack } from "@mui/material"
 
-import CardItem from "components/common/card/CardItem"
+import Basicframe, { QueryProps } from "components/common/BasicFrame"
+import { useGetCourseListQuery } from "features/course/courseSlice"
+import { CardItemSkeletons } from "components/common/card/CardItemSkeleton"
+import CardItems from "components/common/card/CardItems"
+import { CourseListRes } from "types/API/course-service"
+import useGeolocation from "hooks/geolocation/useGeolocation"
 
-interface NeighborhoodCourseProps {
-  info: {
-    img: {
-      src: string
-      alt: string
-    }
-    isLike: boolean
-    texts: {
-      title: string
-      userName: string
-      time: string
-    }
-  }
+interface CourseListQueryProps extends QueryProps {
+  data: CourseListRes
 }
-const NeighborhoodCourseList = ({
-  info,
-}: NeighborhoodCourseProps): JSX.Element => {
+
+const NeighborhoodCourseList = (): JSX.Element => {
+  // const {
+  //   geoState: {
+  //     info: { lat, lng },
+  //   },
+  // } = useGeolocation()
+
+  const getCourseListQuery = useGetCourseListQuery({
+    size: 40,
+  }) as CourseListQueryProps
+  const Content = Basicframe(getCourseListQuery, [CardItemSkeletons, CardItems])
+
   return (
     <Grid
       item
@@ -36,15 +40,10 @@ const NeighborhoodCourseList = ({
       <Stack
         spacing={2}
         sx={{
-          // padding: "21px",
           py: "21px",
         }}
       >
-        <CardItem info={info} />
-        <CardItem info={info} />
-        <CardItem info={info} />
-        <CardItem info={info} />
-        <CardItem info={info} />
+        {Content}
       </Stack>
     </Grid>
   )

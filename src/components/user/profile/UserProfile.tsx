@@ -2,7 +2,7 @@ import React from "react"
 import { Grid } from "@mui/material"
 
 import Basicframe, { QueryProps } from "components/common/BasicFrame"
-import { MydetailResponse } from "types/API/user-service"
+import { MydetailRes } from "types/API/user-service"
 import { useMyDetialQuery } from "features/user/userSlice"
 
 import Profile from "./Profile"
@@ -10,7 +10,7 @@ import ProfileHeader from "./ProfileHeader"
 import ProfileSkeleton from "./ProfileSkeleton"
 
 interface MyDetialQueryProps extends QueryProps {
-  data: MydetailResponse
+  data: MydetailRes
 }
 
 const UserProfile = (): JSX.Element => {

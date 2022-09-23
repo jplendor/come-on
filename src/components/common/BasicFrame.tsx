@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
 
-interface ServerResponse {
+interface ServerRes {
   responseTime: any
   code: any
   data: any
@@ -14,7 +14,7 @@ export interface QueryProps {
 }
 
 interface BasicframeProps extends QueryProps {
-  data: ServerResponse
+  data: ServerRes
 }
 
 const Basicframe: <T extends BasicframeProps>(
