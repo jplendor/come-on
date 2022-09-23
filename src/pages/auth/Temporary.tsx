@@ -24,6 +24,8 @@ const Temporary = (): JSX.Element => {
       <button type="button" onClick={() => loggedInDispatch()}>
         권한 얻기
       </button>
+      <br />
+      <Link to="/meeting/register">모임 생성 페이지 가기</Link>
       {isloggedin ? (
         <div>
           <p>로그인됨</p>
