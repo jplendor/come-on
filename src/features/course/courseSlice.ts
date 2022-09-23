@@ -5,15 +5,13 @@ import { api } from "features/api/apiSlice"
 import { Server, ServerResponse } from "http"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
-import type { RootState } from "../../app/store"
-
-import { api } from "features/api/apiSlice"
 import type {
   AddCourseResponse,
   GetMyCourseListQS,
   MyCoursesResponse,
   OptionalQueryString,
 } from "types/API/course-service"
+import type { RootState } from "../../app/store"
 
 interface CourseId {
   courseId: number

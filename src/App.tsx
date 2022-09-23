@@ -4,8 +4,7 @@ import { Route, Routes } from "react-router-dom"
 
 import Auth from "pages/auth/Auth"
 import User from "pages/user/User"
-import MeetingCreate from "pages/meeting/MeetingCreate"
-import NeighborhoodCourse from "pages/Course/NeighborhoodCourse"
+import NeighborhoodCourse from "pages/course/NeighborhoodCourse"
 
 // 모임
 import MeetingCreate from "pages/meeting/MeetingCreate"

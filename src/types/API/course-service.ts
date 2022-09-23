@@ -134,10 +134,9 @@ export interface GetMyCourseListQS extends OptionalQueryString {
   courseStatus: "COMPLETE" | "WRITING"
 }
 
-export interface CourseDataResponse extends ServerResponse {
-  data: {
-    code: ErrorCode
-    message: CourseData
-  }
-}
-
+// export interface CourseDataResponse extends ServerResponse {
+//   data: {
+//     code: ErrorCode
+//     message: CourseData
+//   }
+// }

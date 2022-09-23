@@ -5,7 +5,6 @@ import { CookiesProvider } from "react-cookie"
 import { BrowserRouter } from "react-router-dom"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
-import "./index.css"
 
 import theme from "theme"
 import checkLoginStatus from "features/auth/checkLoginStatus"
