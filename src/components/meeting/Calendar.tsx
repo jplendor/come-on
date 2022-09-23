@@ -1,118 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { Box, Dialog, DialogTitle, Grid, Avatar, Button } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
-
+import { Box, Button } from "@mui/material"
 import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "utils"
-
-interface SelectedDateModalProps {
-  open: boolean
-  onClose: () => void
-  meetingId: number
-  meetingDates: Array<any>
-  selectedDate: string
-  totalMemberNumber: number
-}
-
-interface DateInfoType {
-  id: number | null
-  date: string
-  userCount: number
-  dateStatus: string | null
-  dateUsers: Array<any>
-}
-
-const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
-  const {
-    open,
-    onClose,
-    meetingId,
-    meetingDates,
-    selectedDate,
-    totalMemberNumber,
-  } = props
-
-  const [dateInfo, setDateInfo] = useState<DateInfoType>()
-
-  const DIALOG_TITLE = {
-    backgroundColor: "#8E8E8E",
-    color: "#FFFFFF",
-  }
-
-  const GRID_ITEM = {
-    display: "flex",
-  }
-
-  const hasDateId = useCallback((): boolean => {
-    const filteredMeetingDates = meetingDates.filter(
-      (item: any) => item.date === selectedDate
-    )
-
-    return filteredMeetingDates.length !== 0
-  }, [meetingDates, selectedDate])
-
-  useEffect(() => {
-    if (hasDateId()) {
-      // 날짜 단건 조회
-      // get("/meetings/{meetingId}/dates/{dateId}")
-      // 임시 데이터
-      setDateInfo({
-        id: 10,
-        date: "2022-06-30",
-        userCount: 2,
-        dateStatus: "UNFIXED",
-        dateUsers: [
-          {
-            id: 10,
-            nickname: "마라탕마스터",
-            imageLink:
-              "https://cdn.pixabay.com/photo/2017/11/19/07/30/girl-2961959_960_720.jpg",
-            meetingRole: "HOST",
-          },
-          {
-            id: 11,
-            nickname: "옥수수수염남",
-            imageLink:
-              "https://cdn.pixabay.com/photo/2016/11/21/12/42/beard-1845166_960_720.jpg",
-            meetingRole: "PARTICIPANT",
-          },
-        ],
-      })
-    } else {
-      setDateInfo({
-        id: null,
-        date: selectedDate,
-        userCount: 0,
-        dateStatus: null,
-        dateUsers: [],
-      })
-    }
-  }, [selectedDate, hasDateId])
-
-  return (
-    <Dialog open={open} onClose={onClose}>
-      {dateInfo && (
-        <>
-          <DialogTitle sx={DIALOG_TITLE}>{dateInfo.date}</DialogTitle>
-          <Grid container>
-            {dateInfo.userCount === 0
-              ? "해당 날짜를 선택한 멤버가 없습니다"
-              : generateComponent(dateInfo.dateUsers, (data, key) => (
-                  <Grid item key={key} sx={GRID_ITEM} xs={12}>
-                    <Avatar alt="프로필 이미지" src={data.imageLink} />
-                    <Box>{data.nickname}</Box>
-                  </Grid>
-                ))}
-          </Grid>
-          <Box>{`가능 인원 : ${dateInfo.userCount} / ${totalMemberNumber}`}</Box>
-        </>
-      )}
-
-      <Button variant="contained" onClick={onClose}>
-        닫기
-      </Button>
-    </Dialog>
-  )
-}
+import {
+  useCreateMeetingDateMutation,
+  useDeleteMeetingDateMutation,
+} from "features/meeting/meetingSlice"
+import SelectedDateModal from "./SelectedDateModal"
 
 interface dateInfo {
   date: number
@@ -142,8 +36,14 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
   const totalMemberNumber = meetingUsers.length
   const [allDates, setAllDates] = useState<CalendarData[]>([])
   const [open, setOpen] = useState(false)
-  const [selectedDate, setSelectedDate] = useState("")
+  const [targetDateInfo, setTargetDateInfo] = useState({
+    date: "",
+    dateId: 0,
+  })
   const [mode, setMode] = useState<Mode>(Mode.View)
+
+  const [createMeetingDate] = useCreateMeetingDateMutation()
+  const [deleteMeetingDate] = useDeleteMeetingDateMutation()
 
   const theme = useTheme()
 
@@ -269,7 +169,9 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     [meetingDates, totalMemberNumber]
   )
 
-  const handleDateClick = (e: React.MouseEvent<HTMLDivElement>): void => {
+  const handleDateClick = async (
+    e: React.MouseEvent<HTMLDivElement>
+  ): Promise<void> => {
     if (!(e.target instanceof HTMLDivElement)) {
       return
     }
@@ -278,14 +180,47 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     }
 
     const targetDate = e.target.dataset.date
+    const filteredMeetingDates = meetingDates.filter(
+      (item: any) => item.date === targetDate
+    )
 
     if (mode === Mode.Select) {
-      // 날짜 생성
-      // post("/meetings/{meetingId}/dates")
+      const isSelected =
+        filteredMeetingDates.length === 0
+          ? false
+          : filteredMeetingDates[0].isSelected
+
+      try {
+        let res
+
+        if (isSelected) {
+          res = await deleteMeetingDate({
+            meetingId,
+            dateId: filteredMeetingDates[0].id,
+          }).unwrap()
+        } else {
+          res = await createMeetingDate({
+            meetingId,
+            date: targetDate,
+          }).unwrap()
+        }
+
+        if (res.code !== "SUCCESS") {
+          throw new Error(`error code: ${res.code}`)
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(error.message)
+        } else {
+          alert(`unexpected error: ${error}`)
+        }
+      }
     }
 
     if (mode === Mode.View) {
-      setSelectedDate(targetDate)
+      const dateId =
+        filteredMeetingDates.length === 0 ? 0 : filteredMeetingDates[0].id
+      setTargetDateInfo({ date: targetDate, dateId })
       setOpen(true)
     }
   }
@@ -345,9 +280,8 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
           open={open}
           onClose={handleClose}
           meetingId={meetingId}
-          meetingDates={meetingDates}
-          selectedDate={selectedDate}
-          totalMemberNumber={totalMemberNumber}
+          targetDateInfo={targetDateInfo}
+          totalMemberNumber={meetingUsers.length}
         />
       </Box>
       <Button
