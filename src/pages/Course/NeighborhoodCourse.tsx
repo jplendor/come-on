@@ -26,7 +26,7 @@ const NeighborhoodCourse = (): JSX.Element => {
     // 콘텐츠 영역 #1
     <Grid container component="main" direction="column" minHeight={1}>
       <Header />
-      <CourseList info={testPorsp} />
+      <CourseList />
     </Grid>
   )
 }
