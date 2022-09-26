@@ -11,6 +11,16 @@ export interface CourseId {
 }
 
 /**
+ * 코스 좋아요 등록 및 취소
+ *
+ * POST /courses/{courseId}/like
+ */
+
+interface LikeCourse {
+  courseId: number
+}
+
+/**
  * 코스 등록
  *
  * POST /courses
@@ -70,8 +80,8 @@ interface SliceResponse<T> {
   last: boolean
 }
 
-export type MyCoursesSliceResponse = SliceResponse<MyCourses>
-export type CourseListSliceResponse = SliceResponse<CourseList>
+export type MyCoursesSliceRes = SliceResponse<MyCourses>
+export type CourseListSliceRes = SliceResponse<CourseList>
 
 /**
  * 900 : 죄송합니다. 서버 내부 오류입니다.
@@ -128,12 +138,17 @@ enum Code {
 export interface ServerRes {
   responseTime: string
   code: Code
-  data: Exception | MyCoursesSliceResponse | CourseListSliceResponse | AddCourse
+  data:
+    | Exception
+    | MyCoursesSliceRes
+    | CourseListSliceRes
+    | AddCourse
+    | LikeCourse
 }
 
 // GET /courses/my & GET /courses/like
 export interface MyCoursesRes extends ServerRes {
-  data: MyCoursesSliceResponse
+  data: MyCoursesSliceRes
 }
 
 // POST /courses
@@ -143,7 +158,12 @@ export interface AddCourseRes extends ServerRes {
 
 // GET /courses
 export interface CourseListRes extends ServerRes {
-  data: CourseListSliceResponse
+  data: CourseListSliceRes
+}
+
+// POST /courses/{courseId}/like
+export interface LikeCourseRes extends ServerRes {
+  data: LikeCourse
 }
 
 export interface ExceptionRes extends ServerRes {

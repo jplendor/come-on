@@ -12,6 +12,7 @@ interface CardItemProps {
       alt: string
     }
     isLike: boolean
+    courseId: number
     texts: {
       title: string
       userName: string
@@ -21,7 +22,7 @@ interface CardItemProps {
 }
 
 const CardItem = ({
-  info: { img, isLike, texts },
+  info: { img, isLike, texts, courseId },
 }: CardItemProps): JSX.Element => {
   return (
     <Box
@@ -33,8 +34,8 @@ const CardItem = ({
     >
       <ImageList cols={1} sx={{ m: 0 }}>
         <ThemeImageListItem>
-          <CardLikeButton isLike={isLike} />
-          <img src={img.src} alt={img.alt} loading="lazy" />
+          <CardLikeButton isLike={isLike} courseId={courseId} />
+          <img src={img.src} alt={img.alt} />
           <CardTexts texts={texts} />
         </ThemeImageListItem>
       </ImageList>

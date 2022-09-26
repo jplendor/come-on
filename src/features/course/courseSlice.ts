@@ -1,26 +1,21 @@
-/* eslint-disable import/prefer-default-export */
-import { fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { CourseData } from "types/API/course-service"
+/* eslint-disable @typescript-eslint/no-unused-vars */ // <-- 임시
+
 import { api } from "features/api/apiSlice"
-import { Server, ServerResponse } from "http"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type {
+  MyCoursesRes,
   AddCourseRes,
-  CourseListRes,
   ExceptionRes,
+  CourseListRes,
   GetCourseListQS,
   GetMyCourseListQS,
-  MyCoursesRes,
   OptionalQueryString,
+  LikeCourseRes,
 } from "types/API/course-service"
-import type { RootState } from "../../app/store"
 
 interface CourseId {
   courseId: number
-}
-interface CourseIdResponse extends ServerResponse {
-  data: CourseId
 }
 
 interface CoursePlaceState {
@@ -105,7 +100,6 @@ export const coursePlaceSlice = createSlice({
 
 export const { addCoursePlace, setCourseDetail } = coursePlaceSlice.actions
 export default coursePlaceSlice.reducer
-// 사실은 서비스 느낌
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -152,19 +146,21 @@ export const courseApi = api.injectEndpoints({
       }),
       providesTags: ["Course"],
     }),
-    getCourseList: builder.query<ServerResponse, void>({
-      query: () => ({
-        url: "/courses",
+    clickLikeCourse: builder.mutation<LikeCourseRes | ExceptionRes, number>({
+      query: (courseId) => ({
+        url: `/courses/${courseId}/like`,
+        method: "POST",
       }),
+      invalidatesTags: ["Course"],
     }),
-    addCourseDetail: builder.mutation<CourseIdResponse, FormData>({
+    addCourseDetail: builder.mutation<any, FormData>({
       query: (data) => ({
         url: "/courses",
         method: "POST",
         body: data,
       }),
     }),
-    addCoursePlace: builder.mutation<ServerResponse, any>({
+    addCoursePlace: builder.mutation<CourseListRes, any>({
       query: (data) => ({
         url: `/courses/${data.courseId}/course-places/batch`,
         method: "POST",
@@ -187,7 +183,7 @@ export const {
   useGetCourseListQuery,
   useGetMyCourseListQuery,
   useGetCourseLikeListQuery,
-  useGetCourseListQuery,
+  useClickLikeCourseMutation,
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
 } = courseApi

@@ -2,12 +2,12 @@ import React from "react"
 import { join, pipe, split } from "@fxts/core"
 
 import { generateComponent } from "utils"
-import { MyCoursesSliceResponse } from "types/API/course-service"
+import { MyCoursesSliceRes } from "types/API/course-service"
 
 import CardItem from "./CardItem"
 
 interface CardItemsProps {
-  info: MyCoursesSliceResponse
+  info: MyCoursesSliceRes
 }
 
 const conversionToString = (arg0: string): string =>
@@ -16,7 +16,10 @@ const conversionToString = (arg0: string): string =>
 const CardItems = ({ info: { contents } }: CardItemsProps): JSX.Element => {
   const Component = generateComponent(
     contents,
-    ({ imageUrl, title, userLiked, writer, lastModifiedDate }, key) => (
+    (
+      { imageUrl, title, userLiked, writer, lastModifiedDate, courseId },
+      key
+    ) => (
       <CardItem
         key={key}
         info={{
@@ -25,6 +28,7 @@ const CardItems = ({ info: { contents } }: CardItemsProps): JSX.Element => {
             alt: title,
           },
           isLike: userLiked,
+          courseId,
           texts: {
             title,
             userName: writer.nickname,
