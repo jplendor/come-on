@@ -1,6 +1,16 @@
 // User-Service API Docs 참고
 
 /**
+ * 프로필 이미지 저장
+ *
+ * POST /profile-image
+ */
+export interface SaveProfileImage {
+  profileImgId: number
+  imageUrl: string
+}
+
+/**
  * 회원 정보 수정
  *
  * PATCH /users/me
@@ -75,7 +85,7 @@ enum Code {
 export interface ServerRes {
   responseTime: string
   code: Code
-  data: Exception | Mydetail | ModifyName
+  data: Exception | Mydetail | ModifyName | SaveProfileImage
 }
 
 // GET /users/me
@@ -86,6 +96,11 @@ export interface MydetailRes extends ServerRes {
 // PATCH /users/me
 export interface ModifyNameRes extends ServerRes {
   data: ModifyName
+}
+
+// POST /profile-image
+export interface SaveProfileImageRes extends ServerRes {
+  data: SaveProfileImage
 }
 
 export interface ExceptionRes extends ServerRes {
