@@ -48,6 +48,20 @@ const SELECTED_CARD = {
 const ICON_STYLE = {
   // relative로 상위 컴포넌트의 우측에 배정되게 할 것.
 }
+// exaddress_name: "강원 속초시 교동 799-173"
+// {category_group_code: "FD6"
+// category_group_name: "음식점"
+// category_name: "음식점 > 간식 > 제과,베이커리"
+// distance: ""
+// id: "26634072"
+// phone: "033-633-4826"
+// place_name: "봉브레드"
+// place_url: "http://place.map.kakao.com/26634072"
+// road_address_name: "강원 속초시 동해대로 4344-1"
+// x: "128.568467688816"
+// y: "38.2029116267752"
+// content : "설명"
+// }
 
 interface ListDetailCardProp {
   index: number // 카드의 인덱스 넘버 - order
@@ -69,7 +83,7 @@ interface ListDetailCardProps {
 //
 
 /* eslint camelcase: ["error", {properties: "never"}] */
-const SearchCard: React.FC<ListDetailCardProps> = ({
+const DisplayCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
   item,
@@ -154,4 +168,4 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   )
 }
 
-export default SearchCard
+export default DisplayCard

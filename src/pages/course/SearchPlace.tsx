@@ -1,21 +1,8 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-  ReactElement,
-} from "react"
+import React, { useEffect, useState, useRef } from "react"
 
 import ReactDOMServer from "react-dom/server"
-import {
-  Input,
-  InputAdornment,
-  TextField,
-  Box,
-  Pagination,
-} from "@mui/material"
-import { Search, Edit as EditIcon } from "@mui/icons-material"
+import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
+import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { generateComponent } from "utils"
 import SearchCard from "components/common/card/SearchCard"

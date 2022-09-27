@@ -17,12 +17,9 @@ import MapContainer from "components/common/MapContainer"
 import ListDetailCard, {
   ListDetailCardProp,
 } from "components/common/ListDetailCard"
-import { ObjectType } from "typescript"
-import { Link, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-import { addCoursePlace } from "features/course/courseSlice"
-import SearchPlace from "./SearchPlace"
 
 interface NavigationBarProps {
   currentPage: number
@@ -52,8 +49,8 @@ interface CoursePlaceState {
   description: string
   lng: number // 경도 x
   lat: number // 위도 y
-  kakaoPlaceId: number
-  placeCategory: string
+  apiId: number
+  category: string
 }
 
 interface pageProps {

@@ -1,15 +1,8 @@
-import React, {
-  useState,
-  useRef,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-} from "react"
-import { JsxElement } from "typescript"
-import MapContainer from "components/common/MapContainer"
+import React, { useState, useRef, useEffect } from "react"
+
 import { styled } from "@mui/material/styles"
 
-import { Box, Button } from "@mui/material"
+import { Box } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import { useSelector, useDispatch } from "react-redux"
@@ -32,25 +25,21 @@ interface placeProps {
       lat: number
       lng: number
       order: number
-      kakaoPlaceId: number
-      placeCategory: string
+      apiId: number
+      category: string
     }
   ]
   toModify: [
     {
-      coursePlaceId: number
-      name: string
+      id: number | undefined
       description: string
-      lat: number
-      lng: number
       order: number
-      kakaoPlaceId: number
-      placeCategory: string
+      category: string
     }
   ]
   toDelete: [
     {
-      coursePlaceId: number
+      id: number | undefined
     }
   ]
 }
@@ -83,12 +72,23 @@ const b64toBlob = (
   return myBlob
 }
 
+const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
+  const arr = dataUrl.split(",")
+  if (arr.length < 2) {
+    return undefined
+  }
+  const mimeArr = arr[0].match(/:(.*?);/)
+  if (!mimeArr || mimeArr.length < 2) {
+    return undefined
+  }
+  const mime = mimeArr[1]
+  const buff = Buffer.from(arr[1], "base64")
+  return new File([buff], filename, { type: mime })
+}
+
 // 코스등록 전 미리보기 페이지
 const CourseRegiDetail3 = (): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
-  const onClicKPostCourse = (): void => {
-    console.log("전송성공")
-  }
   const ImgContainer = styled(Box)(() => ({
     margin: "0",
     padding: "0",
@@ -120,38 +120,50 @@ api연동부분
 
   const [addCourseDetail, { data: result, isSuccess }] =
     useAddCourseDetailMutation()
-
+  const [imgSrc, setImgSrc] = useState<string | File>()
   const [addCoursePlace, { data: courseResult }] = useAddCoursePlaceMutation()
-
-  const { data, error, isLoading } = useGetCourseListQuery()
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })
 
-  const base64toImg = (): void => {
-    console.log(courseDetail.imgFile)
+  const base64toImg = (blobImgFile: Blob): File => {
+    const myFile = new File([blobImgFile], "모임이미지", { type: "image/jpeg" })
+    return myFile
   }
 
+  const [onSubmit, setOnSubmit] = useState<boolean>(true)
+
   // 제출용 폼데이터 만드는 함수
+  // base64 => File => blob으로 만들었다.
   const makeFormData = (blobImgFile: Blob): FormData => {
     const formData = new FormData()
     formData.append("title", courseDetail.title)
     formData.append("description", courseDetail.description)
-    formData.append("imgFile", blobImgFile)
+    const myfile = dataUrlToFile(courseDetail.imgFile, "임시데이터.png")
+
+    if (myfile !== undefined) {
+      myfile?.arrayBuffer().then((arrayBuffer) => {
+        const blob = new Blob([new Uint8Array(arrayBuffer)], {
+          type: myfile.type,
+        })
+        console.log(blob)
+      })
+
+      formData.append("imgFile", myfile)
+    }
+    console.log(myfile)
 
     return formData
   }
-
-  let courseId: number | undefined = 0
+  let courseId: number | undefined
   // async (): Promise<boolean>
   // 코스 디테일 전송하는 함수
   const submitCourseDetail = async (): Promise<boolean> => {
     const { imgFile } = courseDetail
     const base64str = imgFile.split(",")
-    const imgType = base64str[0]
-    const base64 = base64str[1]
-    const imageBlob = b64toBlob(base64, imgType)
-
+    const contentTypeProps = base64str[0]
+    const b64Data = base64str[1]
+    const imageBlob = b64toBlob(b64Data, contentTypeProps)
     try {
       const submitData = makeFormData(imageBlob)
       await addCourseDetail(submitData)
@@ -172,35 +184,41 @@ api연동부분
   })
 
   const initialPlace = {
-    order: 0,
+    order: 1,
     name: "newName",
     description: "값을 입력해주세요",
     lng: 38.05248142233915, // 경도 x
     lat: 127.65930674808553, // 위도 y
-    kakaoPlaceId: 12346,
-    placeCategory: "김밥집",
+    apiId: 12346,
+    category: "ETC",
   }
 
   const postData = {
     toSave: [initialPlace],
-    toModify: [initialPlace],
-    toDelete: [{ coursePlaceId: 0 }],
+    // toModify: [{ ...initialPlace, coursePlaceId: courseId }],
+    // toDelete: [{ coursePlaceId: courseId }],
   }
 
-  const [onSubmit, setOnSubmit] = useState(true)
   // // 장소리스트 전송하는 함수
   const submitPlaceList = async (): Promise<boolean> => {
     // map으로 toSave배열에 코스 추가하기
+    // toSave 전처리
     postData.toSave.pop() // 첫번쨰 데이터 삭제
+    const submitData = postData
     courseList.map((place) => postData.toSave.push(place))
+    console.log(postData)
+    // toModify전처리
 
-    // postData.toModify.map((modifyData) => {
-    //   const newItem = { ...modifyData, coursePlaceId: courseId }
-    //   postData.toModify = newItem
+    // for (let i = 0; i < postData.toModify.length; i += 1) {
+    //   postData.toModify[i].coursePlaceId = 2
+    // }
 
+    // for (let i = 0; i < postData.toDelete.length; i += 1) {
+    //   postData.toDelete[i].coursePlaceId = courseId
+    // }
     await addCoursePlace({ courseId, postData })
 
-    await console.log(postData)
+    // console.log(newPostData)
 
     return Promise.resolve(true)
   }
@@ -208,7 +226,9 @@ api연동부분
   useEffect(() => {
     const submit = async (): Promise<boolean> => {
       await submitCourseDetail()
-      await submitPlaceList()
+      if (isSuccess) {
+        await submitPlaceList()
+      }
       return Promise.resolve(true)
     }
 
@@ -231,12 +251,7 @@ api연동부분
       <div>2022-09-15</div>
 
       <ImgContainer>
-        <img
-          src="https://pbs.twimg.com/media/DVT-AesUQAATx65.jpg"
-          width="100%"
-          height="100%"
-          alt="img"
-        />
+        <img src={courseDetail.imgFile} width="100%" height="100%" alt="img" />
       </ImgContainer>
       <div>코스설명</div>
       <div>이 코스에선 귀여운 뱁새를 볼 수 있습니다.</div>
