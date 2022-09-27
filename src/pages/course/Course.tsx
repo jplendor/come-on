@@ -155,7 +155,7 @@ const Course = (): any => {
       <ImgContainer>
         <img src={imgSrc} width="100%" height="100%" alt="img" />
       </ImgContainer>
-      <MainContainer>
+      <MainContainer style={{ margin: "auto 20px" }}>
         <TitleContainer>
           <Box className="Title" sx={TITLE}>
             <Typography variant="h5" sx={FONT_TITLE}>
