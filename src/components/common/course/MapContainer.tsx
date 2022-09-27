@@ -109,7 +109,8 @@ const MapContainer = ({ selectedNumber }: MapContainerProps): JSX.Element => {
       style={{
         width: "100%",
         height: "180px",
-        margin: "16px auto",
+        margin: "0px",
+        padding: "0px",
         borderRadius: "8px",
       }}
     />

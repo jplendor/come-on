@@ -6,7 +6,7 @@ import { Box, Typography } from "@mui/material"
 import { AccountCircleOutlined, Favorite, DateRange } from "@mui/icons-material"
 
 import { styled } from "@mui/material/styles"
-import MapContainer from "components/common/MapContainer"
+import MapContainer from "components/common/course/MapContainer"
 import KakaoShare from "components/KakaoShare"
 import { generateComponent } from "utils"
 import KakaoIcon from "assets/nav/KakaoIcon"
@@ -108,9 +108,6 @@ const Course = (): any => {
   const [isSelected, setSelected] = useState("")
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
-  const placeList = useSelector((state: RootState) => {
-    return state.course.coursePlaces
-  })
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
@@ -200,7 +197,7 @@ const Course = (): any => {
               onClick={onClickFocus}
               isSelected={isSelected}
               onRemove={onRemove}
-              maxLan={courseData.length}
+              maxLen={courseData.length}
             />
           ))}
         {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
-import { styled, Tab, Box } from "@mui/material"
+import { styled, Tab, Box, IconButton } from "@mui/material"
 import { KeyboardArrowLeft, Close } from "@mui/icons-material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 
@@ -54,6 +54,11 @@ const CourseRegiLayout = (): JSX.Element => {
     return state.course
   })
 
+  const onClickPrev = (): void => {
+    console.log(page)
+    if (page !== 1) setPage(page - 1)
+  }
+
   const handleChange = (
     event: React.SyntheticEvent,
     newValue: number
@@ -85,12 +90,11 @@ const CourseRegiLayout = (): JSX.Element => {
             aria-label="tab Navigation"
             sx={NAVBAR}
           >
+            <IconButton sx={ICONBOXLEFT} onClick={onClickPrev}>
+              <KeyboardArrowLeft fontSize="small" sx={ICON_STYLE} />
+            </IconButton>
             <Tab
-              label={
-                <Box sx={ICONBOXLEFT}>
-                  <KeyboardArrowLeft fontSize="small" sx={ICON_STYLE} />
-                </Box>
-              }
+              label=""
               value="1"
               sx={{
                 width: "33.3%",
@@ -132,7 +136,7 @@ const CourseRegiLayout = (): JSX.Element => {
           <CourseRegiDetail2 page={2} setPage={setPage} />
         </TabPanel>
         <TabPanel value="3">
-          <CourseRegiDetail3 />
+          <CourseRegiDetail3 page={3} setPage={setPage} />
         </TabPanel>
       </TabContext>
     </Box>

@@ -7,7 +7,6 @@ import {
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { Close as CloseIcon, Edit as EditIcon } from "@mui/icons-material"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -160,33 +159,37 @@ interface ListDetailCardProps {
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: string
   onRemove: (index: number) => void
-  maxLan: number
+  maxLen: number
 }
 
 const ListDetailCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
   item: { order: index, name: placeName, category, description },
-  maxLan,
+  maxLen,
   onRemove,
 }) => {
   const modifyCard = (): any => {
     // 수정버튼 누를 시 수정
   }
-  console.log(maxLan)
+
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={2} sx={NUMBERING_BOX}>
-        <Box
-          sx={
-            // eslint-disable-next-line no-nested-ternary
-            index === 1
-              ? LINE_FIRST
-              : index === maxLan
-              ? LINE_LAST
-              : LINE_MIDDLE
-          }
-        />
+        {maxLen !== 1 ? (
+          <Box
+            sx={
+              // eslint-disable-next-line no-nested-ternary
+              index === 1
+                ? LINE_FIRST
+                : index === maxLen
+                ? LINE_LAST
+                : LINE_MIDDLE
+            }
+          />
+        ) : (
+          ""
+        )}
         <ThemeCardNumbering
           align="center"
           sx={isSelected === String(index) ? SELECTED_NUM_CARD : CARD_NUMBERING}

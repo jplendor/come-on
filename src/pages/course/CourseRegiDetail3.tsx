@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  SetStateAction,
+  Dispatch,
+} from "react"
 
 import { styled } from "@mui/material/styles"
 
@@ -85,9 +91,12 @@ const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
   const buff = Buffer.from(arr[1], "base64")
   return new File([buff], filename, { type: mime })
 }
-
+interface pageProps {
+  page: number
+  setPage: Dispatch<SetStateAction<number>>
+}
 // 코스등록 전 미리보기 페이지
-const CourseRegiDetail3 = (): JSX.Element => {
+const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
   const ImgContainer = styled(Box)(() => ({
     margin: "0",
@@ -96,6 +105,8 @@ const CourseRegiDetail3 = (): JSX.Element => {
     height: "180px",
     objectFit: "cover",
   }))
+
+  setPage(3)
 
   const BUTTON_STYLE = {
     height: "50px",
