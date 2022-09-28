@@ -142,7 +142,7 @@ const MeetingCreate = (): JSX.Element => {
           <ImageInput
             title="사진등록"
             alt="모임대표사진"
-            message="모임 대표 사진을 등록해주세요"
+            message="사진을 등록해주세요"
             previewImg={previewImg}
             handleChangeImg={handleChangeImg}
           />
@@ -159,7 +159,16 @@ const MeetingCreate = (): JSX.Element => {
         <Grid item xs={12}>
           <InputWrapper
             title="모임기간"
-            subTitle={<div>임시</div>}
+            subTitle={
+              meetingInfo.startDate && meetingInfo.endDate ? (
+                <div>{`${meetingInfo.startDate.replaceAll(
+                  "-",
+                  "."
+                )}~${meetingInfo.endDate.replaceAll("-", ".")}`}</div>
+              ) : (
+                <div>기간 선택</div>
+              )
+            }
             inputItem={
               <CalendarRangePicker
                 meetingInfo={meetingInfo}
