@@ -162,7 +162,7 @@ interface ListDetailCardProps {
   maxLen: number
 }
 
-const ListDetailCard: React.FC<ListDetailCardProps> = ({
+const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
   item: { order: index, name: placeName, category, description },
@@ -228,4 +228,4 @@ const ListDetailCard: React.FC<ListDetailCardProps> = ({
   )
 }
 
-export default ListDetailCard
+export default DisplayListDetailCard
