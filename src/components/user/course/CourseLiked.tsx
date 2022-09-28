@@ -17,7 +17,6 @@ interface MyCoursesQueryProps extends QueryProps {
 }
 
 // 좋아요한 코스 API 조회
-
 const CourseLiked = ({ value }: CourseLikedProps): JSX.Element => {
   const getLikeCourseQuery = useGetCourseLikeListQuery(
     {}
