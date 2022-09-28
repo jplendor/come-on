@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react"
-
+import React, { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
+import { Tab, Box, IconButton } from "@mui/material"
+import { KeyboardArrowLeft, Close } from "@mui/icons-material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
-import { Tab, Box, Typography } from "@mui/material"
-import { useSelector } from "react-redux"
-import { RootState } from "store"
+
 import CourseRegiDetail1 from "./CourseRegiDetail1"
 import CourseRegiDetail2 from "./CourseRegiDetail2"
 import CourseRegiDetail3 from "./CourseRegiDetail3"
@@ -18,15 +17,40 @@ import CourseRegiDetail3 from "./CourseRegiDetail3"
 작성자 : 강예정
 issue : 중간에 코스등록이 취소 될 시 데이터를 기억해서 다시 불러오는 기능을 추가할 수 있을지 고민 */
 
+const ICONBOXLEFT = {
+  zIndex: "10",
+  position: "absolute",
+  left: "20px",
+}
+
+const ICONBOXRIGHT = {
+  zIndex: "10",
+  position: "absolute",
+  right: "20px",
+}
+
+const ICON_STYLE = {
+  textAlign: "center",
+  fontWeight: "bold",
+  color: "black",
+}
+
+const NAVBAR = {
+  height: "42px",
+}
+
+const NAVICON = {}
+
 interface PageState {
   state: number
 }
 
 const CourseRegiLayout = (): JSX.Element => {
   const [page, setPage] = React.useState(1)
-  const courseList = useSelector((state: RootState) => {
-    return state.course
-  })
+
+  const onClickPrev = (): void => {
+    if (page !== 1) setPage(page - 1)
+  }
 
   const handleChange = (
     event: React.SyntheticEvent,
@@ -42,27 +66,52 @@ const CourseRegiLayout = (): JSX.Element => {
     }
   }, [pageState])
 
-  const onClicKPostCourse = (): void => {
-    // 해당 api로 코스등록을 두번 보냄
-    console.log(courseList)
-    // 상세설명 전송
-
-    // 코스리스트 전송
-  }
-
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
       <TabContext value={String(page)}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <TabList onChange={handleChange} aria-label="tab Navigation">
-            <Tab label="" value="1" sx={{ width: "33.3%" }} disabled />
+          <TabList
+            onChange={handleChange}
+            aria-label="tab Navigation"
+            sx={NAVBAR}
+          >
+            <IconButton sx={ICONBOXLEFT} onClick={onClickPrev}>
+              <KeyboardArrowLeft fontSize="small" sx={ICON_STYLE} />
+            </IconButton>
+            <Tab
+              label=""
+              value="1"
+              sx={{
+                width: "33.3%",
+                padding: "0",
+                margin: "0 auto",
+              }}
+              disabled
+            />
             <Tab
               label={`코스등록(${page}/3)`}
               value="2"
-              sx={{ width: "33.3%" }}
+              sx={{
+                width: "33.3%",
+                fontSize: "18px",
+                lineHeight: "135%",
+                margin: "0 auto",
+                padding: "0",
+                color: "black",
+              }}
+              style={{ color: "black" }}
               disabled
             />
-            <Tab label="" value="3" sx={{ width: "33.3%" }} disabled />
+            <Tab
+              label={
+                <Box sx={ICONBOXRIGHT}>
+                  <Close fontSize="small" sx={ICON_STYLE} />
+                </Box>
+              }
+              value="3"
+              sx={{ width: "33.3%", padding: "0", margin: "0 auto" }}
+              disabled
+            />
           </TabList>
         </Box>
         <TabPanel value="1">
@@ -72,7 +121,7 @@ const CourseRegiLayout = (): JSX.Element => {
           <CourseRegiDetail2 page={2} setPage={setPage} />
         </TabPanel>
         <TabPanel value="3">
-          <CourseRegiDetail3 />
+          <CourseRegiDetail3 page={3} setPage={setPage} />
         </TabPanel>
       </TabContext>
     </Box>

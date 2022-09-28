@@ -22,6 +22,7 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
     // 45.938em -> 735px
     <Container
       maxWidth="xs"
+      disableGutters
       sx={{
         height: "45.938em",
         touchAction: "pan-x pinch-zoom",

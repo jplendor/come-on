@@ -5,7 +5,7 @@ const BUTTON_STYLE = {
   width: "100%",
   height: "50px",
   lineHeight: "50px",
-  marginBottom: "10px",
+  margin: "14px 0",
   color: "white",
   fontWeight: "800",
   fontSize: "1rem",

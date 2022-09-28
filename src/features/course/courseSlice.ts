@@ -1,8 +1,10 @@
 /* eslint-disable import/prefer-default-export */
-import { fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { CourseData } from "types/API/course-service"
 import { api } from "features/api/apiSlice"
-import { Server, ServerResponse } from "http"
+import {
+  ServerResponse,
+  CourseIdResponse,
+  CourseDetailResponse,
+} from "types/API/course-service"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type {
@@ -11,13 +13,9 @@ import type {
   MyCoursesResponse,
   OptionalQueryString,
 } from "types/API/course-service"
-import type { RootState } from "../../app/store"
 
 interface CourseId {
-  courseId: number
-}
-interface CourseIdResponse extends ServerResponse {
-  data: CourseId
+  courseId: number | string
 }
 
 interface CoursePlaceState {
@@ -33,8 +31,9 @@ interface CoursePlaceState {
       description: string
       lng: number // 경도 x
       lat: number // 위도 y
-      kakaoPlaceId: number
-      placeCategory: string
+      apiId: number
+      category: string
+      id: number
     }
   ]
 }
@@ -45,8 +44,9 @@ interface CoursePlaceProps {
   description: string
   lng: number // 경도 x
   lat: number // 위도 y
-  kakaoPlaceId: number
-  placeCategory: string
+  apiId: number
+  category: string
+  id: number
 }
 
 interface CourseDetailProps {
@@ -63,13 +63,14 @@ const initialState: CoursePlaceState = {
   },
   coursePlaces: [
     {
+      id: 0,
       order: 0,
       name: "newName",
       description: "값을 입력해 주세요",
       lng: 38.05248142233915, // 경도 x
       lat: 127.65930674808553, // 위도 y
-      kakaoPlaceId: 12346,
-      placeCategory: "ETC",
+      apiId: 12346,
+      category: "ETC",
     },
   ],
 }
@@ -133,6 +134,12 @@ export const courseApi = api.injectEndpoints({
         url: "/courses",
       }),
     }),
+    getCourseDetail: builder.query<CourseDetailResponse, any>({
+      query: ({ id }) => ({
+        url: `/courses/${id}`,
+        method: "GET",
+      }),
+    }),
     addCourseDetail: builder.mutation<CourseIdResponse, FormData>({
       query: (data) => ({
         url: "/courses",
@@ -140,7 +147,7 @@ export const courseApi = api.injectEndpoints({
         body: data,
       }),
     }),
-    addCoursePlace: builder.mutation<ServerResponse, any>({
+    addCoursePlace: builder.mutation<CourseDetailResponse, any>({
       query: (data) => ({
         url: `/courses/${data.courseId}/course-places/batch`,
         method: "POST",
@@ -165,4 +172,5 @@ export const {
   useGetCourseListQuery,
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
+  useGetCourseDetailQuery,
 } = courseApi

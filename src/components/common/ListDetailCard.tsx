@@ -92,8 +92,8 @@ interface CoursePlaceState {
   description: string
   lng: number // 경도 x
   lat: number // 위도 y
-  kakaoPlaceId: number
-  placeCategory: string
+  apiId: number
+  category: string
 }
 
 interface ListDetailCardProps {
@@ -106,7 +106,7 @@ interface ListDetailCardProps {
 const ListDetailCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
-  item: { order: index, name: placeName, placeCategory: cateName },
+  item: { order: index, name: placeName, category: cateName },
   onRemove,
 }) => {
   const modifyCard = (): any => {

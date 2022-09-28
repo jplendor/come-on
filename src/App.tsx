@@ -7,8 +7,8 @@ import User from "pages/user/User"
 import NeighborhoodCourse from "pages/course/NeighborhoodCourse"
 
 // 코스
-import SearchPlace from "pages/course/SearchPlace"
 import Course from "pages/course/Course"
+import SearchPlace from "pages/course/SearchPlace"
 import CourseRegiLayout from "pages/course/CourseRegiLayout"
 import CourseRegiDetail2 from "pages/course/CourseRegiDetail2"
 import Meeting from "pages/meeting/Meeting"
@@ -19,7 +19,8 @@ const App = (): JSX.Element => {
       <Route path="/" element={<NeighborhoodCourse />} />
       <Route path="auth/*" element={<Auth />} />
       <Route path="user/*" element={<User />} />
-      <Route path="/course/:id" />
+      <Route path="/course" element={<CourseRegiLayout />} />
+      <Route path="/course/:id" element={<Course />} />
       <Route path="/course/register" element={<SearchPlace />} />
       <Route path="meeting/*" element={<Meeting />} />
       <Route path="*" element={<NeighborhoodCourse />} />

@@ -1,8 +1,7 @@
 import React from "react"
 import { render, screen } from "@testing-library/react"
-import App from "./App"
 
-window.Buffer = require("buffer/").Buffer
+import App from "./App"
 
 test("renders learn react link", () => {
   render(<App />)

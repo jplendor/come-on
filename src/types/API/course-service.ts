@@ -7,7 +7,61 @@ export interface CourseData {
 }
 
 export interface CourseId {
-  courseId: string
+  courseId: number | undefined
+}
+
+export interface CourseDetail {
+  courseId: number
+  title: string
+  description: string
+  imageUrl: string
+  courseStatus: string
+  updatedDate: string
+  writer: {
+    id: number
+    nickname: string
+  }
+  likeCount: number
+  userLiked: boolean
+  coursePlaces: [
+    {
+      id: number
+      order: number
+      name: string
+      description: string
+      lng: number // 경도 x
+      lat: number // 위도 y
+      apiId: number
+      category: string
+    }
+  ]
+}
+
+interface placeProps {
+  toSave: [
+    {
+      name: string
+      description: string
+      lat: number
+      lng: number
+      order: number
+      apiId: number
+      category: string
+    }
+  ]
+  toModify: [
+    {
+      id: number | undefined
+      description: string
+      order: number
+      category: string
+    }
+  ]
+  toDelete: [
+    {
+      id: number | undefined
+    }
+  ]
 }
 
 /**
@@ -34,11 +88,11 @@ export interface MyCourses {
   title: string
   imageUrl: string
   courseStatus: string
-  lastModifiedDate: string
+  updatedDate: string
   likeCount: number
   userLiked: boolean
   writer: {
-    userId: number
+    id: number
     nickname: string
   }
 }
@@ -112,7 +166,7 @@ enum Code {
 export interface ServerResponse {
   responseTime: string
   code: Code
-  data: Exception | MyCoursesSliceResponse | AddCourse
+  data: Exception | MyCoursesSliceResponse | AddCourse | CourseId
 }
 
 // GET /courses/my
@@ -134,9 +188,12 @@ export interface GetMyCourseListQS extends OptionalQueryString {
   courseStatus: "COMPLETE" | "WRITING"
 }
 
-// export interface CourseDataResponse extends ServerResponse {
-//   data: {
-//     code: ErrorCode
-//     message: CourseData
-//   }
-// }
+/// //////////////////////////////////////////////
+
+export interface CourseIdResponse extends ServerResponse {
+  data: CourseId
+}
+
+export interface CourseDetailResponse extends ServerResponse {
+  data: CourseDetail
+}
