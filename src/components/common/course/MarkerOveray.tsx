@@ -4,11 +4,11 @@ import "./Customoverlay.css"
 export interface MapProps {
   title: string
   position: any
-  content: string
+  order: number
 }
 
 const MarkerOveray = (
-  { title, position, content }: MapProps,
+  { title, position, order }: MapProps,
   tf: boolean,
   index: number
 ): JSX.Element => {
@@ -23,7 +23,7 @@ const MarkerOveray = (
         {tf ? (
           <span className="number" style={{ backgroundColor: "#FFD24C" }} />
         ) : (
-          <span className="number">{index + 1}</span>
+          <span className="number">{order + 1}</span>
         )}
       </a>
     </div>
