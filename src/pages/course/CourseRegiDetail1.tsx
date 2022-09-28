@@ -116,7 +116,6 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   }
   // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
   const dispatch = useDispatch()
-  const { data, error, isLoading } = useGetCourseListQuery()
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })

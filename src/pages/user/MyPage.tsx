@@ -1,5 +1,3 @@
-/* eslint-disable no-lone-blocks */
-/* eslint-disable prettier/prettier */
 import React, { useEffect } from "react"
 
 import useNavigate from "hooks/navigate/useNavigate"

@@ -123,7 +123,6 @@ api연동부분
 
   const [addCoursePlace, { data: courseResult }] = useAddCoursePlaceMutation()
 
-  const { data, error, isLoading } = useGetCourseListQuery()
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })
