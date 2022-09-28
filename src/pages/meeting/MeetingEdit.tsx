@@ -15,13 +15,13 @@ import Calendar from "components/meeting/Calendar"
 import { useGetMeetingQuery } from "features/meeting/meetingSlice"
 
 const MeetingEdit = (): JSX.Element => {
-  const { meetingId } = useParams()
+  const { id } = useParams()
 
   const {
     data: response,
     isFetching,
     isSuccess,
-  } = useGetMeetingQuery(Number(meetingId))
+  } = useGetMeetingQuery(Number(id))
 
   const theme = useTheme()
 

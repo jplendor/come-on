@@ -69,7 +69,7 @@ interface ListDetailCardProps {
 //
 
 /* eslint camelcase: ["error", {properties: "never"}] */
-const SearchCard: React.FC<ListDetailCardProps> = ({
+const DisplayCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
   item,
@@ -154,4 +154,4 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   )
 }
 
-export default SearchCard
+export default DisplayCard

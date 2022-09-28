@@ -1,17 +1,7 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-  ChangeEvent,
-} from "react"
-
+import React, { Dispatch, SetStateAction, useState, useRef } from "react"
 import { styled } from "@mui/material/styles"
-import { Box, Input, Typography, TextField, Fab, Button } from "@mui/material"
+import { Box, Input, Typography, TextField, Fab } from "@mui/material"
 import { PhotoCamera } from "@mui/icons-material"
-import NabvigationBar from "components/common/NavigationBar"
-import Guide from "components/common/Guide"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import {
@@ -22,13 +12,6 @@ import { CourseData } from "types/API/course-service"
 
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from "store"
-
-interface NavigationBarProps {
-  currentPage: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
-  minPage: number
-  maxPage: number
-}
 
 const FormBox = styled(Box)(() => ({}))
 
@@ -111,6 +94,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
     formData.append("title", changeInput.title)
     formData.append("description", changeInput.description)
     formData.append("imgFile", selectFile.current.files[0])
+    console.log(selectFile.current.files[0])
 
     return formData
   }
@@ -134,7 +118,6 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
 
   return (
     <>
-      <Guide guideStr=" 코스정보를 입력해 주세요!" />
       {/*  */}
       <ImgContainer>
         {imageSrc && (
