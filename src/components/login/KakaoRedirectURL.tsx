@@ -5,7 +5,8 @@ import useAuth from "hooks/auth/useAuth"
 import KakaoIcon from "assets/nav/KakaoIcon"
 import { Login } from "types/API/auth-service"
 import useNavigateUrl from "hooks/auth/useNavigateUrl"
-import { ThemeLoadingButton } from "components/common/Buttons"
+
+import { LoginLoadingButton } from "./LoginButton"
 
 const { KAKAO, REDIRECT_URI } = Login
 const { REACT_APP_CLIENT_URL: CLIENT, REACT_APP_SERVER_URL: SERVER } =
@@ -28,7 +29,7 @@ const KakaoRedirectURL = (): JSX.Element => {
   }, [isloggedin, goUrl])
 
   return (
-    <ThemeLoadingButton
+    <LoginLoadingButton
       loading
       fullWidth
       variant="outlined"
@@ -36,7 +37,7 @@ const KakaoRedirectURL = (): JSX.Element => {
       startIcon={<KakaoIcon />}
     >
       Redirecting...
-    </ThemeLoadingButton>
+    </LoginLoadingButton>
   )
 }
 

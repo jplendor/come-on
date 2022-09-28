@@ -1,8 +1,9 @@
 import { styled } from "@mui/material/styles"
 import { Typography, TypographyProps } from "@mui/material"
-import { ThemeLoginButton } from "components/common/Buttons"
 
-export const ThemeKaKaoButton = styled(ThemeLoginButton)(() => ({
+import { LoginButton } from "./LoginButton"
+
+export const ThemeKaKaoButton = styled(LoginButton)(() => ({
   backgroundColor: "#FAE64C",
   "&:hover": {
     backgroundColor: "#FAE64C",
