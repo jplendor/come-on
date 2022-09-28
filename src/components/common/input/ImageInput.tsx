@@ -23,7 +23,7 @@ const ImageInput = ({
   const theme = useTheme()
 
   const IMG_NULL = {
-    height: "180px",
+    height: "200px",
     bgcolor: "#E5E5E5",
     display: "flex",
     flexDirection: "column",
@@ -51,7 +51,7 @@ const ImageInput = ({
   const ImgWrapper = styled.div`
     position: relative;
     width: 100%;
-    height: 180px;
+    height: 200px;
   `
 
   const PreviewImg = styled.img`
