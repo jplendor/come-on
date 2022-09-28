@@ -44,11 +44,11 @@ interface MyCourses {
   title: string
   imageUrl: string
   courseStatus: string
-  lastModifiedDate: string
+  updatedDate: string
   likeCount: number
   userLiked: boolean
   writer: {
-    userId: number
+    id: number
     nickname: string
   }
 }
@@ -61,7 +61,7 @@ interface MyCourses {
 
 interface CourseList extends MyCourses {
   firstPlace: {
-    coursePlaceId: number
+    id: number
     lat: number
     lng: number
     distance: number
