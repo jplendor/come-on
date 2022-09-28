@@ -90,7 +90,7 @@ const LINE_MIDDLE = {
   zIndex: "11",
   borderLeft: "thin solid #EEEEEE;",
   left: "25px",
-  height: "80px",
+  height: "92px",
 }
 
 const LINE_LAST = {

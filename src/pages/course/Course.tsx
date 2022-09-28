@@ -10,8 +10,6 @@ import MapContainer from "components/common/course/MapContainer"
 import KakaoShare from "components/KakaoShare"
 import { generateComponent } from "utils"
 import KakaoIcon from "assets/nav/KakaoIcon"
-import { RootState } from "store"
-import { useSelector } from "react-redux"
 
 import { useGetCourseDetailQuery } from "features/course/courseSlice"
 import DisplayListDetailCard from "components/common/card/DisplayListDetailCard"
@@ -117,34 +115,33 @@ const Course = (): any => {
     } else setSelected("")
   }
 
-  const { data: resultCourseDetail, isSuccess } = useGetCourseDetailQuery({
+  const {
+    data: resultCourseDetail,
+    isSuccess,
+    isLoading,
+  } = useGetCourseDetailQuery({
     id,
   })
-
-  const [courseData, setCourseData] = useState<CoursePlaceState[]>()
+  let courseData: CoursePlaceState[] = []
+  // const [courseData, setCourseData] = useState<CoursePlaceState[]>([])
   const onRemove = (index: number): void => {
-    setCourseData(courseData?.filter((place) => place.order !== index))
+    courseData = courseData?.filter((place) => place.order !== index)
     console.log(courseData)
-  }
-
-  const LoadImg = (): void => {
-    console.log(id)
-    console.log(resultCourseDetail?.data.coursePlaces)
   }
 
   // heart버튼 클릭시 이벤트
   // const onClickHeart = (event: React.MouseEvent<HTMLDivElement> | null): any => {
   //   const e: any = event?.currentTarget
   // }
-
+  if (isSuccess) courseData = resultCourseDetail.data.coursePlaces
   useEffect(() => {
     if (isSuccess) {
-      LoadImg()
       setImgSrc(resultCourseDetail.data.imageUrl)
-      setCourseData(resultCourseDetail.data.coursePlaces)
+      courseData = resultCourseDetail.data.coursePlaces
       console.log(resultCourseDetail.data.coursePlaces)
+      console.log(courseData)
     }
-  }, [isSuccess])
+  }, [isSuccess, courseData])
 
   return (
     <>
@@ -179,7 +176,15 @@ const Course = (): any => {
           </Box>
         </TitleContainer>
         <Box sx={DES_STYLE}>{resultCourseDetail?.data.description}</Box>
-        <MapContainer selectedNumber={isSelected} />
+        {courseData !== null && courseData !== undefined && (
+          <MapContainer
+            selectedNumber={isSelected}
+            placeLists={courseData}
+            isSuccess={isSuccess}
+            isLoading={isLoading}
+          />
+        )}
+
         <KakaoContainer p={1}>
           <Typography mr={1} variant="subtitle1" sx={FONT_SUBTITLE}>
             <KakaoShare />

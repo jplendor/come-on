@@ -37,6 +37,33 @@ export interface CourseDetail {
   ]
 }
 
+interface placeProps {
+  toSave: [
+    {
+      name: string
+      description: string
+      lat: number
+      lng: number
+      order: number
+      apiId: number
+      category: string
+    }
+  ]
+  toModify: [
+    {
+      id: number | undefined
+      description: string
+      order: number
+      category: string
+    }
+  ]
+  toDelete: [
+    {
+      id: number | undefined
+    }
+  ]
+}
+
 /**
  * 코스 등록
  *
@@ -61,11 +88,11 @@ export interface MyCourses {
   title: string
   imageUrl: string
   courseStatus: string
-  lastModifiedDate: string
+  updatedDate: string
   likeCount: number
   userLiked: boolean
   writer: {
-    userId: number
+    id: number
     nickname: string
   }
 }

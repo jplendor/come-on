@@ -11,44 +11,16 @@ import { styled } from "@mui/material/styles"
 import { Box } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 import { RootState } from "store"
 import {
   useAddCoursePlaceMutation,
   useAddCourseDetailMutation,
-  useGetCourseListQuery,
 } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"
 
 window.Buffer = Buffer
-
-interface placeProps {
-  toSave: [
-    {
-      name: string
-      description: string
-      lat: number
-      lng: number
-      order: number
-      apiId: number
-      category: string
-    }
-  ]
-  toModify: [
-    {
-      id: number | undefined
-      description: string
-      order: number
-      category: string
-    }
-  ]
-  toDelete: [
-    {
-      id: number | undefined
-    }
-  ]
-}
 
 const b64toBlob = (
   b64Data: string,
@@ -107,15 +79,6 @@ const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
   }))
 
   setPage(3)
-
-  const BUTTON_STYLE = {
-    height: "50px",
-    lineHeight: "50px",
-    marginBottom: "10px",
-    color: "white",
-    fontWeight: "800",
-    fontSize: "1rem",
-  }
 
   const MainContainer = styled(Box)(() => ({
     padding: "0px 20px",
@@ -215,21 +178,9 @@ api연동부분
     // map으로 toSave배열에 코스 추가하기
     // toSave 전처리
     postData.toSave.pop() // 첫번쨰 데이터 삭제
-    const submitData = postData
     courseList.map((place) => postData.toSave.push(place))
-    console.log(postData)
-    // toModify전처리
 
-    // for (let i = 0; i < postData.toModify.length; i += 1) {
-    //   postData.toModify[i].coursePlaceId = 2
-    // }
-
-    // for (let i = 0; i < postData.toDelete.length; i += 1) {
-    //   postData.toDelete[i].coursePlaceId = courseId
-    // }
     await addCoursePlace({ courseId, postData })
-
-    // console.log(newPostData)
 
     return Promise.resolve(true)
   }

@@ -1,33 +1,15 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-} from "react"
+import React, { Dispatch, SetStateAction, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 
 import { styled } from "@mui/material/styles"
-import { Box, Typography, IconButton } from "@mui/material"
+import { Box, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import NabvigationBar from "components/common/NavigationBar"
-import Guide from "components/common/Guide"
 import { generateComponent } from "utils"
 import MapContainer from "components/common/course/MapContainer"
-import ListDetailCard, {
-  ListDetailCardProp,
-} from "components/common/ListDetailCard"
 import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import DisplayListDetailCard from "components/common/card/DisplayListDetailCard"
-
-interface NavigationBarProps {
-  currentPage: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
-  minPage: number
-  maxPage: number
-}
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -59,8 +41,6 @@ interface pageProps {
 }
 
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const selectFile = useRef<any>(null)
   const [isSelected, setSelected] = useState("")
   const placeList = useSelector((state: RootState) => {
     return state.course.coursePlaces
@@ -101,7 +81,12 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
 
   return (
     <MainContainer>
-      <MapContainer selectedNumber={isSelected} />
+      <MapContainer
+        selectedNumber={isSelected}
+        placeLists={placeList}
+        isSuccess={placeList !== undefined}
+        isLoading={placeList === undefined}
+      />
       <IconContainer>
         <IconButton type="button">
           <Link to="/course/register">

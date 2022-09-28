@@ -16,7 +16,7 @@ const conversionToString = (arg0: string): string =>
 const CardItems = ({ info: { contents } }: CardItemsProps): JSX.Element => {
   const Component = generateComponent(
     contents,
-    ({ imageUrl, title, userLiked, writer, lastModifiedDate }, key) => (
+    ({ imageUrl, title, userLiked, writer, updatedDate }, key) => (
       <CardItem
         key={key}
         info={{
@@ -28,7 +28,7 @@ const CardItems = ({ info: { contents } }: CardItemsProps): JSX.Element => {
           texts: {
             title,
             userName: writer.nickname,
-            time: conversionToString(lastModifiedDate),
+            time: conversionToString(updatedDate),
           },
         }}
       />

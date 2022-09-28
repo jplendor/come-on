@@ -2,31 +2,26 @@ import React from "react"
 import "./Customoverlay.css"
 
 export interface MapProps {
+  // eslint-disable-next-line react/no-unused-prop-types
+  order: number
   title: string
   position: any
-  content: string
 }
 
 const MarkerOveray = (
-  { title, position, content }: MapProps,
+  { title, position, order }: MapProps,
   tf: boolean,
   index: number
 ): JSX.Element => {
   return (
-    <div className="customoverlay">
-      <a
-        href="https://map.kakao.com/link/map/11394059"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <span className="title">{title}</span>
-        {tf ? (
-          <span className="number" style={{ backgroundColor: "#FFD24C" }} />
-        ) : (
-          <span className="number">{index + 1}</span>
-        )}
-      </a>
-    </div>
+    <a
+      href="https://map.kakao.com/link/map/11394059"
+      target="_blank"
+      rel="noreferrer"
+    >
+      <span className="number" />
+      <span className="order">{order}</span>
+    </a>
   )
 }
 

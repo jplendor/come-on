@@ -1,12 +1,9 @@
 import React, { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
-import { styled, Tab, Box, IconButton } from "@mui/material"
+import { Tab, Box, IconButton } from "@mui/material"
 import { KeyboardArrowLeft, Close } from "@mui/icons-material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
-
-import { useSelector } from "react-redux"
-import { RootState } from "store"
 
 import CourseRegiDetail1 from "./CourseRegiDetail1"
 import CourseRegiDetail2 from "./CourseRegiDetail2"
@@ -50,12 +47,8 @@ interface PageState {
 
 const CourseRegiLayout = (): JSX.Element => {
   const [page, setPage] = React.useState(1)
-  const courseList = useSelector((state: RootState) => {
-    return state.course
-  })
 
   const onClickPrev = (): void => {
-    console.log(page)
     if (page !== 1) setPage(page - 1)
   }
 
@@ -72,14 +65,6 @@ const CourseRegiLayout = (): JSX.Element => {
       setPage(2)
     }
   }, [pageState])
-
-  const onClicKPostCourse = (): void => {
-    // 해당 api로 코스등록을 두번 보냄
-    console.log(courseList)
-    // 상세설명 전송
-
-    // 코스리스트 전송
-  }
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
