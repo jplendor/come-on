@@ -103,7 +103,7 @@ interface CoursePlaceState {
 }
 
 const Course = (): any => {
-  const [isSelected, setSelected] = useState("")
+  const [selectedNumber, setselectedNumber] = useState<string>()
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
 
@@ -111,8 +111,10 @@ const Course = (): any => {
     const e = event?.currentTarget
 
     if (e) {
-      setSelected(e.id)
-    } else setSelected("")
+      setselectedNumber(e.id)
+    } else {
+      setselectedNumber("")
+    }
   }
 
   const {
@@ -126,7 +128,6 @@ const Course = (): any => {
   // const [courseData, setCourseData] = useState<CoursePlaceState[]>([])
   const onRemove = (index: number): void => {
     courseData = courseData?.filter((place) => place.order !== index)
-    console.log(courseData)
   }
 
   // heart버튼 클릭시 이벤트
@@ -138,8 +139,6 @@ const Course = (): any => {
     if (isSuccess) {
       setImgSrc(resultCourseDetail.data.imageUrl)
       courseData = resultCourseDetail.data.coursePlaces
-      console.log(resultCourseDetail.data.coursePlaces)
-      console.log(courseData)
     }
   }, [isSuccess, courseData])
 
@@ -178,7 +177,7 @@ const Course = (): any => {
         <Box sx={DES_STYLE}>{resultCourseDetail?.data.description}</Box>
         {courseData !== null && courseData !== undefined && (
           <MapContainer
-            selectedNumber={isSelected}
+            selectedNumber={String(selectedNumber)}
             placeLists={courseData}
             isSuccess={isSuccess}
             isLoading={isLoading}
@@ -200,7 +199,10 @@ const Course = (): any => {
               item={item}
               key={key}
               onClick={onClickFocus}
-              isSelected={isSelected}
+              isSelected={
+                item.order ===
+                (selectedNumber === "" ? -10 : Number(selectedNumber))
+              }
               onRemove={onRemove}
               maxLen={courseData.length}
             />

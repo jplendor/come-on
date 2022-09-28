@@ -19,12 +19,8 @@ const MarkerOveray = (
         target="_blank"
         rel="noreferrer"
       >
-        <span className="title">{title}</span>
-        {tf ? (
-          <span className="number" style={{ backgroundColor: "#FFD24C" }} />
-        ) : (
-          <span className="number">{order + 1}</span>
-        )}
+        <div className="number" />
+        <div className="order">{order}</div>
       </a>
     </div>
   )

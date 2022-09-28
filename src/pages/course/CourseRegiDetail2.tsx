@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 
 import { styled } from "@mui/material/styles"
 import { Box, IconButton } from "@mui/material"
@@ -10,6 +10,7 @@ import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import DisplayListDetailCard from "components/common/card/DisplayListDetailCard"
+import { setSelectionRange } from "@testing-library/user-event/dist/utils"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -41,7 +42,7 @@ interface pageProps {
 }
 
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
-  const [isSelected, setSelected] = useState("")
+  const [selectedNumber, setselectedNumber] = useState<string>("")
   const placeList = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
@@ -51,8 +52,10 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
     if (e) {
-      setSelected(e.id)
-    } else setSelected("")
+      setselectedNumber(e.id)
+    } else {
+      setselectedNumber("")
+    }
   }
 
   const onRemove = (index: number): void => {
@@ -72,7 +75,6 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
     setCourseData(data)
   }
 
-  const dispatch = useDispatch()
   setPage(2)
 
   const onClicKNextPage = (): void => {
@@ -82,7 +84,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   return (
     <MainContainer>
       <MapContainer
-        selectedNumber={isSelected}
+        selectedNumber={String(selectedNumber)}
         placeLists={placeList}
         isSuccess={placeList !== undefined}
         isLoading={placeList === undefined}
@@ -97,12 +99,15 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       {/* 카카오톡 공유하기 */}
       {/* 버튼만들기 */}
       {placeList[0].order !== 0 &&
-        generateComponent(courseData, (item, key) => (
+        generateComponent(placeList, (item, key) => (
           <DisplayListDetailCard
             item={item}
             key={key}
             onClick={onClickFocus}
-            isSelected={isSelected}
+            isSelected={
+              item.order ===
+              (selectedNumber === "" ? -10 : Number(selectedNumber))
+            }
             onRemove={onRemove}
             maxLen={placeList.length}
           />

@@ -70,13 +70,12 @@ const MapContainer = ({
           position: new window.kakao.maps.LatLng(place.lat, place.lng),
         }
       })
-      console.log(mapData2)
+
       return mapData2
     }
     mapData = makeData()
 
     if (isSuccess && mapData !== undefined) {
-      console.log(mapData)
       const container = mapContainer.current
       const center =
         selectedNumber === ""
@@ -84,7 +83,7 @@ const MapContainer = ({
           : mapData[Number(selectedNumber) - 1].position
       const options = {
         center, // 지도의 중심좌표
-        level: 3, // 지도의 확대 레벨
+        level: 2, // 지도의 확대 레벨
       }
 
       const map = new kakao.maps.Map(container, options)

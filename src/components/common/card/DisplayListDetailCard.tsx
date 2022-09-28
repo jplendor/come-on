@@ -157,7 +157,7 @@ interface CoursePlaceState {
 interface ListDetailCardProps {
   item: CoursePlaceState
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
-  isSelected: string
+  isSelected: boolean
   onRemove: (index: number) => void
   maxLen: number
 }
@@ -169,10 +169,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
   maxLen,
   onRemove,
 }) => {
-  const modifyCard = (): any => {
-    // 수정버튼 누를 시 수정
-  }
-
+  console.log(isSelected)
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={2} sx={NUMBERING_BOX}>
@@ -192,7 +189,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
         )}
         <ThemeCardNumbering
           align="center"
-          sx={isSelected === String(index) ? SELECTED_NUM_CARD : CARD_NUMBERING}
+          sx={isSelected ? SELECTED_NUM_CARD : CARD_NUMBERING}
         >
           {index}
         </ThemeCardNumbering>
@@ -203,7 +200,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
           style={{ marginBottom: "12px" }}
           id={String(index)}
           onClick={onClick}
-          sx={isSelected === String(index) ? SELECTED_CARD : DEFAULT_CARD}
+          sx={isSelected ? SELECTED_CARD : DEFAULT_CARD}
         >
           <Grid item xs={10}>
             <Box sx={ITEM_BOX}>
