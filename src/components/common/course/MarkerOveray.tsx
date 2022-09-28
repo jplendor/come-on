@@ -19,8 +19,9 @@ const MarkerOveray = (
       target="_blank"
       rel="noreferrer"
     >
-      <span className="number" />
-      <span className="order">{order}</span>
+      <div className="number" />
+
+      <div className="order">{order}</div>
     </a>
   )
 }
