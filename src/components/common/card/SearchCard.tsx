@@ -71,6 +71,7 @@ interface ListDetailCardProps {
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   selectedNumber: string
   mode: PlaceType
+  id: number
 }
 //
 
@@ -80,6 +81,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   selectedNumber,
   item,
   mode,
+  id,
 }) => {
   const obj = {
     index: item.index, // 순서
@@ -90,11 +92,13 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
     y: item.y, // place_url
     place_url: item.place_url,
     kakaoPlaceId: item.id,
-    address: item.address_name,
   }
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const placeList = useSelector((state: RootState) => {
+    return state.course.coursePlaces
+  })
 
   const onAddClick = (): void => {
     // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
@@ -121,6 +125,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
         navigate("/course", { state: 200 })
       }
     }
+    console.log(placeList)
   }
 
   return (

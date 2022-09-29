@@ -28,7 +28,7 @@ const CourseNextStepButton: React.FC<ButtonProps> = ({
     <Button
       sx={BUTTON_STYLE}
       variant="contained"
-      disabled={isValid}
+      disabled={!isValid}
       onClick={onClick}
     >
       {content}
@@ -38,5 +38,5 @@ const CourseNextStepButton: React.FC<ButtonProps> = ({
 
 export default CourseNextStepButton
 CourseNextStepButton.defaultProps = {
-  isValid: true,
+  isValid: false,
 }

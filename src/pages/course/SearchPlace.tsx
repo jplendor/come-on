@@ -33,7 +33,7 @@ interface ListDetailCardProp {
   x: number // 경도 longitude              -lon
   y: number // 위도 latitude               -lat
   description: string // 설명              -description
-  id: number // 카카오 id          -kakaoPlaceId
+  id: number // 카카오 id                  -kakaoPlaceId
 }
 
 const MyMarker = (): JSX.Element => {
@@ -99,7 +99,9 @@ const SearchPlace = (): JSX.Element => {
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
     if (e) {
+      console.log(e)
       setselectedNumber(e.id)
+      console.log(e.id)
     } else setselectedNumber("")
   }
 
@@ -172,6 +174,8 @@ const SearchPlace = (): JSX.Element => {
     ps.keywordSearch(value, placesSearchCB, pageOptions)
   }, [searchKeyword, selectedPage])
 
+  console.log(selectedNumber)
+
   return (
     <>
       <header>{/* 검색창 만들기 */}</header>
@@ -202,7 +206,7 @@ const SearchPlace = (): JSX.Element => {
           generateComponent(searchedData, (item, key) => (
             <SearchCard
               item={item}
-              key={key}
+              id={1}
               onClick={onClickFocus}
               selectedNumber={selectedNumber}
               mode={PlaceType.c}

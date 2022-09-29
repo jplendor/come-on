@@ -8,45 +8,68 @@ import { styled } from "@mui/material/styles"
 import { addCoursePlace } from "features/course/courseSlice"
 import { RootState } from "store"
 
+const SELECTED_CARD = {
+  border: "1px solid #1951B2",
+  padding: "0px",
+}
 const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
   "&.MuiGrid-root": {
-    borderRadius: "10px ",
+    borderRadius: "4px",
+    height: "80px",
     color: "black",
   },
-  border: `1px solid #92B4EC`,
-  padding: "0 10px",
+  border: `1px solid #EEEEEE`,
 }))
 
-const TITLE_TOP = {
-  fontWeight: 800,
-  fontSize: "10px",
-  lineHeight: "12px",
-  //  TODO: 추후에 props로 color 속성 전달예정
-  color: "#FFA3A3",
-  border: "1px solid #FFA3A3",
+const ADDRESS_FONT = {
+  fontSize: "12px",
+  padding: "0px",
+
+  color: "#9E9E9E",
 }
-const TITLE_BODY = {
+const ITEM_BOX = {
+  color: "#EEEEEE",
+  padding: "8px 12px",
+}
+
+const TITLE_FONT = {
   fontWeight: "bold",
-  lineHeight: "24px",
-}
-
-const TITLE_BOTTOM = {
-  fontWeight: "400",
-  lineHeight: "19px",
-}
-
-const TITLE_WRAP = {
-  padding: "12px 8px",
+  lineHeight: "140%",
   fontSize: "16px",
-  lineHegiht: "140%",
-  fontWeight: "bold",
+  padding: "0px",
 }
 
-const SELECTED_CARD = {
-  border: "1px solid #FFD24C",
+const TITLE_DES = {
+  margin: "0",
+  lineHeight: "140%",
+  fontSize: "14px",
+  color: "#616161",
+  padding: "0px",
 }
-const ICON_STYLE = {
-  // relative로 상위 컴포넌트의 우측에 배정되게 할 것.
+
+const GRID_WRAP = {
+  color: "#EEEEEE",
+  padding: "0px",
+}
+
+const TITLE_BOX = {
+  display: "flex",
+  displayDirection: "column",
+  flexwrap: "nowrap",
+  lineHeight: "140%",
+  alignItems: "center",
+  padding: "0px",
+}
+
+const URL_ICON = {
+  width: "14px",
+  height: "14px",
+  display: "relative",
+  fontSize: "14px",
+  margin: "0px",
+  padding: "0px",
+  left: "50px",
+  color: "#BDBDBD",
 }
 
 interface ListDetailCardProp {
@@ -116,8 +139,7 @@ const DisplayCard: React.FC<ListDetailCardProps> = ({
   }
 
   return (
-    <>
-      {" "}
+    <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={10} sx={{ margin: "12px 0" }}>
         <ThemeGrid
           container
@@ -126,17 +148,14 @@ const DisplayCard: React.FC<ListDetailCardProps> = ({
           sx={isSelected === String(obj.index) ? SELECTED_CARD : {}}
         >
           <Grid item xs={11}>
-            <Box sx={TITLE_WRAP}>
-              <Typography component="span" sx={TITLE_TOP}>
-                {obj.cateName}
-              </Typography>
-              <Typography variant="h6" sx={TITLE_BODY}>
-                {obj.placeName}
-                <IconButton type="button" onClick={onAddClick}>
-                  <AddIcon sx={ICON_STYLE} color="secondary" fontSize="large" />
-                </IconButton>
-              </Typography>
-              <Typography variant="subtitle2" sx={TITLE_BOTTOM}>
+            <Box sx={ITEM_BOX}>
+              <Typography sx={TITLE_FONT}>{obj.placeName}</Typography>
+
+              <IconButton type="button" onClick={onAddClick}>
+                <AddIcon sx={URL_ICON} color="secondary" fontSize="large" />
+              </IconButton>
+
+              <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 {obj.addressName}
                 <IconButton aria-label="edit this" color="secondary" />
               </Typography>
@@ -151,7 +170,7 @@ const DisplayCard: React.FC<ListDetailCardProps> = ({
           </Grid>
         </ThemeGrid>
       </Grid>
-    </>
+    </Grid>
   )
 }
 

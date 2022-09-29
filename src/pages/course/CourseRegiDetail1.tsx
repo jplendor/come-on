@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useState, useEffect } from "react"
+import React, {
+  Dispatch,
+  SetStateAction,
+  useState,
+  useEffect,
+  useCallback,
+} from "react"
 import { styled } from "@mui/material/styles"
 import { Box, Grid } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
@@ -23,7 +29,7 @@ interface pageProps {
 const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   const dispatch = useDispatch()
 
-  const [isValid, setIsValid] = useState(true)
+  const [isValid, setIsValid] = useState(false)
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
   const [previewImg, setPreviewImg] = useState<null | string>(null)
   const [changeInput, setChangeInput] = useState<CourseData>({
@@ -32,50 +38,59 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
     imgFile: "",
   })
 
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newState = {
-      ...changeInput,
-      imgFile: String(imageSrc),
-      [e.target.name]: e.target.value,
-    }
-    setChangeInput(newState)
-  }
-
   const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
     const reader = new FileReader()
     reader.readAsDataURL(fileBlob)
     return new Promise<void>((resolve) => {
-      reader.onload = () => {
+      reader.onload = async () => {
         if (!reader.result) {
           throw new Error("No img result")
         }
-        setImageSrc(reader.result)
+        await setImageSrc(reader.result)
         resolve()
       }
     })
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////////////////
+  const onValid = useCallback((): boolean => {
+    if (changeInput.title === "") return false
+    if (changeInput.description === "") return false
+    if (changeInput.imgFile === "" || changeInput.imgFile === "undefined")
+      return false
+    return true
+  }, [changeInput])
+
   const changeFileToObjectUrl = (file: File): void => {
     const fileUrl = URL.createObjectURL(file)
     setPreviewImg(fileUrl)
-    encodeFileToBase64(file)
   }
 
-  const handleChangeImg = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    console.log(e.target)
-    onChangeInput(e)
+  const handleChangeImg = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
     if (e.target.files) {
       changeFileToObjectUrl(e.target.files[0])
+      await encodeFileToBase64(e.target.files[0])
+
+      const newState = {
+        ...changeInput,
+        [e.target.name]: e.target.value,
+      }
+      setChangeInput(newState)
     }
   }
 
-  const onValid = (): boolean => {
-    if (changeInput.title === "") return true
-    if (changeInput.description === "") return true
-    if (changeInput.imgFile === "") return true
-    return false
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newState = {
+      ...changeInput,
+      [e.target.name]: e.target.value,
+    }
+
+    setChangeInput(newState)
   }
+
+  /// /////////////////////////////////////////////////////////////////////////////////////////
 
   const onClickNextPage = (): void => {
     dispatch(
@@ -90,9 +105,8 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
 
   useEffect(() => {
     setIsValid(onValid())
-    console.log(changeInput)
     console.log(isValid)
-  }, [changeInput])
+  }, [changeInput, isValid, onValid])
 
   return (
     <FormBox sx={FORM_STYLE} onChange={onValid}>

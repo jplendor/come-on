@@ -25,8 +25,8 @@ const MainContainer = styled(Box)(() => ({
 }))
 
 const ImgContainer = styled(Box)(() => ({
-  margin: "0",
-  padding: "0",
+  padding: "0px 20px 0px 20px",
+
   width: "100%",
   height: "30%",
   objectFit: "cover",
@@ -145,7 +145,7 @@ const Course = (): any => {
     if (isSuccess) {
       setImgSrc(resultCourseDetail.data.imageUrl)
     }
-  }, [isSuccess, courseData, resultCourseDetail?.data.imageUrl])
+  }, [isSuccess, resultCourseDetail?.data.imageUrl])
 
   return (
     <>

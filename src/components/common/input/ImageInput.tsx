@@ -79,6 +79,7 @@ const ImageInput = ({
                 hidden
                 accept="image/*"
                 type="file"
+                name="imgFile"
                 onChange={handleChangeImg}
               />
               <PhotoCamera />
@@ -95,6 +96,7 @@ const ImageInput = ({
                 hidden
                 accept="image/*"
                 type="file"
+                name="imgFile"
                 onChange={handleChangeImg}
               />
               <PhotoCamera />
