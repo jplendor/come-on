@@ -99,9 +99,7 @@ const SearchPlace = (): JSX.Element => {
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
     if (e) {
-      console.log(e)
       setselectedNumber(e.id)
-      console.log(e.id)
     } else setselectedNumber("")
   }
 
@@ -206,7 +204,6 @@ const SearchPlace = (): JSX.Element => {
           generateComponent(searchedData, (item, key) => (
             <SearchCard
               item={item}
-              id={1}
               onClick={onClickFocus}
               selectedNumber={selectedNumber}
               mode={PlaceType.c}
