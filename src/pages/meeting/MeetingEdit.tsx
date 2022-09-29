@@ -13,15 +13,53 @@ import { generateComponent } from "utils"
 import { useTheme } from "@mui/material/styles"
 import Calendar from "components/meeting/Calendar"
 import { useGetMeetingQuery } from "features/meeting/meetingSlice"
+import DisplayListDetailCard, {
+  PlaceType,
+} from "components/common/card/DisplayListDetailCard"
+import { MapOutlined } from "@mui/icons-material"
+
+// 임시 데이터
+const tempPlaces = [
+  {
+    id: 1,
+    apiId: 1,
+    category: "카페",
+    name: "장소이름1",
+    memo: "우리여기서 놀자111",
+    lat: 11,
+    lng: 11,
+    order: 1,
+  },
+  {
+    id: 2,
+    apiId: 2,
+    category: "보드게임",
+    name: "장소이름2",
+    memo: "우리여기서 놀자222",
+    lat: 22,
+    lng: 22,
+    order: 2,
+  },
+]
+
+const NewPlace = {
+  border: "dashed 2px gray",
+  height: "80px",
+  borderRadius: "4px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "column",
+}
 
 const MeetingEdit = (): JSX.Element => {
-  const { id } = useParams()
+  const { meetingId } = useParams()
 
   const {
     data: response,
     isFetching,
     isSuccess,
-  } = useGetMeetingQuery(Number(id))
+  } = useGetMeetingQuery(Number(meetingId))
 
   const theme = useTheme()
 
@@ -77,19 +115,34 @@ const MeetingEdit = (): JSX.Element => {
             }}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12}>
           <Typography variant="h5" component="h2">
             모임 장소
           </Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Button>코스로 공유하기</Button>
-        </Grid>
-        <Grid item xs={4}>
-          <Button>코스 추가</Button>
-        </Grid>
-        <Grid item xs={12}>
-          {/* 모임 장소 리스트 */}
+          <div>
+            {generateComponent(tempPlaces, (data, key) => (
+              <DisplayListDetailCard
+                mode={PlaceType.m}
+                item={data}
+                key={key}
+                isSelected
+                maxLen={tempPlaces.length}
+                onClick={() => {
+                  console.log("click")
+                }}
+                onRemove={() => {
+                  console.log("remove")
+                }}
+              />
+            ))}
+            <Box sx={NewPlace}>
+              <MapOutlined />
+              <Typography>새로운 장소를 추가해보세요</Typography>
+            </Box>
+            <Button variant="contained" fullWidth>
+              코스로 공유하기
+            </Button>
+          </div>
         </Grid>
       </Grid>
     )
