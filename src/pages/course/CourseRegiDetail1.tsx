@@ -105,7 +105,6 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
 
   useEffect(() => {
     setIsValid(onValid())
-    console.log(isValid)
   }, [changeInput, isValid, onValid])
 
   return (

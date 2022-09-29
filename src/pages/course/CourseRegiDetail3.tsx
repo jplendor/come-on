@@ -67,6 +67,7 @@ interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
 }
+
 // 코스등록 전 미리보기 페이지
 const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
@@ -78,7 +79,7 @@ const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
     objectFit: "cover",
   }))
 
-  setPage(3)
+  setPage(page)
 
   const MainContainer = styled(Box)(() => ({
     padding: "0px 20px",
@@ -94,16 +95,10 @@ api연동부분
 
   const [addCourseDetail, { data: result, isSuccess }] =
     useAddCourseDetailMutation()
-  const [imgSrc, setImgSrc] = useState<string | File>()
   const [addCoursePlace, { data: courseResult }] = useAddCoursePlaceMutation()
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })
-
-  const base64toImg = (blobImgFile: Blob): File => {
-    const myFile = new File([blobImgFile], "모임이미지", { type: "image/jpeg" })
-    return myFile
-  }
 
   const [onSubmit, setOnSubmit] = useState<boolean>(true)
 
@@ -113,19 +108,17 @@ api연동부분
     const formData = new FormData()
     formData.append("title", courseDetail.title)
     formData.append("description", courseDetail.description)
-    const myfile = dataUrlToFile(courseDetail.imgFile, "임시데이터.png")
+    const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
 
     if (myfile !== undefined) {
       myfile?.arrayBuffer().then((arrayBuffer) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const blob = new Blob([new Uint8Array(arrayBuffer)], {
           type: myfile.type,
         })
-        console.log(blob)
       })
-
       formData.append("imgFile", myfile)
     }
-    console.log(myfile)
 
     return formData
   }
@@ -143,12 +136,12 @@ api연동부분
       await addCourseDetail(submitData)
 
       if (isSuccess) {
-        const res = await result
-        console.log(res?.data.courseId)
-        courseId = await res?.data.courseId
+        const res = result
+        courseId = res?.data.courseId
       }
     } catch (err) {
-      console.log(err)
+      // eslint-disable-next-line no-console
+      console.log("%s", err)
     }
     return Promise.resolve(true)
   }
@@ -196,7 +189,7 @@ api연동부분
 
     submit()
     setOnSubmit(false)
-  }, [onSubmit])
+  }, [onSubmit, isSuccess, submitCourseDetail])
 
   return (
     <MainContainer>

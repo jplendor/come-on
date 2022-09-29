@@ -108,12 +108,12 @@ enum PlaceType {
   c = "course",
 }
 
-const Course = (): any => {
+const Course = (): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
 
-  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
 
     if (e) {

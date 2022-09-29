@@ -16,7 +16,7 @@ const DEFAULT_CARD = {
   border: "1px solid #EEEEEE",
   padding: "0px",
 }
-const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
+const ThemeGrid = styled(Grid)<GridProps>(() => ({
   "&.MuiGrid-root": {
     borderRadius: "4px",
     height: "80px",
@@ -41,19 +41,6 @@ const TITLE_FONT = {
   fontWeight: "bold",
   lineHeight: "140%",
   fontSize: "16px",
-  padding: "0px",
-}
-
-const TITLE_DES = {
-  margin: "0",
-  lineHeight: "140%",
-  fontSize: "14px",
-  color: "#616161",
-  padding: "0px",
-}
-
-const GRID_WRAP = {
-  color: "#EEEEEE",
   padding: "0px",
 }
 
@@ -165,7 +152,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
             : DEFAULT_CARD
         }
       >
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={TITLE_BOX}>
           <Box sx={ITEM_BOX}>
             <Typography variant="h6" sx={TITLE_FONT}>
               {obj.placeName}

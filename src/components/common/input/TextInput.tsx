@@ -27,7 +27,7 @@ const TextInput = ({
       subTitle={<div>임시</div>}
       inputItem={
         <TextField
-          multiline
+          multiline={multiline}
           fullWidth
           name={name}
           value={value}
