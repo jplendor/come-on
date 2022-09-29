@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Box,
   Grid,
@@ -65,7 +65,6 @@ const ITEM_BOX = {
 }
 
 const TITLE_CATEGORY = {
-  width: "32px",
   fontSize: "10px",
   padding: "1px 3px",
   backgroundColor: "#EEEEEE",
@@ -144,18 +143,31 @@ export interface ListDetailCardProp {
   titleBottom: string
 }
 
-interface CoursePlaceState {
+interface Place {
   order: number
   name: string
-  description: string
   lng: number // 경도 x
   lat: number // 위도 y
   apiId: number
   category: string
 }
 
+interface CoursePlace extends Place {
+  description: string
+}
+
+interface MeetingPlace extends Place {
+  memo: string
+}
+
+export enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
 interface ListDetailCardProps {
-  item: CoursePlaceState
+  mode: PlaceType
+  item: CoursePlace | MeetingPlace
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: boolean
   onRemove: (index: number) => void
@@ -163,13 +175,27 @@ interface ListDetailCardProps {
 }
 
 const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
+  mode,
   onClick,
   isSelected,
-  item: { order: index, name: placeName, category, description },
+  item,
   maxLen,
   onRemove,
 }) => {
-  console.log(isSelected)
+  const { order: index, name: placeName, category } = item
+  let description = null
+  let memo = null
+
+  if (mode === PlaceType.m) {
+    const { memo: itemMemo } = item as MeetingPlace
+    memo = itemMemo
+  }
+
+  if (mode === PlaceType.c) {
+    const { description: itemDescription } = item as CoursePlace
+    description = itemDescription
+  }
+
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={2} sx={NUMBERING_BOX}>
@@ -211,7 +237,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
                 </Typography>
               </Box>
               <Typography variant="subtitle2" sx={TITLE_DES}>
-                {description}
+                {description || memo}
               </Typography>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 임시
