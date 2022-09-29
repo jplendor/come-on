@@ -61,18 +61,25 @@ interface ListDetailCardProp {
   id: number // 카카오 id          -kakaoPlaceId
 }
 
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
 interface ListDetailCardProps {
   item: ListDetailCardProp
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
-  isSelected: string
+  selectedNumber: string
+  mode: PlaceType
 }
 //
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 const SearchCard: React.FC<ListDetailCardProps> = ({
   onClick,
-  isSelected,
+  selectedNumber,
   item,
+  mode,
 }) => {
   const obj = {
     index: item.index, // 순서
@@ -109,7 +116,11 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
         category: "ETC",
       }
       dispatch(addCoursePlace(newPlace))
-      navigate("/course", { state: 200 })
+      if (mode === PlaceType.m) {
+        navigate("/meeting")
+      } else if (mode === PlaceType.c) {
+        navigate("/course", { state: 200 })
+      }
     }
     console.log(placeList)
   }
@@ -122,7 +133,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
           container
           id={String(obj.index)}
           onClick={onClick}
-          sx={isSelected === String(obj.index) ? SELECTED_CARD : {}}
+          sx={selectedNumber === String(obj.index) ? SELECTED_CARD : {}}
         >
           <Grid item xs={11}>
             <Box sx={TITLE_WRAP}>

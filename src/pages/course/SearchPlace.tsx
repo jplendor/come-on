@@ -56,8 +56,13 @@ export interface MapProps {
   content: string
 }
 
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
 const SearchPlace = (): JSX.Element => {
-  const [isSelected, setSelected] = useState("")
+  const [selectedNumber, setselectedNumber] = useState("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
@@ -94,8 +99,8 @@ const SearchPlace = (): JSX.Element => {
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
     if (e) {
-      setSelected(e.id)
-    } else setSelected("")
+      setselectedNumber(e.id)
+    } else setselectedNumber("")
   }
 
   // 마커를 맵에 표시
@@ -199,7 +204,8 @@ const SearchPlace = (): JSX.Element => {
               item={item}
               key={key}
               onClick={onClickFocus}
-              isSelected={isSelected}
+              selectedNumber={selectedNumber}
+              mode={PlaceType.c}
             />
           ))}
       </ListContainer>
