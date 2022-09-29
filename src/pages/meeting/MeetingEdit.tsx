@@ -1,5 +1,5 @@
 import React from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import {
   Grid,
   Typography,
@@ -50,6 +50,7 @@ const NewPlace = {
   justifyContent: "center",
   alignItems: "center",
   flexDirection: "column",
+  cursor: "pointer",
 }
 
 const MeetingEdit = (): JSX.Element => {
@@ -62,6 +63,12 @@ const MeetingEdit = (): JSX.Element => {
   } = useGetMeetingQuery(Number(meetingId))
 
   const theme = useTheme()
+
+  const navigate = useNavigate()
+
+  const addNewPlace = (): void => {
+    navigate("/meeting/place")
+  }
 
   let content
   if (isFetching) {
@@ -135,7 +142,7 @@ const MeetingEdit = (): JSX.Element => {
                 }}
               />
             ))}
-            <Box sx={NewPlace}>
+            <Box sx={NewPlace} onClick={addNewPlace}>
               <MapOutlined />
               <Typography>새로운 장소를 추가해보세요</Typography>
             </Box>
