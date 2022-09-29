@@ -6,7 +6,6 @@ import type { PayloadAction } from "@reduxjs/toolkit"
 import type {
   MyCoursesRes,
   AddCourseRes,
-  ExceptionRes,
   CourseListRes,
   GetCourseListQS,
   GetMyCourseListQS,
@@ -103,7 +102,7 @@ export default coursePlaceSlice.reducer
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    addCourse: builder.mutation<AddCourseRes | ExceptionRes, FormData>({
+    addCourse: builder.mutation<AddCourseRes, FormData>({
       query: (course) => ({
         url: "/courses",
         method: "POST",
@@ -111,42 +110,28 @@ export const courseApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Course"],
     }),
-    getCourseList: builder.query<CourseListRes | ExceptionRes, GetCourseListQS>(
-      {
-        query: ({
-          page = "0",
-          size = "10",
-          title = "",
-          lat = "",
-          lng = "",
-        }) => ({
-          url: `/courses?page=${page}&size=${size}&title=${title}&lat=${lat}&lng=${lng}`,
-          method: "GET",
-        }),
-        providesTags: ["Course"],
-      }
-    ),
-    getMyCourseList: builder.query<
-      MyCoursesRes | ExceptionRes,
-      GetMyCourseListQS
-    >({
-      query: ({ courseStatus, page = "0", size = "10" }) => ({
+    getCourseList: builder.query<CourseListRes, GetCourseListQS>({
+      query: ({ page = "0", size = "3", title = "", lat = "", lng = "" }) => ({
+        url: `/courses?page=${page}&size=${size}&title=${title}&lat=${lat}&lng=${lng}`,
+        method: "GET",
+      }),
+      providesTags: ["Course"],
+    }),
+    getMyCourseList: builder.query<MyCoursesRes, GetMyCourseListQS>({
+      query: ({ courseStatus = "COMPLETE", page = "0", size = "3" }) => ({
         url: `/courses/my?courseStatus=${courseStatus}&page=${page}&size=${size}`,
         method: "GET",
       }),
       providesTags: ["Course"],
     }),
-    getCourseLikeList: builder.query<
-      MyCoursesRes | ExceptionRes,
-      OptionalQueryString
-    >({
-      query: ({ page = "0", size = "10" }) => ({
+    getLikedCourseList: builder.query<MyCoursesRes, OptionalQueryString>({
+      query: ({ page = "0", size = "3" }) => ({
         url: `/courses/like?page=${page}&size=${size}`,
         method: "GET",
       }),
       providesTags: ["Course"],
     }),
-    clickLikeCourse: builder.mutation<LikeCourseRes | ExceptionRes, number>({
+    clickLikeCourse: builder.mutation<LikeCourseRes, number>({
       query: (courseId) => ({
         url: `/courses/${courseId}/like`,
         method: "POST",
@@ -178,11 +163,13 @@ export const courseApi = api.injectEndpoints({
   }),
 })
 
+export const { endpoints } = courseApi
+
 export const {
   useAddCourseMutation,
   useGetCourseListQuery,
   useGetMyCourseListQuery,
-  useGetCourseLikeListQuery,
+  useGetLikedCourseListQuery,
   useClickLikeCourseMutation,
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,

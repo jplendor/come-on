@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/require-default-props */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useMemo } from "react"
+import React, { CSSProperties, useMemo } from "react"
 import { styled } from "@mui/material/styles"
-import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material"
+import { join, pipe, split } from "@fxts/core"
 import type { ImageListItemProps, ImageListItemBarProps } from "@mui/material"
+import { Box, ImageList, ImageListItem, ImageListItemBar } from "@mui/material"
 
-import CardTexts from "./CardTexts"
+import { CourseList, MyCourses } from "types/API/course-service"
 import { CardLikeButton, CardTopInfo } from "./CardItemTitle"
+import CardTexts from "./CardTexts"
 
 // 우리동네코스 이미지
 export const ThemeImage = styled((props: ImageListItemProps) => (
@@ -53,43 +57,55 @@ export const ThemeItemBar = styled(ImageListItemBar)<ImageListItemBarProps>(
 )
 
 interface CardItemProps {
-  info: {
-    img: {
-      src: string
-      alt: string
-    }
-    isLike: boolean
-    courseId: number
-    texts: {
-      title: string
-      userName: string
-      time: string
-    }
-  }
+  info: CourseList | MyCourses
+  style: CSSProperties
 }
 
-// 우리동네코스&모임관리 공통 레이아웃
+// 우리동네코스 & 모임관리 공통 레이아웃
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CardItemLayout = ({ children }: { children: any }): JSX.Element => {
+const CardItemLayout = ({
+  children,
+  style,
+}: {
+  children: any
+  style?: CSSProperties
+}): JSX.Element => {
   return (
-    <ImageList cols={1} sx={{ m: 0 }}>
-      {children}
-    </ImageList>
+    <Box style={style}>
+      <ImageList cols={1} sx={{ m: 0 }}>
+        {children}
+      </ImageList>
+    </Box>
   )
 }
 
 /**
- * 우리동네코스 컴포넌트
+ * 우리동네코스 & 내가공유한코스 & 좋아요한코스
  */
 
-export const CardItem = ({ info }: CardItemProps): JSX.Element => {
-  const { img, isLike, texts, courseId } = useMemo(() => info, [info])
+// 곧 사용할 예정
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const conversionToString = (arg0: string): string =>
+  pipe(arg0, split("-"), join("."))
+
+// 인피니티 스크롤 전용 리스트 컴포넌트 (작업중)
+export const CardItem = ({ info, style }: CardItemProps): JSX.Element => {
+  const { courseId, userLiked, writer, title, imageUrl, updatedDate } = useMemo(
+    () => info,
+    [info]
+  ) as CourseList
   return (
-    <CardItemLayout>
+    <CardItemLayout style={style}>
       <ThemeImage>
-        <CardLikeButton isLike={isLike} courseId={courseId} />
-        <img src={img.src} alt={img.alt} />
-        <CardTexts texts={texts} />
+        <CardLikeButton isLike={userLiked} courseId={courseId} />
+        <img src={imageUrl} alt={title} />
+        <CardTexts
+          texts={{
+            title,
+            userName: writer.nickname,
+            time: updatedDate,
+          }}
+        />
       </ThemeImage>
     </CardItemLayout>
   )
@@ -99,7 +115,7 @@ export const CardItem = ({ info }: CardItemProps): JSX.Element => {
  * 모임관리 컴포넌트
  */
 
-export const CardItem2 = ({ info }: CardItemProps): JSX.Element => {
+export const CardItem2 = ({ info }: any): JSX.Element => {
   const { img, texts } = useMemo(() => info, [info])
   return (
     <CardItemLayout>

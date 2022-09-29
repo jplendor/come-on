@@ -17,7 +17,7 @@ export interface CourseId {
  */
 
 interface LikeCourse {
-  courseId: number
+  userLiked: boolean
 }
 
 /**
@@ -39,7 +39,7 @@ interface AddCourse {
  * GET /courses/like
  */
 
-interface MyCourses {
+export interface MyCourses {
   courseId: number
   title: string
   imageUrl: string
@@ -59,7 +59,7 @@ interface MyCourses {
  * GET /courses
  */
 
-interface CourseList extends MyCourses {
+export interface CourseList extends MyCourses {
   firstPlace: {
     id: number
     lat: number
@@ -176,7 +176,7 @@ export interface OptionalQueryString {
 }
 
 export interface GetMyCourseListQS extends OptionalQueryString {
-  courseStatus: "COMPLETE" | "WRITING"
+  courseStatus?: "COMPLETE" | "WRITING"
 }
 
 export interface GetCourseListQS extends OptionalQueryString {

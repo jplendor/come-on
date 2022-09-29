@@ -1,10 +1,11 @@
+/* eslint-disable react/no-unused-prop-types */
 import React from "react"
 
 import useAuth from "hooks/auth/useAuth"
 import CardMenu from "./CardMenu"
 import TopInfo from "./CardItemTopInfo"
 import { ThemeItemBar } from "./CardItem"
-import { LikeButton } from "./CardItemButton"
+import LikeButton from "./CardItemButton"
 
 interface CardImgProps {
   isLike: boolean
