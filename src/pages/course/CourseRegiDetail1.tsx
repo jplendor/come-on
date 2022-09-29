@@ -4,6 +4,10 @@ import { Box, Input, Typography, TextField, Fab } from "@mui/material"
 import { PhotoCamera } from "@mui/icons-material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
+import TextInput from "components/common/input/TextInput"
+import ImageInput from "components/common/input/ImageInput"
+import InputWrapper from "components/common/input/InputWrapper"
+
 import {
   setCourseDetail,
   useGetCourseListQuery,
@@ -61,7 +65,7 @@ interface pageProps {
 const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   const selectFile = useRef<any>()
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
-
+  const [previewImg, setPreviewImg] = useState<null | string>(null)
   const [changeInput, setChangeInput] = useState<CourseData>({
     title: "",
     description: "",
@@ -88,16 +92,23 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
       }
     })
   }
-
-  const makeFormData = (): FormData => {
-    const formData = new FormData()
-    formData.append("title", changeInput.title)
-    formData.append("description", changeInput.description)
-    formData.append("imgFile", selectFile.current.files[0])
-    console.log(selectFile.current.files[0])
-
-    return formData
+  /// /////////////////////////////////////////////////////////////////////////////////////////
+  const changeFileToObjectUrl = (file: File): void => {
+    const fileUrl = URL.createObjectURL(file)
+    setImageSrc(fileUrl)
+    setPreviewImg(fileUrl)
+    encodeFileToBase64(file)
+    console.log(fileUrl)
   }
+
+  const handleChangeImg = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    onChangeInput(e)
+    if (e.target.files) {
+      changeFileToObjectUrl(e.target.files[0])
+      console.log(e.target.files[0])
+    }
+  }
+
   // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
   const dispatch = useDispatch()
   const { data, error, isLoading } = useGetCourseListQuery()
@@ -119,31 +130,13 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   return (
     <>
       {/*  */}
-      <ImgContainer>
-        {imageSrc && (
-          <img src={String(imageSrc)} alt="img" width="100%" height="100%" />
-        )}
-        <IconContainer>
-          <Fab
-            color="secondary"
-            aria-label="camera"
-            size="large"
-            component="label"
-          >
-            <PhotoCamera sx={ICON_STYLE} />
-            <input
-              hidden
-              accept="image/*"
-              type="file"
-              ref={selectFile}
-              name="imgFile"
-              onChange={(e) => {
-                encodeFileToBase64(selectFile.current.files[0])
-              }}
-            />
-          </Fab>
-        </IconContainer>
-      </ImgContainer>
+      <ImageInput
+        title="이미지 등록"
+        alt="이미지를 등록해 주세요"
+        message="밥드세요"
+        previewImg={previewImg}
+        handleChangeImg={handleChangeImg}
+      />
 
       <FormBox sx={FORM_STYLE}>
         <TitleContainer>

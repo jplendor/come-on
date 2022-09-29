@@ -103,7 +103,7 @@ interface CoursePlaceState {
 }
 
 const Course = (): any => {
-  const [selectedNumber, setselectedNumber] = useState<string>()
+  const [selectedNumber, setselectedNumber] = useState<string>("")
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
 
@@ -138,7 +138,6 @@ const Course = (): any => {
   useEffect(() => {
     if (isSuccess) {
       setImgSrc(resultCourseDetail.data.imageUrl)
-      courseData = resultCourseDetail.data.coursePlaces
     }
   }, [isSuccess, courseData])
 

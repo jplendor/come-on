@@ -1,13 +1,15 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Box,
   Grid,
   GridProps,
+  IconButton,
   Typography,
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
-
+import { KeyboardArrowRight } from "@mui/icons-material"
+import { Link } from "react-router-dom"
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
 // 2. 리스트 삭제 버튼 [V]
@@ -137,6 +139,27 @@ const TITLE_BOX = {
   padding: "0px",
 }
 
+const DES_BOX = {
+  width: "100%",
+  display: "flex",
+  justifyContent: "space-between",
+  displayDirection: "column",
+  flexwrap: "nowrap",
+  padding: "0px",
+  margin: "0px",
+}
+
+const URL_ICON = {
+  width: "14px",
+  height: "14px",
+  display: "relative",
+  fontSize: "14px",
+  margin: "0px",
+  padding: "0px",
+  left: "50px",
+  color: "#BDBDBD",
+}
+
 export interface ListDetailCardProp {
   index: number
   titleTop: string
@@ -165,10 +188,11 @@ interface ListDetailCardProps {
 const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
-  item: { order: index, name: placeName, category, description },
+  item: { order: index, name: placeName, category, description, apiId },
   maxLen,
   onRemove,
 }) => {
+  const routeUrl = `https://map.kakao.com/link/to/${apiId}`
   console.log(isSelected)
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
@@ -210,9 +234,16 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
                   {category}
                 </Typography>
               </Box>
-              <Typography variant="subtitle2" sx={TITLE_DES}>
-                {description}
-              </Typography>
+              <Box sx={DES_BOX}>
+                <Typography variant="subtitle2" sx={TITLE_DES}>
+                  {description}
+                </Typography>
+                <a href={routeUrl} target="_blank" rel="noreferrer">
+                  <IconButton sx={URL_ICON}>
+                    <KeyboardArrowRight />
+                  </IconButton>
+                </a>
+              </Box>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 임시
               </Typography>

@@ -61,20 +61,21 @@ const MapContainer = ({
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
   let mapData: MapProps[]
 
+  const makeData = (): MapProps[] => {
+    const mapData2 = placeLists.map((place) => {
+      return {
+        order: place.order,
+        title: place.name,
+        position: new window.kakao.maps.LatLng(place.lat, place.lng),
+      }
+    })
+
+    return mapData2
+  }
   useEffect(() => {
-    const makeData = (): MapProps[] => {
-      const mapData2 = placeLists.map((place) => {
-        return {
-          order: place.order,
-          title: place.name,
-          position: new window.kakao.maps.LatLng(place.lat, place.lng),
-        }
-      })
-
-      return mapData2
-    }
     mapData = makeData()
-
+    console.log(mapData)
+    console.log(selectedNumber)
     if (isSuccess && mapData !== undefined) {
       const container = mapContainer.current
       const center =
