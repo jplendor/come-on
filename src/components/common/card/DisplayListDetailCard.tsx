@@ -166,34 +166,61 @@ export interface ListDetailCardProp {
   titleBody: string
   titleBottom: string
 }
-
-interface CoursePlaceState {
+interface Place {
   order: number
   name: string
-  description: string
   lng: number // 경도 x
   lat: number // 위도 y
   apiId: number
   category: string
+  address: string
 }
 
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
+interface CoursePlace extends Place {
+  description: string
+}
+
+interface MeetingPlace extends Place {
+  memo: string
+}
 interface ListDetailCardProps {
-  item: CoursePlaceState
+  item: CoursePlace | MeetingPlace
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: boolean
   onRemove: (index: number) => void
   maxLen: number
+  mode: PlaceType
 }
 
 const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
+  mode,
   onClick,
   isSelected,
-  item: { order: index, name: placeName, category, description, apiId },
+  item,
   maxLen,
   onRemove,
 }) => {
+  const { order: index, name: placeName, category, apiId, address } = item
+  let description = null
+  let memo = null
+
+  if (mode === PlaceType.m) {
+    const { memo: itemMemo } = item as MeetingPlace
+    memo = itemMemo
+  }
+
+  if (mode === PlaceType.c) {
+    const { description: itemDescription } = item as CoursePlace
+    description = itemDescription
+  }
+
   const routeUrl = `https://map.kakao.com/link/to/${apiId}`
-  console.log(isSelected)
+
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={2} sx={NUMBERING_BOX}>
@@ -236,7 +263,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
               </Box>
               <Box sx={DES_BOX}>
                 <Typography variant="subtitle2" sx={TITLE_DES}>
-                  {description}
+                  {description !== null ? description : memo}
                 </Typography>
                 <a href={routeUrl} target="_blank" rel="noreferrer">
                   <IconButton sx={URL_ICON}>
@@ -245,7 +272,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
                 </a>
               </Box>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
-                임시
+                {address}
               </Typography>
             </Box>
           </Grid>

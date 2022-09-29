@@ -100,6 +100,12 @@ interface CoursePlaceState {
   apiId: number
   category: string
   id: number
+  address: string
+}
+
+enum PlaceType {
+  m = "meeting",
+  c = "course",
 }
 
 const Course = (): any => {
@@ -125,7 +131,7 @@ const Course = (): any => {
     id,
   })
   let courseData: CoursePlaceState[] = []
-  // const [courseData, setCourseData] = useState<CoursePlaceState[]>([])
+
   const onRemove = (index: number): void => {
     courseData = courseData?.filter((place) => place.order !== index)
   }
@@ -139,7 +145,7 @@ const Course = (): any => {
     if (isSuccess) {
       setImgSrc(resultCourseDetail.data.imageUrl)
     }
-  }, [isSuccess, courseData])
+  }, [isSuccess, courseData, resultCourseDetail?.data.imageUrl])
 
   return (
     <>
@@ -204,6 +210,7 @@ const Course = (): any => {
               }
               onRemove={onRemove}
               maxLen={courseData.length}
+              mode={PlaceType.c}
             />
           ))}
         {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}

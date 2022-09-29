@@ -107,6 +107,7 @@ const DisplayCard: React.FC<ListDetailCardProps> = ({
         lat: obj.y, // 위도 y
         apiId: obj.kakaoPlaceId,
         category: "ETC",
+        address: "",
       }
       dispatch(addCoursePlace(newPlace))
       navigate("/course", { state: 200 })
