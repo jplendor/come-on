@@ -84,7 +84,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   return (
     <MainContainer>
       <MapContainer
-        selectedNumber={String(selectedNumber)}
+        selectedNumber={selectedNumber}
         placeLists={placeList}
         isSuccess={placeList !== undefined}
         isLoading={placeList === undefined}
