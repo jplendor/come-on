@@ -9,6 +9,8 @@ import { useCreateMeetingMutation } from "features/meeting/meetingSlice"
 import ImageInput from "components/common/input/ImageInput"
 import TextInput from "components/common/input/TextInput"
 import InputWrapper from "components/common/input/InputWrapper"
+import Header from "components/meeting/Header"
+import { Close } from "@mui/icons-material"
 
 export interface MeetingInfoType {
   [key: string]: string
@@ -135,73 +137,91 @@ const MeetingCreate = (): JSX.Element => {
     }
   }
 
+  const headerRightBtn = (
+    <Button onClick={() => navigate("/meeting")}>
+      <Close />
+    </Button>
+  )
+
   return (
-    <Box component="form" onSubmit={handleSubmit}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <ImageInput
-            title="사진등록"
-            alt="모임대표사진"
-            message="모임 대표 사진을 등록해주세요"
-            previewImg={previewImg}
-            handleChangeImg={handleChangeImg}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextInput
-            title="모임이름"
-            name="title"
-            value={meetingInfo.title}
-            placeholder="모임이름을 입력해주세요!"
-            handleChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <InputWrapper
-            title="모임기간"
-            subTitle={<div>임시</div>}
-            inputItem={
-              <CalendarRangePicker
-                meetingInfo={meetingInfo}
-                setMeetingInfo={setMeetingInfo}
-              />
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <ButtonGroup>
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: theme.palette.error.main,
-                color: "white",
-                "&:hover": {
+    <>
+      <Header text="모임등록" rightBtn={headerRightBtn} />
+      <Box component="form" onSubmit={handleSubmit}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <ImageInput
+              title="사진등록"
+              alt="모임대표사진"
+              message="사진을 등록해주세요"
+              previewImg={previewImg}
+              handleChangeImg={handleChangeImg}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextInput
+              title="모임이름"
+              name="title"
+              value={meetingInfo.title}
+              placeholder="모임이름을 입력해주세요!"
+              handleChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <InputWrapper
+              title="모임기간"
+              subTitle={
+                meetingInfo.startDate && meetingInfo.endDate ? (
+                  <div>{`${meetingInfo.startDate.replaceAll(
+                    "-",
+                    "."
+                  )}~${meetingInfo.endDate.replaceAll("-", ".")}`}</div>
+                ) : (
+                  <div>기간 선택</div>
+                )
+              }
+              inputItem={
+                <CalendarRangePicker
+                  meetingInfo={meetingInfo}
+                  setMeetingInfo={setMeetingInfo}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ButtonGroup>
+              <Button
+                variant="contained"
+                sx={{
                   bgcolor: theme.palette.error.main,
-                },
-              }}
-              onClick={() => {
-                navigate("/meeting")
-              }}
-            >
-              취소
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: theme.palette.secondary.main,
-                color: "white",
-                "&:hover": {
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: theme.palette.error.main,
+                  },
+                }}
+                onClick={() => {
+                  navigate("/meeting")
+                }}
+              >
+                취소
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
                   bgcolor: theme.palette.secondary.main,
-                },
-              }}
-              type="submit"
-            >
-              완료
-            </Button>
-          </ButtonGroup>
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: theme.palette.secondary.main,
+                  },
+                }}
+                type="submit"
+              >
+                완료
+              </Button>
+            </ButtonGroup>
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </>
   )
 }
 
