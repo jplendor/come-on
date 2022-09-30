@@ -37,7 +37,8 @@ const MeetingCreate = (): JSX.Element => {
 
   const ButtonGroup = styled.div`
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    height: 48px;
   `
 
   const changeFileToObjectUrl = (file: File): void => {
@@ -189,11 +190,12 @@ const MeetingCreate = (): JSX.Element => {
               <Button
                 variant="contained"
                 sx={{
-                  bgcolor: theme.palette.error.main,
+                  bgcolor: theme.grayscale[300],
                   color: "white",
                   "&:hover": {
-                    bgcolor: theme.palette.error.main,
+                    bgcolor: theme.grayscale[300],
                   },
+                  width: "35%",
                 }}
                 onClick={() => {
                   navigate("/meeting")
@@ -204,11 +206,12 @@ const MeetingCreate = (): JSX.Element => {
               <Button
                 variant="contained"
                 sx={{
-                  bgcolor: theme.palette.secondary.main,
+                  bgcolor: theme.palette.primary.main,
                   color: "white",
                   "&:hover": {
-                    bgcolor: theme.palette.secondary.main,
+                    bgcolor: theme.palette.primary.main,
                   },
+                  width: "60%",
                 }}
                 type="submit"
               >
