@@ -60,8 +60,11 @@ enum PlaceType {
   m = "meeting",
   c = "course",
 }
+interface SearchPlaceProps {
+  mode: PlaceType
+}
 
-const SearchPlace = (): JSX.Element => {
+const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
@@ -206,7 +209,7 @@ const SearchPlace = (): JSX.Element => {
               item={item}
               onClickFocus={onClickFocus}
               selectedNumber={selectedNumber}
-              mode={PlaceType.c}
+              mode={mode}
             />
           ))}
       </ListContainer>
