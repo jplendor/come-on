@@ -46,7 +46,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
         if (!reader.result) {
           throw new Error("No img result")
         }
-        await setImageSrc(reader.result)
+        setImageSrc(reader.result)
         resolve()
       }
     })
@@ -76,6 +76,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
         ...changeInput,
         [e.target.name]: e.target.value,
       }
+      console.log(newState)
       setChangeInput(newState)
     }
   }
@@ -105,7 +106,9 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
 
   useEffect(() => {
     setIsValid(onValid())
-  }, [changeInput, isValid, onValid])
+    console.log(isValid)
+    console.log(changeInput)
+  }, [changeInput, isValid])
 
   return (
     <FormBox sx={FORM_STYLE} onChange={onValid}>
