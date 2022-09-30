@@ -1,6 +1,6 @@
+import React from "react"
 import { PlaceType } from "components/common/card/DisplayListDetailCard"
 import SearchPlace from "pages/course/SearchPlace"
-import React from "react"
 
 const MeetingPlaceAdd = (): JSX.Element => {
   return (

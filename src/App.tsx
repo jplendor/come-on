@@ -8,9 +8,7 @@ import NeighborhoodCourse from "pages/course/NeighborhoodCourse"
 
 // 코스
 import Course from "pages/course/Course"
-import SearchPlace from "pages/course/SearchPlace"
 import CourseRegiLayout from "pages/course/CourseRegiLayout"
-import CourseRegiDetail2 from "pages/course/CourseRegiDetail2"
 import Meeting from "pages/meeting/Meeting"
 import CoursePlaceeAdd from "pages/course/CoursePlaceAdd"
 
