@@ -65,7 +65,6 @@ const ImageInput = ({
   return (
     <InputWrapper
       title={title}
-      subTitle={<div>임시</div>}
       inputItem={
         previewImg ? (
           <ImgWrapper>

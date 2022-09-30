@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "@emotion/styled"
+import { Typography } from "@mui/material"
 
 const Info = styled.div`
   display: flex;
@@ -7,8 +8,8 @@ const Info = styled.div`
   padding-bottom: 10px;
 `
 
-const Title = styled.div`
-  font-weight: bold;
+const SubTitle = styled.div`
+  color: gray;
 `
 
 interface InputWrapperProps {
@@ -21,12 +22,14 @@ const InputWrapper = ({
   title,
   subTitle,
   inputItem,
-}: InputWrapperProps): JSX.Element => {
+}: Partial<InputWrapperProps>): JSX.Element => {
   return (
     <>
       <Info>
-        <Title>{title}</Title>
-        {subTitle}
+        <Typography variant="subtitle1" fontWeight="bold">
+          {title}
+        </Typography>
+        <SubTitle>{subTitle}</SubTitle>
       </Info>
       {inputItem}
     </>
