@@ -204,7 +204,7 @@ const SearchPlace = (): JSX.Element => {
           generateComponent(searchedData, (item, key) => (
             <SearchCard
               item={item}
-              onClick={onClickFocus}
+              onClickFocus={onClickFocus}
               selectedNumber={selectedNumber}
               mode={PlaceType.c}
             />

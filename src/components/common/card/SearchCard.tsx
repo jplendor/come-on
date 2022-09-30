@@ -83,20 +83,22 @@ enum PlaceType {
 
 interface ListDetailCardProps {
   item: ListDetailCardProp
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
+  onClickFocus: (event: React.MouseEvent<HTMLDivElement>) => void
   selectedNumber: string
   mode: PlaceType
 }
-//
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 const SearchCard: React.FC<ListDetailCardProps> = ({
-  onClick,
+  onClickFocus,
   selectedNumber,
   item,
 
   mode,
 }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
   const obj = {
     index: item.index, // 순서
     cateName: "ETC", // 카테고리네임
@@ -109,33 +111,47 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
     address: item.address_name,
   }
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const makeNewPlace = (): any => {
+    const newPlace = {
+      id: 0,
+      order: obj.index,
+      name: obj.placeName,
+      description: "값을 입력해 주세요",
+      lng: obj.x, // 경도 x
+      lat: obj.y, // 위도 y
+      apiId: obj.kakaoPlaceId,
+      category: "ETC",
+      address: "",
+    }
 
-  const onAddClick = (): void => {
+    return newPlace
+  }
+
+  const onClickAddCourse = (): void => {
     // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
     const result: boolean = window.confirm(
       `${obj.placeName}을 코스로 추가하시겠습니까?`
     )
+
     if (result === true) {
       alert(`${obj.placeName}이 코스로 추가되었습니다.`)
-      const newPlace = {
-        id: 0,
-        order: obj.index,
-        name: obj.placeName,
-        description: "값을 입력해 주세요",
-        lng: obj.x, // 경도 x
-        lat: obj.y, // 위도 y
-        apiId: obj.kakaoPlaceId,
-        category: "ETC",
-        address: "",
-      }
+      const newPlace = makeNewPlace()
       dispatch(addCoursePlace(newPlace))
-      if (mode === PlaceType.m) {
-        navigate("/meeting")
-      } else if (mode === PlaceType.c) {
-        navigate("/course", { state: 200 })
-      }
+      navigate("/course", { state: 200 })
+    }
+  }
+
+  const onClickAddMeeting = (): void => {
+    // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
+    const result: boolean = window.confirm(
+      `${obj.placeName}을 모임코스로 추가하시겠습니까?`
+    )
+
+    if (result === true) {
+      alert(`${obj.placeName}이 모임코스로 추가되었습니다.`)
+      const newPlace = makeNewPlace()
+      dispatch(addCoursePlace(newPlace))
+      navigate("/meeting")
     }
   }
 
@@ -144,7 +160,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
       <ThemeGrid
         container
         id={String(obj.kakaoPlaceId)}
-        onClick={onClick}
+        onClick={onClickFocus}
         xs={12}
         sx={
           selectedNumber === String(obj.kakaoPlaceId)
@@ -156,7 +172,12 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
           <Box sx={ITEM_BOX}>
             <Typography variant="h6" sx={TITLE_FONT}>
               {obj.placeName}
-              <IconButton type="button" onClick={onAddClick}>
+              <IconButton
+                type="button"
+                onClick={
+                  mode === PlaceType.c ? onClickAddCourse : onClickAddMeeting
+                }
+              >
                 <AddIcon sx={URL_ICON} color="secondary" fontSize="large" />
               </IconButton>
             </Typography>
