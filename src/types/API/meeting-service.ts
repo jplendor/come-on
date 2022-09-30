@@ -34,6 +34,8 @@ interface MeetingDate {
 }
 
 interface Place {
+  apiId: number
+  category: string
   id: number
   name: string
   memo: string
@@ -70,4 +72,18 @@ export interface meetingDateForRead {
 
 export interface MeetingDateDetail extends MeetingDate {
   dateUsers: Array<User>
+}
+
+interface NewPlace {
+  apiId: number
+  name: string
+  lat: number
+  lng: number
+  memo: string
+  category: string
+}
+
+export interface MeetingPlaceForCreate {
+  meetingId: number
+  newPlace: NewPlace
 }

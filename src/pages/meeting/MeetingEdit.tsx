@@ -18,32 +18,6 @@ import DisplayListDetailCard, {
 } from "components/common/card/DisplayListDetailCard"
 import { MapOutlined } from "@mui/icons-material"
 
-// 임시 데이터
-const tempPlaces = [
-  {
-    id: 1,
-    apiId: 1,
-    category: "카페",
-    name: "장소이름1",
-    memo: "우리여기서 놀자111",
-    lat: 11,
-    lng: 11,
-    order: 1,
-    address: "주소11",
-  },
-  {
-    id: 2,
-    apiId: 2,
-    category: "보드게임",
-    name: "장소이름2",
-    memo: "우리여기서 놀자222",
-    lat: 22,
-    lng: 22,
-    order: 2,
-    address: "주소22",
-  },
-]
-
 const NewPlace = {
   border: "dashed 2px gray",
   height: "80px",
@@ -69,7 +43,7 @@ const MeetingEdit = (): JSX.Element => {
   const navigate = useNavigate()
 
   const addNewPlace = (): void => {
-    navigate("/meeting/place")
+    navigate(`/meeting/${meetingId}/place`)
   }
 
   let content
@@ -77,7 +51,6 @@ const MeetingEdit = (): JSX.Element => {
     content = <CircularProgress />
   } else if (isSuccess) {
     const { data: meeting } = response
-
     content = (
       <Grid container spacing={3}>
         <Grid item xs={12}>
@@ -129,13 +102,13 @@ const MeetingEdit = (): JSX.Element => {
             모임 장소
           </Typography>
           <div>
-            {generateComponent(tempPlaces, (data, key) => (
+            {generateComponent(meeting.meetingPlaces, (data, key) => (
               <DisplayListDetailCard
                 mode={PlaceType.m}
-                item={data}
+                item={{ ...data, address: "주소 추가 예정" }}
                 key={key}
                 isSelected
-                maxLen={tempPlaces.length}
+                maxLen={meeting.meetingPlaces.length}
                 onClick={() => {
                   console.log("click")
                 }}
