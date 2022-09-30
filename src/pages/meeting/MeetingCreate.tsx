@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Grid, Box, Button } from "@mui/material"
+import { Grid, Box, Button, Container } from "@mui/material"
 
 import { useTheme } from "@mui/material/styles"
 import styled from "@emotion/styled"
@@ -10,7 +10,6 @@ import ImageInput from "components/common/input/ImageInput"
 import TextInput from "components/common/input/TextInput"
 import InputWrapper from "components/common/input/InputWrapper"
 import Header from "components/meeting/Header"
-import { Close } from "@mui/icons-material"
 
 export interface MeetingInfoType {
   [key: string]: string
@@ -137,16 +136,14 @@ const MeetingCreate = (): JSX.Element => {
     }
   }
 
-  const headerRightBtn = (
-    <Button onClick={() => navigate("/meeting")}>
-      <Close />
-    </Button>
-  )
-
   return (
-    <>
-      <Header text="모임등록" rightBtn={headerRightBtn} />
-      <Box component="form" onSubmit={handleSubmit}>
+    <Container>
+      <Header text="모임등록" />
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ mt: "20px", mb: "20px" }}
+      >
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <ImageInput
@@ -221,7 +218,7 @@ const MeetingCreate = (): JSX.Element => {
           </Grid>
         </Grid>
       </Box>
-    </>
+    </Container>
   )
 }
 
