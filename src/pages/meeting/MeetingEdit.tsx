@@ -29,6 +29,7 @@ const tempPlaces = [
     lat: 11,
     lng: 11,
     order: 1,
+    address: "주소11",
   },
   {
     id: 2,
@@ -39,6 +40,7 @@ const tempPlaces = [
     lat: 22,
     lng: 22,
     order: 2,
+    address: "주소22",
   },
 ]
 

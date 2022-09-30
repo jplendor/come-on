@@ -173,6 +173,7 @@ interface Place {
   lat: number // 위도 y
   apiId: number
   category: string
+  address: string
 }
 
 interface CoursePlace extends Place {
@@ -187,7 +188,6 @@ export enum PlaceType {
   m = "meeting",
   c = "course",
 }
-
 interface ListDetailCardProps {
   mode: PlaceType
   item: CoursePlace | MeetingPlace
@@ -205,7 +205,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
   maxLen,
   onRemove,
 }) => {
-  const { order: index, name: placeName, category, apiId } = item
+  const { order: index, name: placeName, category, apiId, address } = item
   let description = null
   let memo = null
 
@@ -272,7 +272,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
                 </a>
               </Box>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
-                임시
+                {address}
               </Typography>
             </Box>
           </Grid>

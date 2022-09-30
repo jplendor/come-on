@@ -25,8 +25,8 @@ const MainContainer = styled(Box)(() => ({
 }))
 
 const ImgContainer = styled(Box)(() => ({
-  margin: "0",
-  padding: "0",
+  padding: "0px 20px 0px 20px",
+
   width: "100%",
   height: "30%",
   objectFit: "cover",
@@ -100,14 +100,20 @@ interface CoursePlaceState {
   apiId: number
   category: string
   id: number
+  address: string
 }
 
-const Course = (): any => {
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
+const Course = (): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
 
-  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
 
     if (e) {
@@ -125,7 +131,7 @@ const Course = (): any => {
     id,
   })
   let courseData: CoursePlaceState[] = []
-  // const [courseData, setCourseData] = useState<CoursePlaceState[]>([])
+
   const onRemove = (index: number): void => {
     courseData = courseData?.filter((place) => place.order !== index)
   }
@@ -139,7 +145,7 @@ const Course = (): any => {
     if (isSuccess) {
       setImgSrc(resultCourseDetail.data.imageUrl)
     }
-  }, [isSuccess, courseData])
+  }, [isSuccess, resultCourseDetail?.data.imageUrl])
 
   return (
     <>
@@ -204,6 +210,7 @@ const Course = (): any => {
               }
               onRemove={onRemove}
               maxLen={courseData.length}
+              mode={PlaceType.c}
             />
           ))}
         {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}

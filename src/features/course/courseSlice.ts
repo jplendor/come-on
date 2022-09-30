@@ -34,6 +34,7 @@ interface CoursePlaceState {
       apiId: number
       category: string
       id: number
+      address: string
     }
   ]
 }
@@ -47,6 +48,7 @@ interface CoursePlaceProps {
   apiId: number
   category: string
   id: number
+  address: string
 }
 
 interface CourseDetailProps {
@@ -71,6 +73,7 @@ const initialState: CoursePlaceState = {
       lat: 127.65930674808553, // 위도 y
       apiId: 12346,
       category: "ETC",
+      address: "",
     },
   ],
 }

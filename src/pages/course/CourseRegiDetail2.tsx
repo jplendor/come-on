@@ -10,7 +10,6 @@ import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import DisplayListDetailCard from "components/common/card/DisplayListDetailCard"
-import { setSelectionRange } from "@testing-library/user-event/dist/utils"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -26,6 +25,11 @@ const ICON_STYLE = {
   margin: "5px 0",
 }
 
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
 interface CoursePlaceState {
   order: number
   name: string
@@ -34,6 +38,7 @@ interface CoursePlaceState {
   lat: number // 위도 y
   apiId: number
   category: string
+  address: string
 }
 
 interface pageProps {
@@ -110,6 +115,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
             }
             onRemove={onRemove}
             maxLen={placeList.length}
+            mode={PlaceType.c}
           />
         ))}
       <CourseNextStepButton content="다음단계" onClick={onClicKNextPage} />

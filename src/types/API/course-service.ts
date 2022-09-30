@@ -32,6 +32,7 @@ export interface CourseDetail {
       lng: number // 경도 x
       lat: number // 위도 y
       apiId: number
+      address: string
       category: string
     }
   ]

@@ -8,6 +8,7 @@ import InputWrapper from "./InputWrapper"
 interface ImageInputProps {
   title: string
   alt: string
+
   message: string
   previewImg: string | null
   handleChangeImg: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -16,6 +17,7 @@ interface ImageInputProps {
 const ImageInput = ({
   title,
   alt,
+
   message,
   previewImg,
   handleChangeImg,

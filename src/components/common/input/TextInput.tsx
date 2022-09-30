@@ -7,6 +7,8 @@ interface TextInputProps {
   name: string
   value: string
   placeholder: string
+  multiline?: boolean
+  rows?: number
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -15,6 +17,8 @@ const TextInput = ({
   name,
   value,
   placeholder,
+  multiline,
+  rows,
   handleChange,
 }: TextInputProps): JSX.Element => {
   return (
@@ -23,9 +27,11 @@ const TextInput = ({
       subTitle={<div>임시</div>}
       inputItem={
         <TextField
+          multiline={multiline}
           fullWidth
           name={name}
           value={value}
+          rows={rows}
           placeholder={placeholder}
           onChange={handleChange}
         />
@@ -33,5 +39,8 @@ const TextInput = ({
     />
   )
 }
-
+TextInput.defaultProps = {
+  multiline: false,
+  rows: 1,
+}
 export default TextInput
