@@ -11,10 +11,14 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
+import { PlaceType } from "components/common/card/DisplayListDetailCard"
+import { Place } from "components/common/card/SearchCard"
 
 interface PlaceAddModalProps {
   open: boolean
   onClose: () => void
+  newPlace: Place
+  mode: PlaceType
 }
 
 const CATEGORY_LIST = [
@@ -32,7 +36,7 @@ const CATEGORY_LIST = [
 ]
 
 const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
-  const { open, onClose } = props
+  const { open, onClose, newPlace, mode } = props
 
   const [category, setCategory] = useState("")
   const [memo, setMemo] = useState("")
@@ -60,18 +64,12 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
     navigate(`/meeting/${meetingId}`)
   }
 
-  // 임시 데이터
-  const placeInfo = {
-    name: "와라와라노래방",
-    address: "서울특별시 강남구 땡땡로 41번길",
-  }
-
   const makeContent = (): JSX.Element => {
     return (
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>모임 장소</DialogTitle>
-        <Typography variant="h5">{placeInfo.name}</Typography>
-        <Typography>{placeInfo.address}</Typography>
+        <Typography variant="h5">{newPlace.name}</Typography>
+        <Typography>{newPlace.address}</Typography>
         <Select value={category} onChange={handleCategoryChange} displayEmpty>
           <MenuItem value="">카테고리</MenuItem>
           {generateComponent(CATEGORY_LIST, (data, key) => (

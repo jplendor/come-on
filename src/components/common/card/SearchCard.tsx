@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { Box, Grid, GridProps, IconButton, Typography } from "@mui/material"
@@ -6,6 +6,7 @@ import { Add as AddIcon } from "@mui/icons-material"
 
 import { styled } from "@mui/material/styles"
 import { addCoursePlace } from "features/course/courseSlice"
+import PlaceAddModal from "components/meeting/PlaceAddModal"
 
 const SELECTED_CARD = {
   border: "1px solid #1951B2",
@@ -88,6 +89,18 @@ interface ListDetailCardProps {
   mode: PlaceType
 }
 
+export interface Place {
+  id: number
+  order: number
+  name: string
+  description: string
+  lng: number
+  lat: number
+  apiId: number
+  category: string
+  address: string
+}
+
 /* eslint camelcase: ["error", {properties: "never"}] */
 const SearchCard: React.FC<ListDetailCardProps> = ({
   onClickFocus,
@@ -98,6 +111,16 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
 }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const [open, setOpen] = useState(false)
+
+  const openModal = (): void => {
+    setOpen(true)
+  }
+
+  const closeModal = (): void => {
+    setOpen(false)
+  }
 
   const obj = {
     index: item.index, // 순서
@@ -111,7 +134,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
     address: item.address_name,
   }
 
-  const makeNewPlace = (): any => {
+  const makeNewPlace = (): Place => {
     const newPlace = {
       id: 0,
       order: obj.index,
@@ -121,7 +144,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
       lat: obj.y, // 위도 y
       apiId: obj.kakaoPlaceId,
       category: "ETC",
-      address: "",
+      address: obj.address,
     }
 
     return newPlace
@@ -148,50 +171,59 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
     )
 
     if (result === true) {
-      alert(`${obj.placeName}이 모임코스로 추가되었습니다.`)
-      const newPlace = makeNewPlace()
-      dispatch(addCoursePlace(newPlace))
-      navigate("/meeting")
+      openModal()
     }
   }
 
   return (
-    <Grid item xs={10} sx={{ margin: "12px 0" }}>
-      <ThemeGrid
-        container
-        id={String(obj.kakaoPlaceId)}
-        onClick={onClickFocus}
-        xs={12}
-        sx={
-          selectedNumber === String(obj.kakaoPlaceId)
-            ? SELECTED_CARD
-            : DEFAULT_CARD
-        }
-      >
-        <Grid item xs={12} sx={TITLE_BOX}>
-          <Box sx={ITEM_BOX}>
-            <Typography variant="h6" sx={TITLE_FONT}>
-              {obj.placeName}
-              <IconButton
-                type="button"
-                onClick={
-                  mode === PlaceType.c ? onClickAddCourse : onClickAddMeeting
-                }
-              >
-                <AddIcon sx={URL_ICON} color="secondary" fontSize="large" />
-              </IconButton>
-            </Typography>
-            <Typography variant="subtitle2" sx={ADDRESS_FONT}>
-              {obj.addressName}
-              <IconButton aria-label="edit this" color="secondary" />
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={1}>
-          <IconButton aria-label="close this" color="secondary" size="small" />
-        </Grid>
-      </ThemeGrid>
-    </Grid>
+    <>
+      <Grid item xs={10} sx={{ margin: "12px 0" }}>
+        <ThemeGrid
+          container
+          id={String(obj.kakaoPlaceId)}
+          onClick={onClickFocus}
+          xs={12}
+          sx={
+            selectedNumber === String(obj.kakaoPlaceId)
+              ? SELECTED_CARD
+              : DEFAULT_CARD
+          }
+        >
+          <Grid item xs={12} sx={TITLE_BOX}>
+            <Box sx={ITEM_BOX}>
+              <Typography variant="h6" sx={TITLE_FONT}>
+                {obj.placeName}
+                <IconButton
+                  type="button"
+                  onClick={
+                    mode === PlaceType.c ? onClickAddCourse : onClickAddMeeting
+                  }
+                >
+                  <AddIcon sx={URL_ICON} color="secondary" fontSize="large" />
+                </IconButton>
+              </Typography>
+              <Typography variant="subtitle2" sx={ADDRESS_FONT}>
+                {obj.addressName}
+                <IconButton aria-label="edit this" color="secondary" />
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={1}>
+            <IconButton
+              aria-label="close this"
+              color="secondary"
+              size="small"
+            />
+          </Grid>
+        </ThemeGrid>
+      </Grid>
+      <PlaceAddModal
+        open={open}
+        onClose={closeModal}
+        newPlace={makeNewPlace()}
+        mode={mode}
+      />
+    </>
   )
 }
 
