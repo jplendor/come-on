@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom"
 import RequireAuth from "components/auth/RequireAuth"
 
 import MyPage from "./MyPage"
-import ManagingMeetings from "./Meeting"
 
 const AuthMyPage = (): JSX.Element => (
   <RequireAuth>
