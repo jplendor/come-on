@@ -42,6 +42,7 @@ interface Place {
   lat: number
   lng: number
   order: number
+  address: string
 }
 export interface Meeting {
   id: number
@@ -81,6 +82,7 @@ interface NewPlace {
   lng: number
   memo: string
   category: string
+  address: string
 }
 
 export interface MeetingPlaceForCreate {

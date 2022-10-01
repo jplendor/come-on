@@ -103,7 +103,7 @@ const MeetingEdit = (): JSX.Element => {
               {generateComponent(meeting.meetingPlaces, (data, key) => (
                 <DisplayListDetailCard
                   mode={PlaceType.m}
-                  item={{ ...data, address: "주소 추가 예정" }}
+                  item={data}
                   key={key}
                   isSelected
                   maxLen={meeting.meetingPlaces.length}

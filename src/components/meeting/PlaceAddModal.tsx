@@ -72,6 +72,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
           lng: newPlace.lng,
           memo,
           category,
+          address: newPlace.address,
         },
       }).unwrap()
 
