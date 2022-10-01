@@ -6,8 +6,8 @@ import Face, { CollectionsOutlined } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { Box } from "@mui/material"
 import ReactDOMServer from "react-dom/server"
+import { SearchCardProp } from "types/API/course-service"
 import KakaoComponent from "./KakaoComponent"
-
 import MarkerOveray from "./MarkerOveray"
 
 const { kakao } = window
@@ -16,6 +16,7 @@ export interface MapProps {
   order: number
   title: string
   position: any
+  apiId: number
 }
 
 const createMarker: any = (
@@ -67,6 +68,7 @@ const MapContainer = ({
         order: place.order,
         title: place.name,
         position: new window.kakao.maps.LatLng(place.lat, place.lng),
+        apiId: place.apiId,
       }
     })
 
@@ -74,8 +76,6 @@ const MapContainer = ({
   }
   useEffect(() => {
     mapData = makeData()
-    console.log(mapData)
-    console.log(selectedNumber)
     if (isSuccess && mapData !== undefined) {
       const container = mapContainer.current
       const center =
@@ -106,9 +106,13 @@ const MapContainer = ({
       // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
       // 추후 순서 정보 넘어오면 색깔과 번호 커스텀
       // url정보도 저장하도록 해야함
-      mapData.forEach(({ title, position, order }, index) => {
+      mapData.forEach(({ title, position, order, apiId }, index) => {
         const tf = Number(selectedNumber) === index + 1
-        const markerOveray = MarkerOveray({ title, position, order }, tf, index)
+        const markerOveray = MarkerOveray(
+          { title, position, order, apiId },
+          tf,
+          index
+        )
 
         // 커스텀 오버레이가 표시될 위치입니다
         const customContent = ReactDOMServer.renderToString(markerOveray)

@@ -14,9 +14,9 @@ import { generateComponent } from "utils"
 import { useTheme } from "@mui/material/styles"
 import Calendar from "components/meeting/Calendar"
 import { useGetMeetingQuery } from "features/meeting/meetingSlice"
-import DisplayListDetailCard, {
+import PlaceDetailCard, {
   PlaceType,
-} from "components/common/card/DisplayListDetailCard"
+} from "components/common/card/PlaceDetailCard "
 import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
@@ -101,7 +101,7 @@ const MeetingEdit = (): JSX.Element => {
           <Grid item xs={12}>
             <div>
               {generateComponent(meeting.meetingPlaces, (data, key) => (
-                <DisplayListDetailCard
+                <PlaceDetailCard
                   mode={PlaceType.m}
                   item={data}
                   key={key}

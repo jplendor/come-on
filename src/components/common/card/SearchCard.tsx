@@ -7,6 +7,7 @@ import { Add as AddIcon } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { addCoursePlace } from "features/course/courseSlice"
 import PlaceAddModal from "components/meeting/PlaceAddModal"
+import { SearchCardProp } from "types/API/course-service"
 
 const SELECTED_CARD = {
   border: "1px solid #1951B2",
@@ -65,25 +66,13 @@ const URL_ICON = {
   color: "#BDBDBD",
 }
 
-interface ListDetailCardProp {
-  index: number // 카드의 인덱스 넘버 - order
-  address_name: string // 주소
-  category_name: string // 플레이스 카테고리 -placeCategory
-  place_name: string // 장소 이름           -name
-  place_url: string // 플레이스 주소        -
-  x: number // 경도 longitude              -lon
-  y: number // 위도 latitude               -lat
-  description: string // 설명              -description
-  id: number // 카카오 id          -kakaoPlaceId
-}
-
 enum PlaceType {
   m = "meeting",
   c = "course",
 }
 
 interface ListDetailCardProps {
-  item: ListDetailCardProp
+  item: SearchCardProp
   onClickFocus: (event: React.MouseEvent<HTMLDivElement>) => void
   selectedNumber: string
   mode: PlaceType

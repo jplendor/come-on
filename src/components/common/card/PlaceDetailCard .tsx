@@ -9,7 +9,7 @@ import {
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight } from "@mui/icons-material"
-import { Link } from "react-router-dom"
+
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
 // 2. 리스트 삭제 버튼 [V]
@@ -67,6 +67,7 @@ const ITEM_BOX = {
 }
 
 const TITLE_CATEGORY = {
+  width: "32px",
   fontSize: "10px",
   padding: "1px 3px",
   backgroundColor: "#EEEEEE",
@@ -109,6 +110,9 @@ const TITLE_FONT = {
   lineHeight: "140%",
   fontSize: "16px",
   padding: "0px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 }
 
 const TITLE_DES = {
@@ -165,7 +169,6 @@ export interface ListDetailCardProp {
   titleBody: string
   titleBottom: string
 }
-
 interface Place {
   order: number
   name: string
@@ -176,6 +179,11 @@ interface Place {
   address: string
 }
 
+export enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
 interface CoursePlace extends Place {
   description: string
 }
@@ -183,21 +191,16 @@ interface CoursePlace extends Place {
 interface MeetingPlace extends Place {
   memo: string
 }
-
-export enum PlaceType {
-  m = "meeting",
-  c = "course",
-}
 interface ListDetailCardProps {
-  mode: PlaceType
   item: CoursePlace | MeetingPlace
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: boolean
   onRemove: (index: number) => void
   maxLen: number
+  mode: PlaceType
 }
 
-const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
+const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   mode,
   onClick,
   isSelected,
@@ -263,7 +266,7 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
               </Box>
               <Box sx={DES_BOX}>
                 <Typography variant="subtitle2" sx={TITLE_DES}>
-                  {description || memo}
+                  {description !== null ? description : memo}
                 </Typography>
                 <a href={routeUrl} target="_blank" rel="noreferrer">
                   <IconButton sx={URL_ICON}>
@@ -283,4 +286,4 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
   )
 }
 
-export default DisplayListDetailCard
+export default PlaceDetailCard

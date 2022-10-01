@@ -30,7 +30,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   const dispatch = useDispatch()
 
   const [isValid, setIsValid] = useState(false)
-  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
+  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>("")
   const [previewImg, setPreviewImg] = useState<null | string>(null)
   const [changeInput, setChangeInput] = useState<CourseData>({
     title: "",
@@ -42,12 +42,11 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
     const reader = new FileReader()
     reader.readAsDataURL(fileBlob)
     return new Promise<void>((resolve) => {
-      reader.onload = async () => {
+      reader.onload = () => {
         if (!reader.result) {
           throw new Error("No img result")
         }
-        setImageSrc(reader.result)
-        resolve()
+        resolve(setImageSrc(reader.result))
       }
     })
   }
@@ -76,7 +75,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
         ...changeInput,
         [e.target.name]: e.target.value,
       }
-      console.log(newState)
+
       setChangeInput(newState)
     }
   }
@@ -104,9 +103,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
 
   useEffect(() => {
     setIsValid(onValid())
-    console.log(isValid)
-    console.log(changeInput)
-  }, [changeInput, isValid])
+  }, [changeInput, isValid, imageSrc, previewImg])
 
   return (
     <FormBox sx={FORM_STYLE} onChange={onValid}>
