@@ -67,7 +67,6 @@ const ITEM_BOX = {
 }
 
 const TITLE_CATEGORY = {
-  width: "32px",
   fontSize: "10px",
   padding: "1px 3px",
   backgroundColor: "#EEEEEE",
