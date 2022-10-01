@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react"
 
-interface ServerResponse {
+interface ServerRes {
   responseTime: any
   code: any
   data: any
@@ -14,20 +14,20 @@ export interface QueryProps {
 }
 
 interface BasicframeProps extends QueryProps {
-  data: ServerResponse
+  data: ServerRes
 }
 
 const Basicframe: <T extends BasicframeProps>(
   arg0: T,
-  arg1: [() => JSX.Element, (arg0: any) => JSX.Element]
+  arg1: [() => JSX.Element, (arg0: any) => JSX.Element | JSX.Element[] | any]
 ) => JSX.Element = (
   { data: info, isLoading, isSuccess, isError },
   [Skeleton, Component]
 ) => {
-  let content
+  let content = <div />
   if (isError || isLoading) content = <Skeleton />
   if (isSuccess) content = <Component info={info.data} />
-  return content as JSX.Element
+  return content
 }
 
 export default Basicframe

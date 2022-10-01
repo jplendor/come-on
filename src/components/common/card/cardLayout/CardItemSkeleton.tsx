@@ -10,7 +10,7 @@ export const CardItemSkeleton = (): JSX.Element => (
   >
     <Skeleton
       variant="rounded"
-      width={350}
+      width="100%"
       height={180}
       sx={{ borderRadius: "6px" }}
     />

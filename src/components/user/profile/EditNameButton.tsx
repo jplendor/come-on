@@ -1,7 +1,7 @@
-import React, { memo } from "react"
+import React from "react"
 import type { Dispatch, SetStateAction } from "react"
-import { Edit as EditIcon } from "@mui/icons-material"
 import { CircularProgress, IconButton } from "@mui/material"
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined"
 
 interface NameEditButtonProps {
   isLoading: boolean
@@ -18,9 +18,9 @@ const NameEditButton = ({
     {isLoading ? (
       <CircularProgress size={ICON_SIZE} />
     ) : (
-      <EditIcon sx={{ fontSize: ICON_SIZE }} />
+      <EditOutlinedIcon sx={{ fontSize: ICON_SIZE }} />
     )}
   </IconButton>
 )
 
-export default memo(NameEditButton)
+export default NameEditButton
