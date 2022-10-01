@@ -80,24 +80,24 @@ enum Code {
  * data         : 결과 데이터를 반환합니다.
  */
 
-export interface ServerResponse {
+export interface ServerRes {
   responseTime: string
   code: Code
   data: Exception | ReissueToken | Logout | TokenValidation
 }
 
-export interface ReissueResponse extends ServerResponse {
+export interface ReissueRes extends ServerRes {
   data: ReissueToken
 }
 
-export interface LogoutResponse extends ServerResponse {
-  data: Logout | Exception
+export interface LogoutRes extends ServerRes {
+  data: Logout
 }
 
-export interface ExceptionResponse extends ServerResponse {
-  data: Exception | Exception
+export interface ExceptionRes extends ServerRes {
+  data: Exception
 }
 
-export interface TokenValidationResponse extends ServerResponse {
-  data: TokenValidation | Exception
+export interface TokenValidationRes extends ServerRes {
+  data: TokenValidation
 }

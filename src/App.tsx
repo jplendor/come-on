@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom"
 
 import Auth from "pages/auth/Auth"
 import User from "pages/user/User"
-import NeighborhoodCourse from "pages/course/NeighborhoodCourse"
+import NeighborhoodCourse from "pages/user/Neighborhood"
 
 // 코스
 import Course from "pages/course/Course"
@@ -22,5 +22,4 @@ const App = (): JSX.Element => {
     </Routes>
   )
 }
-
 export default App

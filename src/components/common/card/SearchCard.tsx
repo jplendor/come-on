@@ -156,7 +156,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   const onClickAddMeeting = (): void => {
     // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
     const result: boolean = window.confirm(
-      `${obj.placeName}을 모임코스로 추가하시겠습니까?`
+      `${obj.placeName}을 모임장소로 추가하시겠습니까?`
     )
 
     if (result === true) {

@@ -8,12 +8,10 @@ const BUTTON = {
   borderRadius: "8px",
   padding: "18px 18px",
 }
-
-export const ThemeLoginButton = styled(Button)<ButtonProps>(() => BUTTON)
-
-export const ThemeLoadingButton = styled(LoadingButton)<LoadingButtonProps>(
-  () => ({
+export const LoginButton = styled(Button)<ButtonProps>(() => BUTTON)
+export const LoginLoadingButton = styled(LoadingButton)<LoadingButtonProps>(
+  ({ theme: { grayscale } }) => ({
     ...BUTTON,
-    backgroundColor: "#e0e0e0",
+    backgroundColor: grayscale[300],
   })
 )

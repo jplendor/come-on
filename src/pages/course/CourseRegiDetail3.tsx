@@ -96,6 +96,7 @@ api연동부분
   const [addCourseDetail, { data: result, isSuccess }] =
     useAddCourseDetailMutation()
   const [addCoursePlace, { data: courseResult }] = useAddCoursePlaceMutation()
+
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })

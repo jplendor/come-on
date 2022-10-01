@@ -36,7 +36,7 @@ const Meeting = (): JSX.Element => {
       <Route path="/" element={<AuthMeetingListRead />} />
       <Route path="register" element={<AuthMeetingCreate />} />
       <Route path=":meetingId" element={<AuthMeetingEdit />} />
-      <Route path="place" element={<AuthMeetingPlaceAdd />} />
+      <Route path=":meetingId/place" element={<AuthMeetingPlaceAdd />} />
     </Routes>
   )
 }

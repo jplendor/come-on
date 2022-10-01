@@ -13,9 +13,9 @@ import {
   Typography,
   InputAdornment,
 } from "@mui/material"
+import { useModifyNameMutation } from "features/user/userSlice"
 import type { TypographyProps, TextFieldProps } from "@mui/material"
 
-import { useModifyNameMutation } from "features/user/userSlice"
 import NameEditButton from "./EditNameButton"
 
 const NicknameTitle = styled(Typography)<TypographyProps>(

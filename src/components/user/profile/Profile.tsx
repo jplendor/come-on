@@ -33,6 +33,7 @@ const Profile = ({
           },
           title: `어서오세요. ${name}님!`,
           email,
+          setOpen,
         }}
       />
       {/* 프로필 영역 #1-3 */}

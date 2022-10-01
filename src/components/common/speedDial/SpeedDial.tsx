@@ -1,10 +1,26 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from "react"
+import { styled } from "@mui/material/styles"
 import EditIcon from "@mui/icons-material/Edit"
-import { SpeedDialAction, SpeedDialIcon } from "@mui/material"
+import type { SpeedDialProps } from "@mui/material"
+import {
+  Box,
+  SpeedDialIcon,
+  SpeedDialAction,
+  SpeedDial as MuiSpeedDial,
+} from "@mui/material"
 
-import ThemeSpeedDial from "components/common/speedDial"
 import { generateComponent } from "utils"
+
+const ThemeSpeedDial = styled((props: SpeedDialProps) => (
+  <Box sx={{ position: "relative" }}>
+    <MuiSpeedDial {...props} />
+  </Box>
+))(({ theme: { palette } }) => ({
+  "& .MuiSpeedDial-fab": {
+    backgroundColor: palette.primary,
+  },
+}))
 
 const actions = [{ icon: <EditIcon />, name: "코스생성" }]
 

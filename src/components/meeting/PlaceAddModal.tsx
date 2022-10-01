@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import {
   Button,
   Dialog,
@@ -13,6 +13,7 @@ import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
 import { PlaceType } from "components/common/card/PlaceDetailCard "
 import { Place } from "components/common/card/SearchCard"
+import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 
 interface PlaceAddModalProps {
   open: boolean
@@ -57,11 +58,36 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
 
   const navigate = useNavigate()
 
-  const addPlace = (): void => {
-    // TODO: 모임 장소 생성 요청 추가하기
-    // 임시
-    const meetingId = 3
-    navigate(`/meeting/${meetingId}`)
+  const { meetingId } = useParams()
+  const [createMeetingPlace] = useCreateMeetingPlaceMutation()
+
+  const addPlace = async (): Promise<void> => {
+    try {
+      const res = await createMeetingPlace({
+        meetingId: Number(meetingId),
+        newPlace: {
+          apiId: newPlace.apiId,
+          name: newPlace.name,
+          lat: newPlace.lat,
+          lng: newPlace.lng,
+          memo,
+          category,
+          address: newPlace.address,
+        },
+      }).unwrap()
+
+      if (res.code !== "SUCCESS") {
+        throw new Error(`error code: ${res.code}`)
+      }
+
+      navigate(`/meeting/${meetingId}`)
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message)
+      } else {
+        alert(`unexpected error: ${error}`)
+      }
+    }
   }
 
   const makeContent = (): JSX.Element => {

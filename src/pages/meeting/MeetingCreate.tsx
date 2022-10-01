@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Grid, Box, Button } from "@mui/material"
+import { Grid, Box, Button, Container } from "@mui/material"
 
 import { useTheme } from "@mui/material/styles"
 import styled from "@emotion/styled"
@@ -9,6 +9,7 @@ import { useCreateMeetingMutation } from "features/meeting/meetingSlice"
 import ImageInput from "components/common/input/ImageInput"
 import TextInput from "components/common/input/TextInput"
 import InputWrapper from "components/common/input/InputWrapper"
+import Header from "components/meeting/Header"
 
 export interface MeetingInfoType {
   [key: string]: string
@@ -36,7 +37,8 @@ const MeetingCreate = (): JSX.Element => {
 
   const ButtonGroup = styled.div`
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    height: 48px;
   `
 
   const changeFileToObjectUrl = (file: File): void => {
@@ -136,72 +138,90 @@ const MeetingCreate = (): JSX.Element => {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <ImageInput
-            title="사진등록"
-            alt="모임대표사진"
-            message="모임 대표 사진을 등록해주세요"
-            previewImg={previewImg}
-            handleChangeImg={handleChangeImg}
-          />
+    <Container>
+      <Header text="모임등록" />
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{ mt: "20px", mb: "20px" }}
+      >
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <ImageInput
+              title="사진등록"
+              alt="모임대표사진"
+              message="사진을 등록해주세요"
+              previewImg={previewImg}
+              handleChangeImg={handleChangeImg}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextInput
+              title="모임이름"
+              name="title"
+              value={meetingInfo.title}
+              placeholder="모임이름을 입력해주세요!"
+              handleChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <InputWrapper
+              title="모임기간"
+              subTitle={
+                meetingInfo.startDate && meetingInfo.endDate ? (
+                  <div>{`${meetingInfo.startDate.replaceAll(
+                    "-",
+                    "."
+                  )}~${meetingInfo.endDate.replaceAll("-", ".")}`}</div>
+                ) : (
+                  <div>기간 선택</div>
+                )
+              }
+              inputItem={
+                <CalendarRangePicker
+                  meetingInfo={meetingInfo}
+                  setMeetingInfo={setMeetingInfo}
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ButtonGroup>
+              <Button
+                variant="contained"
+                sx={{
+                  bgcolor: theme.grayscale[300],
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: theme.grayscale[300],
+                  },
+                  width: "35%",
+                }}
+                onClick={() => {
+                  navigate("/meeting")
+                }}
+              >
+                취소
+              </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  bgcolor: theme.palette.primary.main,
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: theme.palette.primary.main,
+                  },
+                  width: "60%",
+                }}
+                type="submit"
+              >
+                완료
+              </Button>
+            </ButtonGroup>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <TextInput
-            title="모임이름"
-            name="title"
-            value={meetingInfo.title}
-            placeholder="모임이름을 입력해주세요!"
-            handleChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <InputWrapper
-            title="모임기간"
-            subTitle={<div>임시</div>}
-            inputItem={
-              <CalendarRangePicker
-                meetingInfo={meetingInfo}
-                setMeetingInfo={setMeetingInfo}
-              />
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <ButtonGroup>
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: theme.palette.error.main,
-                color: "white",
-                "&:hover": {
-                  bgcolor: theme.palette.error.main,
-                },
-              }}
-              onClick={() => {
-                navigate("/meeting")
-              }}
-            >
-              취소
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: theme.palette.secondary.main,
-                color: "white",
-                "&:hover": {
-                  bgcolor: theme.palette.secondary.main,
-                },
-              }}
-              type="submit"
-            >
-              완료
-            </Button>
-          </ButtonGroup>
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </Container>
   )
 }
 

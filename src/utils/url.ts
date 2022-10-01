@@ -12,6 +12,7 @@ import {
 
 import { AuthParams, Url } from "types/auth"
 
+import { ReissueRes } from "types/API/auth-service"
 import { decryptValue } from "./crypto"
 import { CookieName, decryptCookie, encryptCookie } from "./cookies"
 import { LeafPath, pullingProperty } from "./pullingProperty"
@@ -58,10 +59,20 @@ export const encryptedCookieConvToParamObj = () =>
 const converToQueryString = (values: (string | number)[], key: string[]) =>
   values.map((value, i) => `${key[i]}=${value}`).join("&")
 
-export const converToQueryStrAndSetEncryptCookie = (
+const converToQueryStrAndSetEncryptCookie = (
   values: (string | number)[],
   key: string[]
 ): void =>
   pipe(converToQueryString(values, key), (queryString) =>
     encryptCookie(CookieName.auth, queryString)
   )
+
+export const setReissueTokenCookie = (response: ReissueRes): void => {
+  const {
+    data: { accessToken, expiry: newExpiry, userId },
+  } = response
+  converToQueryStrAndSetEncryptCookie(
+    [accessToken, newExpiry, userId],
+    ["token", "expiry", "userId"]
+  )
+}

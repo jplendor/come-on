@@ -59,10 +59,6 @@ export interface PreviousPathname {
   }
 }
 
-export interface RedirectURLProps {
-  url: string
-}
-
 export interface RequireAuthProps {
   children: JSX.Element
 }

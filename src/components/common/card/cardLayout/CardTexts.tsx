@@ -1,10 +1,10 @@
 import React from "react"
 import { styled } from "@mui/material/styles"
-import { Divider, Typography } from "@mui/material"
 import type { TypographyProps } from "@mui/material"
+import { Divider, Grid, Typography } from "@mui/material"
 import { AccountCircleOutlined, DateRangeOutlined } from "@mui/icons-material"
 
-import { ThemeImageListItemBar } from "./ThemeImageListItem"
+import { ThemeItemBar } from "./CardItem"
 
 const CardSubTitleText = styled(Typography)<TypographyProps>(
   ({
@@ -27,7 +27,7 @@ const CardTitleText = styled(Typography)<TypographyProps>(
   ({
     theme: {
       textStyles: {
-        title3: { regular },
+        title3: { bold },
       },
       grayscale,
     },
@@ -35,34 +35,31 @@ const CardTitleText = styled(Typography)<TypographyProps>(
     userSelect: "none",
     textAlign: "left",
     color: grayscale[900],
-    fontSize: regular.fontSize,
-    lineHeight: regular.lineHeight,
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    fontWeight: bold.fontWeight,
   })
 )
 
-const CardTitle = ({ text }: { text: string }): JSX.Element => {
-  return <CardTitleText>{text}</CardTitleText>
-}
+const CardTitle = ({ text }: { text: string }): JSX.Element => (
+  <CardTitleText>{text}</CardTitleText>
+)
 
-const CardSubTitle = ({ text }: { text: string }): JSX.Element => {
-  return (
-    <>
-      <AccountCircleOutlined />
-      <CardSubTitleText>{text}</CardSubTitleText>
-    </>
-  )
-}
+const CardSubTitle = ({ text }: { text: string }): JSX.Element => (
+  <>
+    <AccountCircleOutlined />
+    <CardSubTitleText>{text}</CardSubTitleText>
+  </>
+)
 
-const CardSubTime = ({ text }: { text: string }): JSX.Element => {
-  return (
-    <>
-      <DateRangeOutlined />
-      <CardSubTitleText>
-        <time dateTime={text}>{text}</time>
-      </CardSubTitleText>
-    </>
-  )
-}
+const CardSubTime = ({ text }: { text: string }): JSX.Element => (
+  <>
+    <DateRangeOutlined />
+    <CardSubTitleText>
+      <time dateTime={text}>{text}</time>
+    </CardSubTitleText>
+  </>
+)
 
 export interface TextsProps {
   title: string
@@ -78,10 +75,10 @@ const CardTexts = ({
   texts: { title, userName, time },
 }: CardTextsProps): JSX.Element => {
   return (
-    <ThemeImageListItemBar
+    <ThemeItemBar
       title={<CardTitle text={title} />}
       subtitle={
-        <>
+        <Grid container>
           <CardSubTitle text={userName} />
           <Divider
             orientation="vertical"
@@ -93,7 +90,7 @@ const CardTexts = ({
             }}
           />
           <CardSubTime text={time} />
-        </>
+        </Grid>
       }
       position="below"
     />

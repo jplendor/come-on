@@ -15,6 +15,7 @@ const User = (): JSX.Element => {
     <Routes>
       <Route index element={<AuthMyPage />} />
       <Route path="my-page" element={<AuthMyPage />} />
+      <Route path="my-meetings" element={<ManagingMeetings />} />
     </Routes>
   )
 }
