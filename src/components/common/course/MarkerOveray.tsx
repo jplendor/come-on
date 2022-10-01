@@ -5,17 +5,18 @@ export interface MapProps {
   title: string
   position: any
   order: number
+  apiId: number
 }
 
 const MarkerOveray = (
-  { title, position, order }: MapProps,
+  { title, position, order, apiId }: MapProps,
   tf: boolean,
   index: number
 ): JSX.Element => {
   return (
     <div className="customoverlay">
       <a
-        href="https://map.kakao.com/link/map/11394059"
+        href={`https://map.kakao.com/link/map/${apiId}`}
         target="_blank"
         rel="noreferrer"
       >
