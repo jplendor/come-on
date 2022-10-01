@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, ReactElement } from "react"
 
 import ReactDOMServer from "react-dom/server"
 import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
@@ -6,6 +6,7 @@ import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { generateComponent } from "utils"
 import SearchCard from "components/common/card/SearchCard"
+import { SearchCardProp } from "types/API/course-service"
 
 const { kakao } = window
 
@@ -36,20 +37,6 @@ interface ListDetailCardProp {
   id: number // 카카오 id                  -kakaoPlaceId
 }
 
-const MyMarker = (): JSX.Element => {
-  return (
-    <div style={{ padding: "5px", fontSize: "12px" }}>
-      <a
-        href="https://map.kakao.com/link/map/11394059"
-        target="_blank"
-        rel="noreferrer"
-      >
-        테스트마커입니다
-      </a>
-    </div>
-  )
-}
-
 export interface MapProps {
   title: string
   position: any
@@ -62,6 +49,24 @@ enum PlaceType {
 }
 interface SearchPlaceProps {
   mode: PlaceType
+}
+
+const MyMarker = ({
+  place_name: placeName,
+  place_url: placeUrl,
+}: SearchCardProp): JSX.Element => {
+  return (
+    <div style={{ padding: "5px", fontSize: "12px" }}>
+      <a
+        href={placeUrl}
+        target="_blank"
+        rel="noreferrer"
+        style={{ textDecoration: "none" }}
+      >
+        {placeName}
+      </a>
+    </div>
+  )
 }
 
 const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
@@ -116,7 +121,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     // 마커에 클릭이벤트를 등록합니다
     kakao.maps.event.addListener(marker, "click", function () {
       // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-      const myMarker = MyMarker()
+      const myMarker = MyMarker(place)
       const renderedMarger = ReactDOMServer.renderToString(myMarker)
 
       infowindow.setContent(renderedMarger)
@@ -173,9 +178,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     const value = searchKeyword
 
     ps.keywordSearch(value, placesSearchCB, pageOptions)
-  }, [searchKeyword, selectedPage])
-
-  console.log(selectedNumber)
+  }, [selectedPage])
 
   return (
     <>

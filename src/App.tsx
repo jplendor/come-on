@@ -8,9 +8,7 @@ import NeighborhoodCourse from "pages/course/NeighborhoodCourse"
 
 // 코스
 import Course from "pages/course/Course"
-import CourseRegiLayout from "pages/course/CourseRegiLayout"
 import Meeting from "pages/meeting/Meeting"
-import CoursePlaceeAdd from "pages/course/CoursePlaceAdd"
 
 const App = (): JSX.Element => {
   return (
@@ -18,9 +16,7 @@ const App = (): JSX.Element => {
       <Route path="/" element={<NeighborhoodCourse />} />
       <Route path="auth/*" element={<Auth />} />
       <Route path="user/*" element={<User />} />
-      <Route path="/course" element={<CourseRegiLayout />} />
-      <Route path="/course/:id" element={<Course />} />
-      <Route path="/course/register" element={<CoursePlaceeAdd />} />
+      <Route path="course/*" element={<Course />} />
       <Route path="meeting/*" element={<Meeting />} />
       <Route path="*" element={<NeighborhoodCourse />} />
     </Routes>

@@ -110,6 +110,9 @@ const TITLE_FONT = {
   lineHeight: "140%",
   fontSize: "16px",
   padding: "0px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 }
 
 const TITLE_DES = {
@@ -197,7 +200,7 @@ interface ListDetailCardProps {
   mode: PlaceType
 }
 
-const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
+const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   mode,
   onClick,
   isSelected,
@@ -283,4 +286,4 @@ const DisplayListDetailCard: React.FC<ListDetailCardProps> = ({
   )
 }
 
-export default DisplayListDetailCard
+export default PlaceDetailCard

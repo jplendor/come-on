@@ -6,8 +6,8 @@ import Face, { CollectionsOutlined } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { Box } from "@mui/material"
 import ReactDOMServer from "react-dom/server"
+import { SearchCardProp } from "types/API/course-service"
 import KakaoComponent from "./KakaoComponent"
-
 import MarkerOveray from "./MarkerOveray"
 
 const { kakao } = window

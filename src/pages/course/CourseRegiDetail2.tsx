@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useState } from "react"
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react"
 import { useSelector } from "react-redux"
 
 import { styled } from "@mui/material/styles"
@@ -9,7 +15,7 @@ import MapContainer from "components/common/course/MapContainer"
 import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-import DisplayListDetailCard from "components/common/card/DisplayListDetailCard"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard "
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -48,11 +54,23 @@ interface pageProps {
 
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
+  const [isValid, setIsValid] = useState(false)
   const placeList = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-
   const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
+
+  const onValid = useCallback((): void => {
+    if (placeList[0].order !== 0) setIsValid(true)
+    else {
+      setIsValid(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    onValid()
+    console.log(isValid)
+  }, [isValid, onValid])
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
@@ -105,7 +123,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       {/* 버튼만들기 */}
       {placeList[0].order !== 0 &&
         generateComponent(placeList, (item, key) => (
-          <DisplayListDetailCard
+          <PlaceDetailCard
             item={item}
             key={key}
             onClick={onClickFocus}
@@ -118,7 +136,11 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
             mode={PlaceType.c}
           />
         ))}
-      <CourseNextStepButton content="다음단계" onClick={onClicKNextPage} />
+      <CourseNextStepButton
+        content="다음단계"
+        isValid={isValid}
+        onClick={onClicKNextPage}
+      />
     </MainContainer>
   )
 }

@@ -4,7 +4,6 @@ import React, {
   useState,
   useEffect,
   useCallback,
-  useRef,
 } from "react"
 import { styled } from "@mui/material/styles"
 import { Box, Grid } from "@mui/material"
@@ -77,7 +76,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
         [e.target.name]: e.target.value,
       }
 
-      await setChangeInput(newState)
+      setChangeInput(newState)
     }
   }
 
@@ -106,8 +105,6 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
 
   useEffect(() => {
     setIsValid(onValid())
-    console.log(isValid)
-    console.log(changeInput)
   }, [changeInput, isValid, imageSrc, previewImg])
 
   return (

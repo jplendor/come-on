@@ -13,9 +13,9 @@ import { generateComponent } from "utils"
 import { useTheme } from "@mui/material/styles"
 import Calendar from "components/meeting/Calendar"
 import { useGetMeetingQuery } from "features/meeting/meetingSlice"
-import DisplayListDetailCard, {
+import PlaceDetailCard, {
   PlaceType,
-} from "components/common/card/DisplayListDetailCard"
+} from "components/common/card/PlaceDetailCard "
 import { MapOutlined } from "@mui/icons-material"
 
 // 임시 데이터
@@ -130,7 +130,7 @@ const MeetingEdit = (): JSX.Element => {
           </Typography>
           <div>
             {generateComponent(tempPlaces, (data, key) => (
-              <DisplayListDetailCard
+              <PlaceDetailCard
                 mode={PlaceType.m}
                 item={data}
                 key={key}

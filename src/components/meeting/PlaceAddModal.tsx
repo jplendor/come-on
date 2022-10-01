@@ -11,7 +11,7 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
-import { PlaceType } from "components/common/card/DisplayListDetailCard"
+import { PlaceType } from "components/common/card/PlaceDetailCard "
 import { Place } from "components/common/card/SearchCard"
 
 interface PlaceAddModalProps {
