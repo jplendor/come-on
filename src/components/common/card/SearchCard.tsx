@@ -1,80 +1,69 @@
-import React, { SetStateAction, useEffect, useState, useRef } from "react"
-import { useSelector, useDispatch } from "react-redux"
+import React, { useState } from "react"
+import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import {
-  Input,
-  InputAdornment,
-  TextField,
-  Box,
-  Grid,
-  GridProps,
-  IconButton,
-  Typography,
-  TypographyProps,
-} from "@mui/material"
-import {
-  Search,
-  Edit as EditIcon,
-  Add as AddIcon,
-  AlignVerticalTopRounded,
-} from "@mui/icons-material"
+import { Box, Grid, GridProps, IconButton, Typography } from "@mui/material"
+import { Add as AddIcon } from "@mui/icons-material"
 
 import { styled } from "@mui/material/styles"
 import { addCoursePlace } from "features/course/courseSlice"
-import { RootState } from "store"
-
-const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
-  "&.MuiGrid-root": {
-    borderRadius: "10px ",
-    color: "black",
-  },
-  border: `1px solid #92B4EC`,
-  padding: "0 10px",
-}))
-
-const TITLE_TOP = {
-  fontWeight: 800,
-  fontSize: "10px",
-  lineHeight: "12px",
-  //  TODO: 추후에 props로 color 속성 전달예정
-  color: "#FFA3A3",
-  border: "1px solid #FFA3A3",
-}
-const TITLE_BODY = {
-  fontWeight: "bold",
-  lineHeight: "24px",
-}
-
-const TITLE_BOTTOM = {
-  fontWeight: "400",
-  lineHeight: "19px",
-}
-
-const TITLE_WRAP = {
-  height: "110px",
-  padding: "15px",
-}
+import PlaceAddModal from "components/meeting/PlaceAddModal"
 
 const SELECTED_CARD = {
-  border: "1px solid #FFD24C",
+  border: "1px solid #1951B2",
+  padding: "0px",
 }
-const ICON_STYLE = {
-  // relative로 상위 컴포넌트의 우측에 배정되게 할 것.
+
+const DEFAULT_CARD = {
+  border: "1px solid #EEEEEE",
+  padding: "0px",
 }
-// exaddress_name: "강원 속초시 교동 799-173"
-// {category_group_code: "FD6"
-// category_group_name: "음식점"
-// category_name: "음식점 > 간식 > 제과,베이커리"
-// distance: ""
-// id: "26634072"
-// phone: "033-633-4826"
-// place_name: "봉브레드"
-// place_url: "http://place.map.kakao.com/26634072"
-// road_address_name: "강원 속초시 동해대로 4344-1"
-// x: "128.568467688816"
-// y: "38.2029116267752"
-// content : "설명"
-// }
+const ThemeGrid = styled(Grid)<GridProps>(() => ({
+  "&.MuiGrid-root": {
+    borderRadius: "4px",
+    height: "80px",
+    margin: "12px 0",
+    color: "black",
+  },
+  border: `1px solid #1951B2`,
+}))
+
+const ADDRESS_FONT = {
+  fontSize: "12px",
+  padding: "0px",
+
+  color: "#9E9E9E",
+}
+const ITEM_BOX = {
+  color: "#EEEEEE",
+  padding: "8px 12px",
+}
+
+const TITLE_FONT = {
+  fontWeight: "bold",
+  lineHeight: "140%",
+  fontSize: "16px",
+  padding: "0px",
+}
+
+const TITLE_BOX = {
+  display: "flex",
+  displayDirection: "column",
+  flexwrap: "nowrap",
+  lineHeight: "140%",
+  alignItems: "center",
+  padding: "0px",
+}
+
+const URL_ICON = {
+  width: "14px",
+  height: "14px",
+  display: "relative",
+  fontSize: "14px",
+  margin: "0px",
+  padding: "0px",
+  left: "50px",
+  color: "#BDBDBD",
+}
 
 interface ListDetailCardProp {
   index: number // 카드의 인덱스 넘버 - order
@@ -88,89 +77,132 @@ interface ListDetailCardProp {
   id: number // 카카오 id          -kakaoPlaceId
 }
 
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
 interface ListDetailCardProps {
   item: ListDetailCardProp
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
-  isSelected: string
+  onClickFocus: (event: React.MouseEvent<HTMLDivElement>) => void
+  selectedNumber: string
+  mode: PlaceType
 }
-//
 
-const SearchBar = styled(TextField)(() => ({
-  padding: "10px",
-  margin: "10px 0",
-}))
-
-const ListContainer = styled(Box)(() => ({
-  padding: "10px",
-}))
+export interface Place {
+  id: number
+  order: number
+  name: string
+  description: string
+  lng: number
+  lat: number
+  apiId: number
+  category: string
+  address: string
+}
 
 /* eslint camelcase: ["error", {properties: "never"}] */
 const SearchCard: React.FC<ListDetailCardProps> = ({
-  onClick,
-  isSelected,
+  onClickFocus,
+  selectedNumber,
   item,
+
+  mode,
 }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const [open, setOpen] = useState(false)
+
+  const openModal = (): void => {
+    setOpen(true)
+  }
+
+  const closeModal = (): void => {
+    setOpen(false)
+  }
+
   const obj = {
     index: item.index, // 순서
-    cateName: item.category_name, // 카테고리네임
+    cateName: "ETC", // 카테고리네임
     placeName: item.place_name, // 장소이름
     addressName: item.address_name, // 주소
     x: item.x, // 위도,경도
     y: item.y, // place_url
     place_url: item.place_url,
     kakaoPlaceId: item.id,
+    address: item.address_name,
   }
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const placeList = useSelector((state: RootState) => {
-    return state.course.coursePlaces
-  })
+  const makeNewPlace = (): Place => {
+    const newPlace = {
+      id: 0,
+      order: obj.index,
+      name: obj.placeName,
+      description: "값을 입력해 주세요",
+      lng: obj.x, // 경도 x
+      lat: obj.y, // 위도 y
+      apiId: obj.kakaoPlaceId,
+      category: "ETC",
+      address: obj.address,
+    }
 
-  const onAddClick = (): void => {
+    return newPlace
+  }
+
+  const onClickAddCourse = (): void => {
     // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
     const result: boolean = window.confirm(
       `${obj.placeName}을 코스로 추가하시겠습니까?`
     )
+
     if (result === true) {
       alert(`${obj.placeName}이 코스로 추가되었습니다.`)
-      const newPlace = {
-        order: obj.index,
-        name: obj.placeName,
-        description: "",
-        lng: obj.x, // 경도 x
-        lat: obj.y, // 위도 y
-        kakaoPlaceId: obj.kakaoPlaceId,
-        placeCategory: obj.cateName,
-      }
+      const newPlace = makeNewPlace()
       dispatch(addCoursePlace(newPlace))
       navigate("/course", { state: 200 })
     }
-    console.log(placeList)
+  }
+
+  const onClickAddMeeting = (): void => {
+    // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
+    const result: boolean = window.confirm(
+      `${obj.placeName}을 모임장소로 추가하시겠습니까?`
+    )
+
+    if (result === true) {
+      openModal()
+    }
   }
 
   return (
     <>
-      {" "}
       <Grid item xs={10} sx={{ margin: "12px 0" }}>
         <ThemeGrid
           container
-          id={String(obj.index)}
-          onClick={onClick}
-          sx={isSelected === String(obj.index) ? SELECTED_CARD : {}}
+          id={String(obj.kakaoPlaceId)}
+          onClick={onClickFocus}
+          xs={12}
+          sx={
+            selectedNumber === String(obj.kakaoPlaceId)
+              ? SELECTED_CARD
+              : DEFAULT_CARD
+          }
         >
-          <Grid item xs={11}>
-            <Box sx={TITLE_WRAP}>
-              <Typography component="span" sx={TITLE_TOP}>
-                {obj.cateName}
-              </Typography>
-              <Typography variant="h6" sx={TITLE_BODY}>
+          <Grid item xs={12} sx={TITLE_BOX}>
+            <Box sx={ITEM_BOX}>
+              <Typography variant="h6" sx={TITLE_FONT}>
                 {obj.placeName}
-                <IconButton type="button" onClick={onAddClick}>
-                  <AddIcon sx={ICON_STYLE} color="secondary" fontSize="large" />
+                <IconButton
+                  type="button"
+                  onClick={
+                    mode === PlaceType.c ? onClickAddCourse : onClickAddMeeting
+                  }
+                >
+                  <AddIcon sx={URL_ICON} color="secondary" fontSize="large" />
                 </IconButton>
               </Typography>
-              <Typography variant="subtitle2" sx={TITLE_BOTTOM}>
+              <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 {obj.addressName}
                 <IconButton aria-label="edit this" color="secondary" />
               </Typography>
@@ -185,6 +217,12 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
           </Grid>
         </ThemeGrid>
       </Grid>
+      <PlaceAddModal
+        open={open}
+        onClose={closeModal}
+        newPlace={makeNewPlace()}
+        mode={mode}
+      />
     </>
   )
 }

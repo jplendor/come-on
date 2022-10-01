@@ -1,21 +1,8 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-  ReactElement,
-} from "react"
+import React, { useEffect, useState, useRef } from "react"
 
 import ReactDOMServer from "react-dom/server"
-import {
-  Input,
-  InputAdornment,
-  TextField,
-  Box,
-  Pagination,
-} from "@mui/material"
-import { Search, Edit as EditIcon } from "@mui/icons-material"
+import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
+import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { generateComponent } from "utils"
 import SearchCard from "components/common/card/SearchCard"
@@ -46,7 +33,7 @@ interface ListDetailCardProp {
   x: number // 경도 longitude              -lon
   y: number // 위도 latitude               -lat
   description: string // 설명              -description
-  id: number // 카카오 id          -kakaoPlaceId
+  id: number // 카카오 id                  -kakaoPlaceId
 }
 
 const MyMarker = (): JSX.Element => {
@@ -69,8 +56,16 @@ export interface MapProps {
   content: string
 }
 
-const SearchPlace = (): JSX.Element => {
-  const [isSelected, setSelected] = useState("")
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+interface SearchPlaceProps {
+  mode: PlaceType
+}
+
+const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
+  const [selectedNumber, setselectedNumber] = useState("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
@@ -107,8 +102,8 @@ const SearchPlace = (): JSX.Element => {
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
     if (e) {
-      setSelected(e.id)
-    } else setSelected("")
+      setselectedNumber(e.id)
+    } else setselectedNumber("")
   }
 
   // 마커를 맵에 표시
@@ -180,6 +175,8 @@ const SearchPlace = (): JSX.Element => {
     ps.keywordSearch(value, placesSearchCB, pageOptions)
   }, [searchKeyword, selectedPage])
 
+  console.log(selectedNumber)
+
   return (
     <>
       <header>{/* 검색창 만들기 */}</header>
@@ -210,9 +207,9 @@ const SearchPlace = (): JSX.Element => {
           generateComponent(searchedData, (item, key) => (
             <SearchCard
               item={item}
-              key={key}
-              onClick={onClickFocus}
-              isSelected={isSelected}
+              onClickFocus={onClickFocus}
+              selectedNumber={selectedNumber}
+              mode={mode}
             />
           ))}
       </ListContainer>

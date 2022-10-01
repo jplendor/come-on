@@ -1,49 +1,34 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
 
-import {
-  Box,
-  Typography,
-  makeStyles,
-  IconButton,
-  ImageListItem,
-  Button,
-} from "@mui/material"
+import { Box, Typography } from "@mui/material"
 
-import FavoriteIcon from "@mui/icons-material/Favorite"
+import { AccountCircleOutlined, Favorite, DateRange } from "@mui/icons-material"
+
 import { styled } from "@mui/material/styles"
-import MapContainer from "components/common/MapContainer"
+import MapContainer from "components/common/course/MapContainer"
 import KakaoShare from "components/KakaoShare"
-import ListDetailCard, {
-  ListDetailCardProp,
-} from "components/common/ListDetailCard"
 import { generateComponent } from "utils"
 import KakaoIcon from "assets/nav/KakaoIcon"
-import { RootState } from "store"
-import { useSelector, useDispatch } from "react-redux"
 
-const SAMPLE_DATA3 = {
-  title: "사진찍기 좋은 부산여행 코스",
-  author: "여행마스터",
-  date: "2022-08-03", // 나중에 date형식으로 받고 표시형식 설정해야함
-}
+import { useGetCourseDetailQuery } from "features/course/courseSlice"
+import DisplayListDetailCard from "components/common/card/DisplayListDetailCard"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
+  flexDirection: "column",
 }))
 
 const MainContainer = styled(Box)(() => ({
-  padding: "0px 20px",
   display: "flex",
   flexDirection: "column",
 }))
 
 const ImgContainer = styled(Box)(() => ({
-  margin: "0",
-  padding: "0",
+  padding: "0px 20px 0px 20px",
+
   width: "100%",
-  height: "180px",
+  height: "30%",
   objectFit: "cover",
 }))
 
@@ -53,17 +38,58 @@ const KakaoContainer = styled(Box)(() => ({
   alignItems: "center",
 }))
 
-const FONT_SIZE_800 = {
-  fontWeight: "800",
+const FONT_TITLE = {
+  fontSize: "22px",
+  lineHeight: "125%",
+  fontWeight: "bold",
 }
 
-const BUTTON_STYLE = {
-  height: "50px",
-  lineHeight: "50px",
-  marginBottom: "10px",
-  color: "white",
-  fontWeight: "800",
-  fontSize: "1rem",
+const FONT_SUBTITLE = {
+  fontSize: "13px",
+  lineHeight: "145%",
+  color: "#9E9E9E",
+}
+
+const ICON_BOX = {
+  lineHegiht: "145%",
+  margin: "0 auto",
+  display: "flex",
+  flexWrap: "nowrap",
+  justifyContent: "flex-start",
+  alignItems: "center",
+}
+
+const ICON_STYLE = {
+  width: "16px",
+  height: "16px",
+}
+
+const SUBTITLE = {
+  lineHegiht: "145%",
+  margin: "10px 0",
+  display: "flex",
+  flexWrap: "nowrap",
+  justifyContent: "flex-start",
+}
+
+const TITLE = {
+  width: "100%",
+  display: "flex",
+  marginTop: "10px",
+  justifyContent: "space-between",
+}
+
+const FAVORITE_BOX = {
+  width: "24px",
+  height: "24px",
+  margin: "auto 10px",
+}
+
+const DES_STYLE = {
+  height: "80px",
+  fontSize: "14px",
+  lineHeight: "140%",
+  color: "#616161",
 }
 interface CoursePlaceState {
   order: number
@@ -71,79 +97,120 @@ interface CoursePlaceState {
   description: string
   lng: number // 경도 x
   lat: number // 위도 y
-  kakaoPlaceId: number
-  placeCategory: string
+  apiId: number
+  category: string
+  id: number
+  address: string
 }
 
-const Course = (): any => {
-  const [isSelected, setSelected] = useState("")
-  const placeList = useSelector((state: RootState) => {
-    return state.course.coursePlaces
-  })
-  const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
 
-  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
+const Course = (): JSX.Element => {
+  const [selectedNumber, setselectedNumber] = useState<string>("")
+  const [imgSrc, setImgSrc] = useState<string>("")
+  const { id } = useParams<string>()
+
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
 
     if (e) {
-      setSelected(e.id)
-    } else setSelected("")
+      setselectedNumber(e.id)
+    } else {
+      setselectedNumber("")
+    }
   }
 
+  const {
+    data: resultCourseDetail,
+    isSuccess,
+    isLoading,
+  } = useGetCourseDetailQuery({
+    id,
+  })
+  let courseData: CoursePlaceState[] = []
+
   const onRemove = (index: number): void => {
-    setCourseData(courseData.filter((place) => place.order !== index))
+    courseData = courseData?.filter((place) => place.order !== index)
   }
 
   // heart버튼 클릭시 이벤트
   // const onClickHeart = (event: React.MouseEvent<HTMLDivElement> | null): any => {
   //   const e: any = event?.currentTarget
   // }
+  if (isSuccess) courseData = resultCourseDetail.data.coursePlaces
+  useEffect(() => {
+    if (isSuccess) {
+      setImgSrc(resultCourseDetail.data.imageUrl)
+    }
+  }, [isSuccess, resultCourseDetail?.data.imageUrl])
 
   return (
     <>
       {/* 타이틀만들기 */}
       <ImgContainer>
-        <img
-          src="https://pbs.twimg.com/media/DVT-AesUQAATx65.jpg"
-          width="100%"
-          height="100%"
-          alt="img"
-        />
+        <img src={imgSrc} width="100%" height="100%" alt="img" />
       </ImgContainer>
-      <MainContainer>
-        <TitleContainer p={2}>
-          <Box className="Title" mt={2}>
-            <Typography variant="h5" sx={FONT_SIZE_800}>
-              {SAMPLE_DATA3.title}
+      <MainContainer style={{ margin: "auto 20px" }}>
+        <TitleContainer>
+          <Box className="Title" sx={TITLE}>
+            <Typography variant="h5" sx={FONT_TITLE}>
+              {resultCourseDetail?.data.title}
             </Typography>
-            {/* {하트버튼 만들기} */}
-            <Box className="subTitle">
-              <Typography variant="subtitle1" sx={FONT_SIZE_800}>
-                {`${SAMPLE_DATA3.author}  |  ${SAMPLE_DATA3.date}`}
-              </Typography>
-            </Box>
+            <Favorite color="secondary" sx={FAVORITE_BOX} />
           </Box>
-          <Typography fontSize="2.8rem" mt={2} color="secondary">
-            <FavoriteIcon fontSize="inherit" />
-          </Typography>
+          <Box className="subTitle" sx={SUBTITLE}>
+            <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
+              <Box sx={ICON_BOX}>
+                <AccountCircleOutlined sx={ICON_STYLE} />
+                {resultCourseDetail?.data.writer.nickname}
+                <Typography
+                  variant="subtitle1"
+                  sx={FONT_SUBTITLE}
+                  style={{ margin: "auto 5px" }}
+                >
+                  |
+                </Typography>
+                <DateRange sx={ICON_STYLE} />
+                {resultCourseDetail?.data.updatedDate}
+              </Box>
+            </Typography>
+          </Box>
         </TitleContainer>
-        <MapContainer selectedNumber={isSelected} />
+        <Box sx={DES_STYLE}>{resultCourseDetail?.data.description}</Box>
+        {courseData !== null && courseData !== undefined && (
+          <MapContainer
+            selectedNumber={String(selectedNumber)}
+            placeLists={courseData}
+            isSuccess={isSuccess}
+            isLoading={isLoading}
+          />
+        )}
+
         <KakaoContainer p={1}>
-          <Typography mr={1} variant="subtitle1" sx={FONT_SIZE_800}>
+          <Typography mr={1} variant="subtitle1" sx={FONT_SUBTITLE}>
             <KakaoShare />
           </Typography>
           <KakaoIcon width="30px" height="30px" />
         </KakaoContainer>
         {/* 카카오톡 공유하기 */}
         {/* 버튼만들기 */}
-        {placeList[0].order !== 0 &&
+        {courseData !== null &&
+          courseData !== undefined &&
           generateComponent(courseData, (item, key) => (
-            <ListDetailCard
+            <DisplayListDetailCard
               item={item}
               key={key}
               onClick={onClickFocus}
-              isSelected={isSelected}
+              isSelected={
+                item.order ===
+                (selectedNumber === "" ? -10 : Number(selectedNumber))
+              }
               onRemove={onRemove}
+              maxLen={courseData.length}
+              mode={PlaceType.c}
             />
           ))}
         {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}

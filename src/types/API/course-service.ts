@@ -7,7 +7,62 @@ export interface CourseData {
 }
 
 export interface CourseId {
-  courseId: string
+  courseId: number | undefined
+}
+
+export interface CourseDetail {
+  courseId: number
+  title: string
+  description: string
+  imageUrl: string
+  courseStatus: string
+  updatedDate: string
+  writer: {
+    id: number
+    nickname: string
+  }
+  likeCount: number
+  userLiked: boolean
+  coursePlaces: [
+    {
+      id: number
+      order: number
+      name: string
+      description: string
+      lng: number // 경도 x
+      lat: number // 위도 y
+      apiId: number
+      address: string
+      category: string
+    }
+  ]
+}
+
+interface placeProps {
+  toSave: [
+    {
+      name: string
+      description: string
+      lat: number
+      lng: number
+      order: number
+      apiId: number
+      category: string
+    }
+  ]
+  toModify: [
+    {
+      id: number | undefined
+      description: string
+      order: number
+      category: string
+    }
+  ]
+  toDelete: [
+    {
+      id: number | undefined
+    }
+  ]
 }
 
 /**
@@ -144,6 +199,7 @@ export interface ServerRes {
     | CourseListSliceRes
     | AddCourse
     | LikeCourse
+    | CourseId
 }
 
 // GET /courses/my & GET /courses/like
@@ -185,9 +241,12 @@ export interface GetCourseListQS extends OptionalQueryString {
   lng?: number
 }
 
-// export interface CourseDataResponse extends ServerResponse {
-//   data: {
-//     code: ErrorCode
-//     message: CourseData
-//   }
-// }
+/// //////////////////////////////////////////////
+
+export interface CourseIdResponse extends ServerRes {
+  data: CourseId
+}
+
+export interface CourseDetailResponse extends ServerRes {
+  data: CourseDetail
+}
