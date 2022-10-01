@@ -66,12 +66,22 @@ interface placeProps {
 }
 
 /**
+ * 코스 좋아요 등록 및 취소
+ *
+ * POST /courses/{courseId}/like
+ */
+
+interface LikeCourse {
+  userLiked: boolean
+}
+
+/**
  * 코스 등록
  *
  * POST /courses
  */
 
-export interface AddCourse {
+interface AddCourse {
   courseId: number
   courseStatus: string
 }
@@ -98,6 +108,21 @@ export interface MyCourses {
   }
 }
 
+/**
+ * 코스 리스트 조회
+ *
+ * GET /courses
+ */
+
+export interface CourseList extends MyCourses {
+  firstPlace: {
+    id: number
+    lat: number
+    lng: number
+    distance: number
+  }
+}
+
 // 공통 응답 스펙 - Slice 응답의 경우
 interface SliceResponse<T> {
   currentSlice: number
@@ -110,7 +135,8 @@ interface SliceResponse<T> {
   last: boolean
 }
 
-export type MyCoursesSliceResponse = SliceResponse<MyCourses>
+export type MyCoursesSliceRes = SliceResponse<MyCourses>
+export type CourseListSliceRes = SliceResponse<CourseList>
 
 /**
  * 900 : 죄송합니다. 서버 내부 오류입니다.
@@ -164,37 +190,63 @@ enum Code {
   UNAUTHORIZED = "UNAUTHORIZED",
 }
 
-export interface ServerResponse {
+export interface ServerRes {
   responseTime: string
   code: Code
-  data: Exception | MyCoursesSliceResponse | AddCourse | CourseId
+  data:
+    | Exception
+    | MyCoursesSliceRes
+    | CourseListSliceRes
+    | AddCourse
+    | LikeCourse
+    | CourseId
 }
 
-// GET /courses/my
-export interface MyCoursesResponse extends ServerResponse {
-  data: MyCoursesSliceResponse
+// GET /courses/my & GET /courses/like
+export interface MyCoursesRes extends ServerRes {
+  data: MyCoursesSliceRes
 }
 
-// GET /courses/like
-export interface AddCourseResponse extends ServerResponse {
+// POST /courses
+export interface AddCourseRes extends ServerRes {
   data: AddCourse
 }
 
+// GET /courses
+export interface CourseListRes extends ServerRes {
+  data: CourseListSliceRes
+}
+
+// POST /courses/{courseId}/like
+export interface LikeCourseRes extends ServerRes {
+  data: LikeCourse
+}
+
+export interface ExceptionRes extends ServerRes {
+  data: Exception
+}
+
 export interface OptionalQueryString {
-  page?: string
-  size?: string
+  page?: number
+  size?: number
 }
 
 export interface GetMyCourseListQS extends OptionalQueryString {
-  courseStatus: "COMPLETE" | "WRITING"
+  courseStatus?: "COMPLETE" | "WRITING"
+}
+
+export interface GetCourseListQS extends OptionalQueryString {
+  title?: string
+  lat?: number
+  lng?: number
 }
 
 /// //////////////////////////////////////////////
 
-export interface CourseIdResponse extends ServerResponse {
+export interface CourseIdResponse extends ServerRes {
   data: CourseId
 }
 
-export interface CourseDetailResponse extends ServerResponse {
+export interface CourseDetailResponse extends ServerRes {
   data: CourseDetail
 }

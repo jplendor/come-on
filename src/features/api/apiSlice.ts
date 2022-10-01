@@ -7,25 +7,15 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
 import {
   isTimeExpired,
-  encryptedCookieConvToParamObj,
-  converToQueryStrAndSetEncryptCookie,
+  setReissueTokenCookie,
+  encryptedCookieConvToParamObj as getTokenCookie,
 } from "utils"
-import { ReissueResponse } from "types/API/auth-service"
-
-const setReissueTokenCookie = (response: ReissueResponse): void => {
-  const {
-    data: { accessToken, expiry: newExpiry, userId },
-  } = response
-  converToQueryStrAndSetEncryptCookie(
-    [accessToken, newExpiry, userId],
-    ["token", "expiry", "userId"]
-  )
-}
+import { ReissueRes } from "types/API/auth-service"
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_SERVER_URL,
   prepareHeaders: (header) => {
-    const { token } = encryptedCookieConvToParamObj()
+    const { token } = getTokenCookie()
     if (token) header.set("Authorization", `Bearer ${token}`)
     return header
   },
@@ -42,9 +32,8 @@ export const baseQueryWithReauth: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions)
-
   // 토큰이 만료됐을때
-  if (isTimeExpired()) {
+  if (isTimeExpired(result.meta?.request.url)) {
     const refreshResult = await baseQuery(
       {
         url: "/auth/reissue",
@@ -55,7 +44,7 @@ export const baseQueryWithReauth: BaseQueryFn<
       extraOptions
     )
     if (refreshResult.data)
-      setReissueTokenCookie(refreshResult.data as ReissueResponse)
+      setReissueTokenCookie(refreshResult.data as ReissueRes)
 
     result = await baseQuery(args, api, extraOptions)
   }

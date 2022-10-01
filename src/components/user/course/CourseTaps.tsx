@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from "react"
+import React, { ReactNode, SyntheticEvent } from "react"
 import { styled } from "@mui/material/styles"
 import { Box, Tab, Tabs } from "@mui/material"
 import type { TabsProps } from "@mui/material"
 
 interface StyledTabsProps extends TabsProps {
   value: number
-  children?: React.ReactNode
-  onChange: (event: React.SyntheticEvent, newValue: number) => void
+  children?: ReactNode
+  onChange: (event: SyntheticEvent, newValue: number) => void
 }
 
 const ThemeTabs = styled((props: StyledTabsProps) => (

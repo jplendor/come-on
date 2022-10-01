@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom"
 
 import Auth from "pages/auth/Auth"
 import User from "pages/user/User"
-import NeighborhoodCourse from "pages/course/NeighborhoodCourse"
+import NeighborhoodCourse from "pages/user/Neighborhood"
 
 // 코스
 import Course from "pages/course/Course"
@@ -20,11 +20,13 @@ const App = (): JSX.Element => {
       <Route path="/" element={<NeighborhoodCourse />} />
       <Route path="auth/*" element={<Auth />} />
       <Route path="user/*" element={<User />} />
-      <Route path="/course" element={<CourseRegiLayout />} />
+      <Route path="meeting/*" element={<Meeting />} />
+      {/* <Route path="/course" element={<CourseRegiLayout />} />
       <Route path="/course/:id" element={<Course />} />
       <Route path="/course/register" element={<CoursePlaceeAdd />} />
-      <Route path="meeting/*" element={<Meeting />} />
-      <Route path="*" element={<NeighborhoodCourse />} />
+      <Route path="/course/:id" />
+      <Route path="/course/register" element={<SearchPlace />} />
+      <Route path="*" element={<NeighborhoodCourse />} /> */}
     </Routes>
   )
 }

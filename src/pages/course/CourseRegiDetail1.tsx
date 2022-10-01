@@ -91,8 +91,6 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
     setChangeInput(newState)
   }
 
-  /// /////////////////////////////////////////////////////////////////////////////////////////
-
   const onClickNextPage = (): void => {
     dispatch(
       setCourseDetail({

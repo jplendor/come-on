@@ -1,22 +1,20 @@
 /* eslint-disable import/prefer-default-export */
 import { api } from "features/api/apiSlice"
 import {
-  ServerResponse,
   CourseIdResponse,
   CourseDetailResponse,
 } from "types/API/course-service"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type {
-  AddCourseResponse,
+  MyCoursesRes,
+  AddCourseRes,
+  CourseListRes,
+  GetCourseListQS,
   GetMyCourseListQS,
-  MyCoursesResponse,
   OptionalQueryString,
+  LikeCourseRes,
 } from "types/API/course-service"
-
-interface CourseId {
-  courseId: number | string
-}
 
 interface CoursePlaceState {
   courseDetails: {
@@ -106,11 +104,10 @@ export const coursePlaceSlice = createSlice({
 
 export const { addCoursePlace, setCourseDetail } = coursePlaceSlice.actions
 export default coursePlaceSlice.reducer
-// 사실은 서비스 느낌
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    addCourse: builder.mutation<AddCourseResponse, FormData>({
+    addCourse: builder.mutation<AddCourseRes, FormData>({
       query: (course) => ({
         url: "/courses",
         method: "POST",
@@ -118,24 +115,33 @@ export const courseApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Course"],
     }),
-    getMyCourseList: builder.query<MyCoursesResponse, GetMyCourseListQS>({
-      query: ({ courseStatus, page = "0", size = "10" }) => ({
+    getCourseList: builder.query<CourseListRes, GetCourseListQS>({
+      query: ({ page = "0", size = "3", title = "", lat = "", lng = "" }) => ({
+        url: `/courses?page=${page}&size=${size}&title=${title}&lat=${lat}&lng=${lng}`,
+        method: "GET",
+      }),
+      providesTags: ["Course"],
+    }),
+    getMyCourseList: builder.query<MyCoursesRes, GetMyCourseListQS>({
+      query: ({ courseStatus = "COMPLETE", page = "0", size = "3" }) => ({
         url: `/courses/my?courseStatus=${courseStatus}&page=${page}&size=${size}`,
         method: "GET",
       }),
       providesTags: ["Course"],
     }),
-    getCourseLikeList: builder.query<MyCoursesResponse, OptionalQueryString>({
-      query: ({ page = "0", size = "10" }) => ({
+    getLikedCourseList: builder.query<MyCoursesRes, OptionalQueryString>({
+      query: ({ page = "0", size = "3" }) => ({
         url: `/courses/like?page=${page}&size=${size}`,
         method: "GET",
       }),
       providesTags: ["Course"],
     }),
-    getCourseList: builder.query<ServerResponse, void>({
-      query: () => ({
-        url: "/courses",
+    clickLikeCourse: builder.mutation<LikeCourseRes, number>({
+      query: (courseId) => ({
+        url: `/courses/${courseId}/like`,
+        method: "POST",
       }),
+      invalidatesTags: ["Course"],
     }),
     getCourseDetail: builder.query<CourseDetailResponse, any>({
       query: ({ id }) => ({
@@ -168,11 +174,14 @@ export const courseApi = api.injectEndpoints({
   }),
 })
 
+export const { endpoints } = courseApi
+
 export const {
   useAddCourseMutation,
-  useGetMyCourseListQuery,
-  useGetCourseLikeListQuery,
   useGetCourseListQuery,
+  useGetMyCourseListQuery,
+  useGetLikedCourseListQuery,
+  useClickLikeCourseMutation,
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
   useGetCourseDetailQuery,

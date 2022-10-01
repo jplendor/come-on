@@ -1,20 +1,17 @@
 import React, { ReactNode } from "react"
 import { AppBar, Box, Container, Grid } from "@mui/material"
 
-import SpeedDial from "components/user/course/ourNeighborhood/SpeedDial"
-
-import Navbar from "./Navbar"
+import SpeedDial from "components/common/speedDial/SpeedDial"
+import Navbar from "./contents/Navbar"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let temporaryArea: any = {
+const temporaryArea: any = {
   marginTop: "20px",
   border: "2px solid black",
   borderRadius: "5px",
   borderTop: "none",
   borderBottom: "none",
 }
-
-if (process.env.NODE_ENV === "production") temporaryArea = {}
 
 const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
@@ -25,8 +22,8 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
       disableGutters
       sx={{
         height: "45.938em",
-        touchAction: "pan-x pinch-zoom",
-        ...temporaryArea,
+        // production 버전에서는 테스트용 테두리 제거
+        ...(process.env.NODE_ENV === "production" ? {} : temporaryArea),
       }}
     >
       {/* 콘텐츠 영역 #1 */}

@@ -25,12 +25,12 @@ const toStringYyyymmdd = (dateParam: Date): string => {
 
 export { getYyyymmddArray, toStringYyyymmdd }
 
-export const isTimeExpired = (): boolean => {
+export const isTimeExpired = (url?: string): boolean => {
+  // 중복 요청 방지
+  if (url === `${process.env.REACT_APP_SERVER_URL}/auth/reissue`) return false
   const { expiry } = encryptedCookieConvToParamObj()
-
   const now = new Date().getTime()
   const expiryTime = new Date(parseInt(expiry, 10) * 1000).getTime()
-
   // 토큰이 만료됐는지
   return Boolean(now >= expiryTime)
 }

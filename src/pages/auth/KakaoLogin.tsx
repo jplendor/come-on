@@ -1,8 +1,6 @@
 import React, { useState } from "react"
-
 import KakaoIcon from "assets/nav/KakaoIcon"
-import { Login } from "types/API/auth-service"
-import RedirectURL from "components/auth/RedirectURL"
+import KakaoRedirectURL from "components/login/KakaoRedirectURL"
 import { KakaoBtnText, ThemeKaKaoButton } from "components/login/KakaoLogin"
 
 /**
@@ -10,15 +8,10 @@ import { KakaoBtnText, ThemeKaKaoButton } from "components/login/KakaoLogin"
  * 받은 토큰은 /auth/login-verification 링크로 전송된다.
  */
 
-const { KAKAO, REDIRECT_URI } = Login
-const CLIENT = process.env.REACT_APP_CLIENT_URL
-const SERVER = process.env.REACT_APP_SERVER_URL
-
 const KakaoLogin = (): JSX.Element => {
   const [isClick, setIsClick] = useState(false)
   const onClickHandler = (): void => setIsClick(true)
-  const KAKAO_LOGIN = `${SERVER}/oauth2/authorize/${KAKAO}?redirect_uri=${CLIENT}${REDIRECT_URI}`
-  if (isClick) return <RedirectURL url={KAKAO_LOGIN} />
+  if (isClick) return <KakaoRedirectURL />
   return (
     <ThemeKaKaoButton
       fullWidth

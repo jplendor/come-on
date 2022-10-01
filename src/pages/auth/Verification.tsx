@@ -20,7 +20,7 @@ import { conversionToUrl, encryptValue, trueCallBack } from "utils"
  */
 
 // FINISH: 토큰이 들어왔는지 식별하고 추출하기 [v]
-// TODO: 토큰 검증 (서버) []
+// FINISH: 토큰 검증 (서버) [v]
 // FINISH: 추출된 토큰을 쿠키에 저장 [v]
 // FINISH: 모든 처리가 끝나면 방문하려던 페이지로 다시 이동시키기 [v]
 
