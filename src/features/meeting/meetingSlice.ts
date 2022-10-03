@@ -7,10 +7,23 @@ import {
   MeetingDateForDelete,
   meetingDateForRead,
   MeetingDateDetail,
+  MeetingList,
+  MeetingListQS,
 } from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
+    getMeetingList: builder.query<
+      ServerResponse<MeetingList>,
+      Partial<MeetingListQS>
+    >({
+      query: (args) => ({
+        // eslint-disable-next-line max-len
+        url: `/meetings`,
+        method: "GET",
+        params: { ...args },
+      }),
+    }),
     // 모임 생성
     createMeeting: builder.mutation<ServerResponse<number>, FormData>({
       query: (meeting) => ({
@@ -66,4 +79,5 @@ export const {
   useCreateMeetingDateMutation,
   useDeleteMeetingDateMutation,
   useGetMeetingDateQuery,
+  useGetMeetingListQuery,
 } = meetingApiSlice

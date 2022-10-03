@@ -111,23 +111,29 @@ export const courseApi = api.injectEndpoints({
       invalidatesTags: ["Course"],
     }),
     getCourseList: builder.query<CourseListRes, GetCourseListQS>({
-      query: ({ page = "0", size = "3", title = "", lat = "", lng = "" }) => ({
-        url: `/courses?page=${page}&size=${size}&title=${title}&lat=${lat}&lng=${lng}`,
+      query: (args) => ({
+        url: `/courses`,
         method: "GET",
+        params: { ...args },
       }),
       providesTags: ["Course"],
     }),
     getMyCourseList: builder.query<MyCoursesRes, GetMyCourseListQS>({
-      query: ({ courseStatus = "COMPLETE", page = "0", size = "3" }) => ({
-        url: `/courses/my?courseStatus=${courseStatus}&page=${page}&size=${size}`,
+      query: (args) => ({
+        url: `/courses/my`,
         method: "GET",
+        params: { ...args },
       }),
       providesTags: ["Course"],
     }),
-    getLikedCourseList: builder.query<MyCoursesRes, OptionalQueryString>({
-      query: ({ page = "0", size = "3" }) => ({
-        url: `/courses/like?page=${page}&size=${size}`,
+    getLikedCourseList: builder.query<
+      MyCoursesRes,
+      Partial<OptionalQueryString>
+    >({
+      query: (args) => ({
+        url: `/courses/like`,
         method: "GET",
+        params: { ...args },
       }),
       providesTags: ["Course"],
     }),

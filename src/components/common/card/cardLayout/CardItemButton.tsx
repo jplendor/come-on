@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import React, { useState } from "react"
+import React from "react"
 
 import theme from "theme"
 import { IconButton } from "@mui/material"
@@ -13,11 +13,7 @@ interface LikeButtonProps {
 
 const LikeButton = ({ isLike, courseId }: LikeButtonProps): JSX.Element => {
   const [click] = useClickLikeCourseMutation()
-  const [like, setLike] = useState(isLike)
-  const onClickHandler = () => {
-    click(courseId)
-    setLike(!like)
-  }
+  const onClickHandler = () => click(courseId)
   return (
     <IconButton
       aria-label="like"
@@ -29,7 +25,7 @@ const LikeButton = ({ isLike, courseId }: LikeButtonProps): JSX.Element => {
         marginRight: "14px",
       }}
     >
-      {like ? (
+      {isLike ? (
         <FavoriteRounded color="secondary" />
       ) : (
         <FavoriteBorderRounded

@@ -14,6 +14,36 @@ export interface ServerResponse<T> {
   data: T
 }
 
+/**
+ * 모임 리스트 조회
+ *
+ * GET /meetings
+ */
+
+export interface MeetingList {
+  contents: {
+    id: number
+    hostNickname: string
+    userCount: number
+    myMeetingRole: "HOST" | "EDITOR" | "PARTICIPANT"
+    title: string
+    startDate: string
+    endDate: string
+    imageLink: string
+    meetingCodeId: number
+    fixedDates: string[]
+    meetingStatus: "UNFIXED" | "PROCEEDING" | "END"
+  }
+}
+
+export interface MeetingListQS {
+  page: number
+  size: number
+  title: string
+  startDate: string
+  endDate: string
+}
+
 // User, Place => 공통으로 빼기?
 interface User {
   id: number
