@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
 import { MeetingInfoType } from "pages/meeting/MeetingCreate"
@@ -40,6 +40,8 @@ interface CalendarRangePickerProps {
   setMeetingInfo: Dispatch<SetStateAction<MeetingInfoType>>
 }
 
+const DAYOFWEEK_LIST = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+
 const CalendarRangePicker = ({
   meetingInfo,
   setMeetingInfo,
@@ -73,9 +75,11 @@ const CalendarRangePicker = ({
 
   const CALENDAR = {
     height: "300px",
-    px: "10px",
+    px: "15px",
     overflow: "auto",
     backgroundColor: "#ffffff",
+    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
+    borderRadius: "10px",
   }
 
   const DAYOFTHEWEEK_CONTAINER = {
@@ -85,6 +89,8 @@ const CalendarRangePicker = ({
     position: "sticky",
     top: "0px",
     display: "flex",
+    color: "gray",
+    py: "5px",
   }
 
   const DAYOFTHEWEEK = {
@@ -92,31 +98,21 @@ const CalendarRangePicker = ({
     textAlign: "center",
     lineHeight: "50px",
     color: "#8E8E8E",
-    fontWeight: "bold",
   }
 
   const MONTH_CONTAINER = {
     my: "30px",
   }
 
-  const MONTH_NUMBER = {
-    height: "30px",
-    m: "10px",
-    textAlign: "center",
-    fontSize: "20px",
-    fontWeight: "bold",
-  }
-
   const MONTH = {
-    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
     display: "flex",
     flexWrap: "wrap",
   }
 
   const DATE = {
     width: 1 / 7,
-    height: "80px",
-    lineHeight: "80px",
+    height: "60px",
+    lineHeight: "60px",
     textAlign: "center",
   }
 
@@ -242,6 +238,13 @@ const CalendarRangePicker = ({
     return currentMonthDateInfo || []
   }
 
+  const getSunStyle = (dayOfWeek: string): { color: string } => {
+    if (dayOfWeek === "SUN") {
+      return { color: "red" }
+    }
+    return { color: "inherit" }
+  }
+
   useEffect((): void => {
     setOneYearDateInfo()
   }, [setOneYearDateInfo])
@@ -249,18 +252,18 @@ const CalendarRangePicker = ({
   return (
     <Box sx={CALENDAR}>
       <Box sx={DAYOFTHEWEEK_CONTAINER}>
-        {generateComponent(["S", "M", "T", "W", "T", "F", "S"], (data, key) => (
-          <Box key={key} sx={DAYOFTHEWEEK}>
+        {generateComponent(DAYOFWEEK_LIST, (data, key) => (
+          <Typography key={key} sx={{ ...DAYOFTHEWEEK, ...getSunStyle(data) }}>
             {data}
-          </Box>
+          </Typography>
         ))}
       </Box>
       {ymInfo &&
         generateComponent(ymInfo, (data1, key1) => (
           <Box key={key1} sx={MONTH_CONTAINER}>
-            <Box sx={MONTH_NUMBER}>
+            <Typography>
               {data1.y}년 {data1.m + 1}월
-            </Box>
+            </Typography>
             <Box sx={MONTH}>
               {dateInfo &&
                 generateComponent(

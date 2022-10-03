@@ -1,96 +1,44 @@
 import React, {
   Dispatch,
   SetStateAction,
-  useEffect,
   useState,
-  useRef,
-  ChangeEvent,
+  useEffect,
+  useCallback,
 } from "react"
-
 import { styled } from "@mui/material/styles"
-import { Box, Input, Typography, TextField, Fab, Button } from "@mui/material"
-import { PhotoCamera } from "@mui/icons-material"
-import NabvigationBar from "components/common/NavigationBar"
-import Guide from "components/common/Guide"
+import { Box, Grid } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
-import {
-  setCourseDetail,
-  useGetCourseListQuery,
-} from "features/course/courseSlice"
+import TextInput from "components/common/input/TextInput"
+import ImageInput from "components/common/input/ImageInput"
+
+import { setCourseDetail } from "features/course/courseSlice"
 import { CourseData } from "types/API/course-service"
 
-import { useSelector, useDispatch } from "react-redux"
-import { RootState } from "store"
-
-interface NavigationBarProps {
-  currentPage: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
-  minPage: number
-  maxPage: number
-}
+import { useDispatch } from "react-redux"
 
 const FormBox = styled(Box)(() => ({}))
-
-const TitleContainer = styled(Box)(() => ({}))
-
-const DetailContainer = styled(Box)(() => ({}))
-
-const ImgContainer = styled(Box)(() => ({
-  margin: "0 auto",
-  padding: "0",
-  width: "100%",
-  height: "20rem",
-  objectFit: "cover",
-  borderRadius: "6px",
-  position: "relative",
-}))
-
-const LABEL_STYLE = {
-  margin: "20px 0",
-  fontWeight: "800",
-}
-
-const INPUT_STYLE = {
-  width: "100%",
-}
-
 const FORM_STYLE = {
   padding: "0 10px",
 }
-
-const ICON_STYLE = {
-  color: "white",
-}
-
-const IconContainer = styled(Box)(() => ({
-  zIndex: "1000",
-  position: "absolute",
-  bottom: "25px",
-  right: "25px",
-}))
-
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
 }
 
 const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
-  const selectFile = useRef<any>()
-  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>()
+  const dispatch = useDispatch()
 
+  const [isValid, setIsValid] = useState(false)
+  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>("")
+  const [previewImg, setPreviewImg] = useState<null | string>(null)
   const [changeInput, setChangeInput] = useState<CourseData>({
     title: "",
     description: "",
     imgFile: "",
   })
 
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newState = { ...changeInput, [e.target.name]: e.target.value }
-    setChangeInput(newState)
-    console.log(changeInput)
-  }
-  const encodeFileToBase64 = (fileBlob: Blob): any => {
+  const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
     const reader = new FileReader()
     reader.readAsDataURL(fileBlob)
     return new Promise<void>((resolve) => {
@@ -98,29 +46,51 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
         if (!reader.result) {
           throw new Error("No img result")
         }
-        setImageSrc(reader.result)
-        resolve()
-        setChangeInput(selectFile.current.files[0])
-        console.log(reader)
+        resolve(setImageSrc(reader.result))
       }
     })
   }
 
-  const makeFormData = (): FormData => {
-    const formData = new FormData()
-    formData.append("title", changeInput.title)
-    formData.append("description", changeInput.description)
-    formData.append("imgFile", selectFile.current.files[0])
+  const onValid = useCallback((): boolean => {
+    if (changeInput.title === "") return false
+    if (changeInput.description === "") return false
+    if (changeInput.imgFile === "" || changeInput.imgFile === "undefined")
+      return false
+    return true
+  }, [changeInput])
 
-    return formData
+  const changeFileToObjectUrl = (file: File): void => {
+    const fileUrl = URL.createObjectURL(file)
+    setPreviewImg(fileUrl)
   }
-  // 호출하면 api가 요청되는 트리거고, 뒤에는 성공인지, 로딩인지, 데이터 들어오는 객체
-  const dispatch = useDispatch()
-  const courseDetail = useSelector((state: RootState) => {
-    return state.course.courseDetails
-  })
-  // 페이지를 이동시키고 데이터를 전역상태로 저장
-  const onClicKNextPage = (): void => {
+
+  const handleChangeImg = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    if (e.target.files) {
+      changeFileToObjectUrl(e.target.files[0])
+      await encodeFileToBase64(e.target.files[0])
+
+      const newState = {
+        ...changeInput,
+        [e.target.name]: e.target.value,
+      }
+
+      setChangeInput(newState)
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newState = {
+      ...changeInput,
+      [e.target.name]: e.target.value,
+    }
+
+    setChangeInput(newState)
+  }
+
+  const onClickNextPage = (): void => {
     dispatch(
       setCourseDetail({
         title: changeInput.title,
@@ -131,65 +101,51 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
     setPage(page + 1)
   }
 
-  return (
-    <>
-      <Guide guideStr=" 코스정보를 입력해 주세요!" />
-      {/*  */}
-      <ImgContainer>
-        {imageSrc && (
-          <img src={String(imageSrc)} alt="img" width="100%" height="100%" />
-        )}
-        <IconContainer>
-          <Fab
-            color="secondary"
-            aria-label="camera"
-            size="large"
-            component="label"
-          >
-            <PhotoCamera sx={ICON_STYLE} />
-            <input
-              hidden
-              accept="image/*"
-              type="file"
-              ref={selectFile}
-              name="imgFile"
-              onChange={(e) => {
-                encodeFileToBase64(selectFile.current.files[0])
-              }}
-            />
-          </Fab>
-        </IconContainer>
-      </ImgContainer>
+  useEffect(() => {
+    setIsValid(onValid())
+  }, [changeInput, isValid, imageSrc, previewImg])
 
-      <FormBox sx={FORM_STYLE}>
-        <TitleContainer>
-          <Typography variant="h6" sx={LABEL_STYLE}>
-            코스이름
-          </Typography>
-          <Input
-            type="text"
-            sx={INPUT_STYLE}
+  return (
+    <FormBox sx={FORM_STYLE} onChange={onValid}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <ImageInput
+            title="이미지 등록"
+            alt="이미지를 등록해 주세요"
+            message="이미지를 등록해 주세요"
+            previewImg={previewImg}
+            handleChangeImg={handleChangeImg}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextInput
+            title="코스이름"
             name="title"
             value={changeInput.title}
-            onChange={onChangeInput}
+            placeholder="코스명을 입력해 주세요"
+            handleChange={onChangeInput}
           />
-        </TitleContainer>
-        <DetailContainer>
-          <Typography variant="h6" sx={LABEL_STYLE}>
-            코스설명
-          </Typography>
-          <TextField
+        </Grid>
+        <Grid item xs={12}>
+          <TextInput
             multiline
-            sx={INPUT_STYLE}
-            rows={10}
+            title="코스설명"
+            placeholder="코스설명을 입력해주세요"
+            rows={8}
             name="description"
             value={changeInput.description}
-            onChange={onChangeInput}
+            handleChange={onChangeInput}
           />
-        </DetailContainer>
-        <CourseNextStepButton content="다음단계" onClick={onClicKNextPage} />
-      </FormBox>
-    </>
+        </Grid>
+        <Grid item xs={12}>
+          <CourseNextStepButton
+            content="다음단계"
+            isValid={isValid}
+            onClick={onClickNextPage}
+          />
+        </Grid>
+      </Grid>
+    </FormBox>
   )
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react"
 import { useTheme } from "@mui/material/styles"
-import { Box, Button } from "@mui/material"
+import { Box, Button, Typography } from "@mui/material"
 import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "utils"
 import {
   useCreateMeetingDateMutation,
@@ -30,6 +30,8 @@ enum Mode {
   Select = "SELECT",
 }
 
+const DAYOFWEEK_LIST = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+
 const Calendar = ({ meetingInfo }: any): JSX.Element => {
   const { meetingId, startDate, endDate, meetingUsers, meetingDates } =
     meetingInfo
@@ -48,10 +50,12 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
   const theme = useTheme()
 
   const CALENDAR = {
-    height: "500px",
+    maxHeight: "500px",
     px: "10px",
     overflow: "auto",
     backgroundColor: "#ffffff",
+    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
+    borderRadius: "10px",
   }
 
   const DAYOFTHEWEEK_CONTAINER = {
@@ -68,7 +72,6 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     textAlign: "center",
     lineHeight: "50px",
     color: "#8E8E8E",
-    fontWeight: "bold",
   }
 
   const MONTH_CONTAINER = {
@@ -84,16 +87,17 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
   }
 
   const MONTH = {
-    boxShadow: "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
     display: "flex",
     flexWrap: "wrap",
   }
 
   const DATE = {
     width: 1 / 7,
-    height: "80px",
-    lineHeight: "80px",
+    height: "50px",
+    lineHeight: "50px",
     textAlign: "center",
+    mt: "5px",
+    mb: "5px",
   }
 
   const getAllDates = useCallback(
@@ -241,14 +245,11 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     <Box>
       <Box sx={CALENDAR}>
         <Box sx={DAYOFTHEWEEK_CONTAINER}>
-          {generateComponent(
-            ["S", "M", "T", "W", "T", "F", "S"],
-            (data, key) => (
-              <Box key={key} sx={DAYOFTHEWEEK}>
-                {data}
-              </Box>
-            )
-          )}
+          {generateComponent(DAYOFWEEK_LIST, (data, key) => (
+            <Typography key={key} sx={DAYOFTHEWEEK}>
+              {data}
+            </Typography>
+          ))}
         </Box>
         {generateComponent(allDates, (allData, key1) => (
           <Box key={key1} sx={MONTH_CONTAINER}>
@@ -259,7 +260,7 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
                   key={key2}
                   sx={{
                     ...DATE,
-                    backgroundColor: `rgba(255, 165, 165, ${monthData.percentage})`,
+                    backgroundColor: `rgba(51,127,254, ${monthData.percentage})`,
                   }}
                   data-date={
                     monthData.date === 0

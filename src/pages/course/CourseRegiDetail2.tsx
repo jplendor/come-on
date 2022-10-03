@@ -1,35 +1,21 @@
 import React, {
   Dispatch,
   SetStateAction,
+  useCallback,
   useEffect,
   useState,
-  useRef,
 } from "react"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 
 import { styled } from "@mui/material/styles"
-import { Box, Typography, IconButton } from "@mui/material"
+import { Box, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import NabvigationBar from "components/common/NavigationBar"
-import Guide from "components/common/Guide"
 import { generateComponent } from "utils"
-import MapContainer from "components/common/MapContainer"
-import ListDetailCard, {
-  ListDetailCardProp,
-} from "components/common/ListDetailCard"
-import { ObjectType } from "typescript"
-import { Link, useLocation } from "react-router-dom"
+import MapContainer from "components/common/course/MapContainer"
+import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-import { addCoursePlace } from "features/course/courseSlice"
-import SearchPlace from "./SearchPlace"
-
-interface NavigationBarProps {
-  currentPage: number
-  setCurrentPage: Dispatch<SetStateAction<number>>
-  minPage: number
-  maxPage: number
-}
+import PlaceDetailCard from "components/common/card/PlaceDetailCard "
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -37,7 +23,6 @@ const IconContainer = styled(Box)(() => ({
 }))
 
 const MainContainer = styled(Box)(() => ({
-  padding: "0px 20px",
   display: "flex",
   flexDirection: "column",
 }))
@@ -46,14 +31,20 @@ const ICON_STYLE = {
   margin: "5px 0",
 }
 
+enum PlaceType {
+  m = "meeting",
+  c = "course",
+}
+
 interface CoursePlaceState {
   order: number
   name: string
   description: string
   lng: number // 경도 x
   lat: number // 위도 y
-  kakaoPlaceId: number
-  placeCategory: string
+  apiId: number
+  category: string
+  address: string
 }
 
 interface pageProps {
@@ -62,20 +53,32 @@ interface pageProps {
 }
 
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const selectFile = useRef<any>(null)
-  const [isSelected, setSelected] = useState("")
+  const [selectedNumber, setselectedNumber] = useState<string>("")
+  const [isValid, setIsValid] = useState(false)
   const placeList = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-
   const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
+
+  const onValid = useCallback((): void => {
+    if (placeList[0].order !== 0) setIsValid(true)
+    else {
+      setIsValid(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    onValid()
+    console.log(isValid)
+  }, [isValid, onValid])
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
     const e = event?.currentTarget
     if (e) {
-      setSelected(e.id)
-    } else setSelected("")
+      setselectedNumber(e.id)
+    } else {
+      setselectedNumber("")
+    }
   }
 
   const onRemove = (index: number): void => {
@@ -95,45 +98,50 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
     setCourseData(data)
   }
 
-  const dispatch = useDispatch()
+  setPage(2)
 
   const onClicKNextPage = (): void => {
     setPage(page + 1)
   }
 
   return (
-    <>
-      <NabvigationBar
-        currentPage={1}
-        setCurrentPage={setCurrentPage}
-        minPage={1}
-        maxPage={3}
+    <MainContainer>
+      <MapContainer
+        selectedNumber={selectedNumber}
+        placeLists={placeList}
+        isSuccess={placeList !== undefined}
+        isLoading={placeList === undefined}
       />
-      <Guide guideStr=" 장소를 등록해 주세요!" />
-      <MainContainer>
-        <MapContainer selectedNumber={isSelected} />
-        <IconContainer>
-          <IconButton type="button">
-            <Link to="/course/register">
-              <Add sx={ICON_STYLE} color="secondary" fontSize="large" />
-            </Link>
-          </IconButton>
-        </IconContainer>
-        {/* 카카오톡 공유하기 */}
-        {/* 버튼만들기 */}
-        {placeList[0].order !== 0 &&
-          generateComponent(courseData, (item, key) => (
-            <ListDetailCard
-              item={item}
-              key={key}
-              onClick={onClickFocus}
-              isSelected={isSelected}
-              onRemove={onRemove}
-            />
-          ))}
-        <CourseNextStepButton content="다음단계" onClick={onClicKNextPage} />
-      </MainContainer>
-    </>
+      <IconContainer>
+        <IconButton type="button">
+          <Link to="/course/register">
+            <Add sx={ICON_STYLE} color="secondary" fontSize="large" />
+          </Link>
+        </IconButton>
+      </IconContainer>
+      {/* 카카오톡 공유하기 */}
+      {/* 버튼만들기 */}
+      {placeList[0].order !== 0 &&
+        generateComponent(placeList, (item, key) => (
+          <PlaceDetailCard
+            item={item}
+            key={key}
+            onClick={onClickFocus}
+            isSelected={
+              item.order ===
+              (selectedNumber === "" ? -10 : Number(selectedNumber))
+            }
+            onRemove={onRemove}
+            maxLen={placeList.length}
+            mode={PlaceType.c}
+          />
+        ))}
+      <CourseNextStepButton
+        content="다음단계"
+        isValid={isValid}
+        onClick={onClicKNextPage}
+      />
+    </MainContainer>
   )
 }
 

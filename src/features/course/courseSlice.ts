@@ -1,6 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */ // <-- 임시
-
+/* eslint-disable import/prefer-default-export */
 import { api } from "features/api/apiSlice"
+import {
+  CourseIdResponse,
+  CourseDetailResponse,
+} from "types/API/course-service"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type {
@@ -12,10 +15,6 @@ import type {
   OptionalQueryString,
   LikeCourseRes,
 } from "types/API/course-service"
-
-interface CourseId {
-  courseId: number
-}
 
 interface CoursePlaceState {
   courseDetails: {
@@ -30,8 +29,10 @@ interface CoursePlaceState {
       description: string
       lng: number // 경도 x
       lat: number // 위도 y
-      kakaoPlaceId: number
-      placeCategory: string
+      apiId: number
+      category: string
+      id: number
+      address: string
     }
   ]
 }
@@ -42,8 +43,10 @@ interface CoursePlaceProps {
   description: string
   lng: number // 경도 x
   lat: number // 위도 y
-  kakaoPlaceId: number
-  placeCategory: string
+  apiId: number
+  category: string
+  id: number
+  address: string
 }
 
 interface CourseDetailProps {
@@ -60,13 +63,15 @@ const initialState: CoursePlaceState = {
   },
   coursePlaces: [
     {
+      id: 0,
       order: 0,
       name: "newName",
       description: "값을 입력해 주세요",
       lng: 38.05248142233915, // 경도 x
       lat: 127.65930674808553, // 위도 y
-      kakaoPlaceId: 12346,
-      placeCategory: "ETC",
+      apiId: 12346,
+      category: "ETC",
+      address: "",
     },
   ],
 }
@@ -144,14 +149,20 @@ export const courseApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Course"],
     }),
-    addCourseDetail: builder.mutation<any, FormData>({
+    getCourseDetail: builder.query<CourseDetailResponse, any>({
+      query: ({ id }) => ({
+        url: `/courses/${id}`,
+        method: "GET",
+      }),
+    }),
+    addCourseDetail: builder.mutation<CourseIdResponse, FormData>({
       query: (data) => ({
         url: "/courses",
         method: "POST",
         body: data,
       }),
     }),
-    addCoursePlace: builder.mutation<CourseListRes, any>({
+    addCoursePlace: builder.mutation<CourseDetailResponse, any>({
       query: (data) => ({
         url: `/courses/${data.courseId}/course-places/batch`,
         method: "POST",
@@ -179,4 +190,5 @@ export const {
   useClickLikeCourseMutation,
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
+  useGetCourseDetailQuery,
 } = courseApi
