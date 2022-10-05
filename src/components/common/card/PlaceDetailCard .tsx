@@ -8,7 +8,7 @@ import {
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { KeyboardArrowRight } from "@mui/icons-material"
+import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -42,7 +42,6 @@ const SELECTED_CARD = {
 const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
   "&.MuiGrid-root": {
     borderRadius: "4px",
-    height: "80px",
     color: "black",
   },
   border: `1px solid #EEEEEE`,
@@ -64,17 +63,6 @@ const CARD_NUMBERING = {
 const ITEM_BOX = {
   color: "#EEEEEE",
   padding: "8px 12px",
-}
-
-const TITLE_CATEGORY = {
-  fontSize: "10px",
-  padding: "1px 3px",
-  backgroundColor: "#EEEEEE",
-  textAlign: "center",
-  color: "#9E9E9E",
-  margin: "1px 0px 2px 4px",
-
-  borderRadius: "2px",
 }
 
 const LINE_FIRST = {
@@ -104,15 +92,6 @@ const LINE_LAST = {
   bottom: "12px",
   padding: "0px",
 }
-const TITLE_FONT = {
-  fontWeight: "bold",
-  lineHeight: "140%",
-  fontSize: "16px",
-  padding: "0px",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-}
 
 const TITLE_DES = {
   margin: "0",
@@ -132,13 +111,35 @@ const NUMBERING_BOX = {
   alignItem: "center",
   padding: "0px",
 }
+
 const TITLE_BOX = {
   display: "flex",
-  displayDirection: "column",
+  alignItems: "center",
   flexwrap: "nowrap",
   lineHeight: "140%",
-  alignItems: "center",
   padding: "0px",
+}
+
+const TITLE_FONT = {
+  fontWeight: "bold",
+  lineHeight: "140%",
+  fontSize: "16px",
+  padding: "0px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  maxWidth: "60%",
+}
+
+const TITLE_CATEGORY = {
+  fontSize: "10px",
+  padding: "1px 3px",
+  backgroundColor: "#EEEEEE",
+  textAlign: "center",
+  color: "#9E9E9E",
+  m: "0 10px",
+  height: "20px",
+  borderRadius: "2px",
 }
 
 const DES_BOX = {
@@ -151,15 +152,21 @@ const DES_BOX = {
   margin: "0px",
 }
 
-const URL_ICON = {
+const ICON = {
   width: "14px",
   height: "14px",
-  display: "relative",
   fontSize: "14px",
   margin: "0px",
   padding: "0px",
-  left: "50px",
   color: "#BDBDBD",
+}
+
+const ButtonGroup = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "end",
+  justifyContent: "space-between",
+  p: "10px",
 }
 
 export interface ListDetailCardProp {
@@ -262,23 +269,30 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
                 <Typography component="span" sx={TITLE_CATEGORY}>
                   {category}
                 </Typography>
+                <IconButton sx={ICON}>
+                  <Edit />
+                </IconButton>
               </Box>
               <Box sx={DES_BOX}>
                 <Typography variant="subtitle2" sx={TITLE_DES}>
                   {description !== null ? description : memo}
                 </Typography>
-                <a href={routeUrl} target="_blank" rel="noreferrer">
-                  <IconButton sx={URL_ICON}>
-                    <KeyboardArrowRight />
-                  </IconButton>
-                </a>
               </Box>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 {address}
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={1} />
+          <Grid item xs={2} sx={ButtonGroup}>
+            <IconButton sx={ICON}>
+              <Close />
+            </IconButton>
+            <a href={routeUrl} target="_blank" rel="noreferrer">
+              <IconButton sx={ICON}>
+                <KeyboardArrowRight />
+              </IconButton>
+            </a>
+          </Grid>
         </ThemeGrid>
       </Grid>
     </Grid>
