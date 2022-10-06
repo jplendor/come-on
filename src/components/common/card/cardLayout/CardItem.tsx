@@ -8,6 +8,7 @@ import type { ImageListItemProps, ImageListItemBarProps } from "@mui/material"
 import { Box, ImageList, ImageListItem, ImageListItemBar } from "@mui/material"
 
 import { CourseList, MyCourses } from "types/API/course-service"
+import { useGetCourseListQuery } from "features/course/courseSlice"
 import { CardLikeButton, CardTopInfo } from "./CardItemTitle"
 import CardTexts from "./CardTexts"
 

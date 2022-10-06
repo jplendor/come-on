@@ -1,19 +1,37 @@
-import React, { useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import {
   Box,
   Grid,
   GridProps,
   IconButton,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
   Typography,
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
-import PlaceDetailEditCard from "./PlaceDetailEditCard"
+import { Close } from "@mui/icons-material"
+import { generateComponent } from "utils"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
 // 2. 리스트 삭제 버튼 [V]
+
+const CATEGORY_LIST = [
+  { name: "SCHOOL", value: "학교" },
+  { name: "CAFE", value: "카페" },
+  { name: "BAR", value: "술집" },
+  { name: "SPORT", value: "스포츠" },
+  { name: "SHOPPING", value: "쇼핑" },
+  { name: "ETC", value: "기타" },
+  { name: "ATTRACTION", value: "관광명소" },
+  { name: "RESTAURANT", value: "음식점" },
+  { name: "ACCOMMODATION", value: "숙박" },
+  { name: "CULTURE", value: "문화시설" },
+  { name: "ACTIVITY", value: "액티비티" },
+]
 
 const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
   borderRadius: "30px",
@@ -94,14 +112,6 @@ const LINE_LAST = {
   padding: "0px",
 }
 
-const TITLE_DES = {
-  margin: "0",
-  lineHeight: "140%",
-  fontSize: "14px",
-  color: "#616161",
-  padding: "0px",
-}
-
 const GRID_WRAP = {
   color: "#EEEEEE",
   padding: "0px",
@@ -130,17 +140,6 @@ const TITLE_FONT = {
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
   maxWidth: "60%",
-}
-
-const TITLE_CATEGORY = {
-  fontSize: "10px",
-  padding: "1px 3px",
-  backgroundColor: "#EEEEEE",
-  textAlign: "center",
-  color: "#9E9E9E",
-  m: "0 10px",
-  height: "20px",
-  borderRadius: "2px",
 }
 
 const DES_BOX = {
@@ -199,56 +198,54 @@ interface CoursePlace extends Place {
 interface MeetingPlace extends Place {
   memo: string
 }
-interface ListDetailCardProps {
+interface PlaceDetailEditCard {
   item: CoursePlace | MeetingPlace
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: boolean
-  onRemove: (index: number) => void
   maxLen: number
   mode: PlaceType
+  setIsEditing: Dispatch<SetStateAction<boolean>>
 }
 
-const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
+const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   mode,
-  onClick,
   isSelected,
   item,
   maxLen,
-  onRemove,
+  setIsEditing,
 }) => {
-  const [isEditing, setIsEditing] = useState(false)
+  const { order: index, name: placeName, address } = item
 
-  const { order: index, name: placeName, category, apiId, address, id } = item
-  let description = null
-  let memo = null
+  const [category, setCategory] = useState<string>()
+  const [memo, setMemo] = useState<string>()
+  const [description, setDescription] = useState<string>()
 
-  if (mode === PlaceType.m) {
-    const { memo: itemMemo } = item as MeetingPlace
-    memo = itemMemo
-  }
-
-  if (mode === PlaceType.c) {
-    const { description: itemDescription } = item as CoursePlace
-    description = itemDescription
-  }
-
-  const routeUrl = `https://map.kakao.com/link/to/${apiId}`
-
-  const handleClickClose = (e: React.MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-    onRemove(id)
-  }
-
-  if (isEditing) {
-    return (
-      <PlaceDetailEditCard
-        item={item}
-        isSelected={isSelected}
-        mode={mode}
-        maxLen={maxLen}
-        setIsEditing={setIsEditing}
-      />
+  useEffect(() => {
+    setCategory(
+      CATEGORY_LIST.filter((it) => it.value === item.category)[0].name
     )
+
+    if (mode === PlaceType.m) {
+      const { memo: itemMemo } = item as MeetingPlace
+      setMemo(itemMemo)
+    }
+
+    if (mode === PlaceType.c) {
+      const { description: itemDescription } = item as CoursePlace
+      setDescription(itemDescription)
+    }
+  }, [item, mode])
+
+  const handleCategoryChange = (e: SelectChangeEvent): void => {
+    setCategory(e.target.value)
+  }
+
+  const handleMemoChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setMemo(e.target.value)
+  }
+
+  const handleClickClose = (): void => {
+    // 장소 수정 api
+    setIsEditing(false)
   }
 
   return (
@@ -280,30 +277,36 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
           container
           style={{ marginBottom: "12px" }}
           id={String(index)}
-          onClick={onClick}
           sx={isSelected ? SELECTED_CARD : DEFAULT_CARD}
         >
           <Grid item xs={10}>
             <Box sx={ITEM_BOX}>
               <Box sx={TITLE_BOX}>
                 <Typography sx={TITLE_FONT}>{placeName}</Typography>
-                <Typography component="span" sx={TITLE_CATEGORY}>
-                  {category}
-                </Typography>
-                <IconButton
-                  sx={ICON}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setIsEditing(true)
-                  }}
-                >
-                  <Edit />
-                </IconButton>
+                {category && (
+                  <Select
+                    size="small"
+                    value={category}
+                    onChange={handleCategoryChange}
+                  >
+                    <MenuItem value="">카테고리</MenuItem>
+                    {generateComponent(CATEGORY_LIST, (data, key) => (
+                      <MenuItem value={data.name} key={key}>
+                        {data.value}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
               </Box>
               <Box sx={DES_BOX}>
-                <Typography variant="subtitle2" sx={TITLE_DES}>
-                  {description !== null ? description : memo}
-                </Typography>
+                {memo && (
+                  <TextField
+                    size="small"
+                    value={memo}
+                    onChange={handleMemoChange}
+                  />
+                )}
+                {description && <TextField size="small" value={description} />}
               </Box>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 {address}
@@ -314,11 +317,6 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
             <IconButton sx={ICON} onClick={handleClickClose}>
               <Close />
             </IconButton>
-            <a href={routeUrl} target="_blank" rel="noreferrer">
-              <IconButton sx={ICON}>
-                <KeyboardArrowRight />
-              </IconButton>
-            </a>
           </Grid>
         </ThemeGrid>
       </Grid>
@@ -326,4 +324,4 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   )
 }
 
-export default PlaceDetailCard
+export default PlaceDetailEditCard

@@ -7,11 +7,25 @@ import {
   MeetingDateForDelete,
   meetingDateForRead,
   MeetingDateDetail,
+  MeetingList,
+  MeetingListQS,
   MeetingPlaceForCreate,
+  MeetingPlaceForDelete,
 } from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
+    getMeetingList: builder.query<
+      ServerResponse<MeetingList>,
+      Partial<MeetingListQS>
+    >({
+      query: (args) => ({
+        // eslint-disable-next-line max-len
+        url: `/meetings`,
+        method: "GET",
+        params: { ...args },
+      }),
+    }),
     // 모임 생성
     createMeeting: builder.mutation<ServerResponse<number>, FormData>({
       query: (meeting) => ({
@@ -73,6 +87,17 @@ export const meetingApiSlice = api.injectEndpoints({
       }),
       invalidatesTags: ["Meeting"],
     }),
+    // 모임 장소 삭제
+    deleteMeetingPlace: builder.mutation<
+      ServerResponse<null>,
+      MeetingPlaceForDelete
+    >({
+      query: (meetingPlace) => ({
+        url: `/meetings/${meetingPlace.meetingId}/places/${meetingPlace.placeId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Meeting"],
+    }),
   }),
 })
 
@@ -82,5 +107,7 @@ export const {
   useCreateMeetingDateMutation,
   useDeleteMeetingDateMutation,
   useGetMeetingDateQuery,
+  useGetMeetingListQuery,
   useCreateMeetingPlaceMutation,
+  useDeleteMeetingPlaceMutation,
 } = meetingApiSlice
