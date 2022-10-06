@@ -1,14 +1,12 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  SetStateAction,
-  Dispatch,
-} from "react"
+import React, { useState, SetStateAction, Dispatch, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { MydetailRes } from "types/API/user-service"
+import { toStringYyyymmdd, generateComponent } from "utils"
 
+import { useMyDetailQuery } from "features/user/userSlice"
 import { styled } from "@mui/material/styles"
 
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import { useSelector } from "react-redux"
@@ -19,36 +17,85 @@ import {
 } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"
+import { AccountCircleOutlined, DateRange, Favorite } from "@mui/icons-material"
+import PlaceDetailCard, {
+  PlaceType,
+} from "components/common/card/PlaceDetailCard "
+
+import MapContainer from "components/common/course/MapContainer"
+import { QueryProps } from "components/common/BasicFrame/BasicFrame"
+
+const TitleContainer = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "column",
+}))
+
+const MainContainer = styled(Box)(() => ({
+  display: "flex",
+  margin: "16px 0",
+  flexDirection: "column",
+}))
+
+const ImgContainer = styled(Box)(() => ({
+  width: "100%",
+  height: "30%",
+  objectFit: "cover",
+}))
+
+const FONT_TITLE = {
+  fontSize: "22px",
+  lineHeight: "125%",
+  fontWeight: "bold",
+}
+
+const FONT_SUBTITLE = {
+  fontSize: "13px",
+  lineHeight: "145%",
+  color: "#9E9E9E",
+}
+
+const ICON_BOX = {
+  lineHegiht: "145%",
+  margin: "0 auto",
+  display: "flex",
+  flexWrap: "nowrap",
+  justifyContent: "flex-start",
+  alignItems: "center",
+}
+
+const ICON_STYLE = {
+  width: "16px",
+  height: "16px",
+}
+
+const SUBTITLE = {
+  lineHegiht: "145%",
+  margin: "10px 0",
+  display: "flex",
+  flexWrap: "nowrap",
+  justifyContent: "flex-start",
+}
+
+const TITLE = {
+  width: "100%",
+  display: "flex",
+  marginTop: "10px",
+  justifyContent: "space-between",
+}
+
+const FAVORITE_BOX = {
+  width: "24px",
+  height: "24px",
+  margin: "auto 10px",
+}
+
+const DES_STYLE = {
+  fontSize: "14px",
+  lineHeight: "140%",
+  color: "#616161",
+}
 
 window.Buffer = Buffer
-
-const b64toBlob = (
-  b64Data: string,
-  contentTypeProps: string,
-  sliceSizeProps?: number
-): Blob => {
-  const contentType = contentTypeProps || ""
-  const sliceSize = sliceSizeProps || 512
-
-  const byteCharacters = Buffer.from(b64Data, "base64").toString()
-  const byteArrays = []
-
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize)
-
-    const byteNumbers = new Array(slice.length)
-    for (let i = 0; i < slice.length; i += 1) {
-      byteNumbers[i] = slice.charCodeAt(i)
-    }
-
-    const byteArray = new Uint8Array(byteNumbers)
-
-    byteArrays.push(byteArray)
-  }
-
-  const myBlob = new Blob(byteArrays, { type: contentType })
-  return myBlob
-}
 
 const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
   const arr = dataUrl.split(",")
@@ -70,42 +117,42 @@ interface pageProps {
 
 // 코스등록 전 미리보기 페이지
 const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
-  const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
-  const ImgContainer = styled(Box)(() => ({
-    margin: "0",
-    padding: "0",
-    width: "100%",
-    height: "180px",
-    objectFit: "cover",
-  }))
-
-  setPage(page)
-
-  const MainContainer = styled(Box)(() => ({
-    padding: "0px 20px",
-    display: "flex",
-    flexDirection: "column",
-  }))
-
   /* **********************************************************************
-
 api연동부분
  2
 ************************************************************************** */
+  const navigate = useNavigate()
+  interface MyDetailQueryProps extends QueryProps {
+    data: MydetailRes
+  }
 
+  const [selectedNumber, setselectedNumber] = useState<string>("")
   const [addCourseDetail, { data: result, isSuccess }] =
     useAddCourseDetailMutation()
-  const [addCoursePlace, { data: courseResult }] = useAddCoursePlaceMutation()
+  const [addCoursePlace] = useAddCoursePlaceMutation()
+  const { data: userData, isLoading: isLoadingUser } =
+    useMyDetailQuery() as MyDetailQueryProps
 
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })
+  const placeList = useSelector((state: RootState) => {
+    return state.course.coursePlaces
+  })
+  const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
-  const [onSubmit, setOnSubmit] = useState<boolean>(true)
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const e = event?.currentTarget
+    if (e) {
+      setselectedNumber(e.id)
+    } else {
+      setselectedNumber("")
+    }
+  }
 
   // 제출용 폼데이터 만드는 함수
   // base64 => File => blob으로 만들었다.
-  const makeFormData = (blobImgFile: Blob): FormData => {
+  const makeFormData = (): FormData => {
     const formData = new FormData()
     formData.append("title", courseDetail.title)
     formData.append("description", courseDetail.description)
@@ -127,13 +174,8 @@ api연동부분
   // async (): Promise<boolean>
   // 코스 디테일 전송하는 함수
   const submitCourseDetail = async (): Promise<boolean> => {
-    const { imgFile } = courseDetail
-    const base64str = imgFile.split(",")
-    const contentTypeProps = base64str[0]
-    const b64Data = base64str[1]
-    const imageBlob = b64toBlob(b64Data, contentTypeProps)
     try {
-      const submitData = makeFormData(imageBlob)
+      const submitData = makeFormData()
       await addCourseDetail(submitData)
 
       if (isSuccess) {
@@ -179,53 +221,100 @@ api연동부분
     return Promise.resolve(true)
   }
 
-  useEffect(() => {
-    const submit = async (): Promise<boolean> => {
-      await submitCourseDetail()
-      if (isSuccess) {
-        await submitPlaceList()
-      }
-      return Promise.resolve(true)
+  // 무한리렌더링 조심 부분
+
+  const submit = async (): Promise<boolean> => {
+    if ((await submitCourseDetail()) === true) {
+      await submitPlaceList()
     }
-
-    submit()
-    setOnSubmit(false)
-  }, [onSubmit, isSuccess, submitCourseDetail])
-
-  return (
-    <MainContainer>
-      {/*       
-        /* 코스 이름
-  코스 날짜
+    setIsSubmit(true)
+    return Promise.resolve(true)
   }
-{
-  코스사진
-  코스설명
-      */}
-      <div>사진찍기 좋은 부산 여행 코스</div>
-      <div>여행마스터</div>
-      <div>2022-09-15</div>
 
-      <ImgContainer>
-        <img src={courseDetail.imgFile} width="100%" height="100%" alt="img" />
-      </ImgContainer>
-      <div>코스설명</div>
-      <div>이 코스에선 귀여운 뱁새를 볼 수 있습니다.</div>
+  if (isSubmit) {
+    navigate("/")
+  }
 
-      {/*  맵컨테이너
-맵 리스트 */}
-      <div
-        id="map"
-        ref={mapContainer}
-        style={{ width: "100%", height: "20rem" }}
-      />
-      <CourseNextStepButton
-        content="코스등록 완료하기"
-        onClick={() => {
-          setOnSubmit(true)
-        }}
-      />
-    </MainContainer>
+  if (isLoadingUser) return <div>Loading...</div>
+  return (
+    courseDetail && (
+      <>
+        <ImgContainer>
+          <img
+            src={courseDetail.imgFile}
+            width="100%"
+            height="100%"
+            alt="img"
+          />
+        </ImgContainer>
+        <MainContainer>
+          <TitleContainer>
+            <Box className="Title" sx={TITLE}>
+              <Typography variant="h5" sx={FONT_TITLE}>
+                {courseDetail?.title}
+              </Typography>
+              <Favorite color="secondary" sx={FAVORITE_BOX} />
+            </Box>
+            <Box className="subTitle" sx={SUBTITLE}>
+              <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
+                <Box sx={ICON_BOX}>
+                  <AccountCircleOutlined sx={ICON_STYLE} />
+                  <Typography
+                    variant="subtitle1"
+                    sx={FONT_SUBTITLE}
+                    style={{ margin: "auto 5px" }}
+                  >
+                    {userData.data.nickname}
+                  </Typography>
+                  <DateRange sx={ICON_STYLE} />
+                  {toStringYyyymmdd(new Date())}
+                </Box>
+              </Typography>
+            </Box>
+          </TitleContainer>
+          <Box sx={DES_STYLE}>{courseDetail?.description}</Box>
+          {placeList !== null && placeList !== undefined && (
+            <MapContainer
+              selectedNumber={selectedNumber}
+              placeLists={placeList}
+              isSuccess
+              isLoading={false}
+            />
+          )}
+
+          {placeList[0].order !== 0 &&
+            generateComponent(placeList, (item, key) => (
+              <PlaceDetailCard
+                item={item}
+                key={key}
+                onClick={onClickFocus}
+                isSelected={
+                  item.order ===
+                  (selectedNumber === "" ? -10 : Number(selectedNumber))
+                }
+                onRemove={() => {
+                  console.log("dd")
+                }}
+                maxLen={placeList.length}
+                mode={PlaceType.c}
+              />
+            ))}
+          <CourseNextStepButton
+            content="수정하기"
+            onClick={() => {
+              console.log("수정하기")
+            }}
+          />
+          <CourseNextStepButton
+            content="코스등록 완료"
+            onClick={() => {
+              submit()
+            }}
+            isValid
+          />
+        </MainContainer>
+      </>
+    )
   )
 }
 export default CourseRegiDetail3

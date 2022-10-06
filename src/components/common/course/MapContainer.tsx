@@ -134,7 +134,7 @@ const MapContainer = ({
       style={{
         width: "100%",
         height: "180px",
-        margin: "0px",
+        margin: "16px 0",
         padding: "0px",
         borderRadius: "8px",
       }}

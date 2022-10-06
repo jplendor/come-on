@@ -13,7 +13,7 @@ import {
 } from "utils"
 import { RootState } from "store"
 import { api } from "features/api/apiSlice"
-import { myDetial } from "features/user/userSlice"
+import { myDetail } from "features/user/userSlice"
 import { MydetailRes } from "types/API/user-service"
 import { LocalstorageName, SliceStatus } from "types/auth"
 
@@ -105,7 +105,7 @@ export const tokenValidation = createAsyncThunk<
     )
     if (isError) return rejectWithValue(validationData as ExceptionRes)
     setCookie(CookieName.auth, encryptedText)
-    await dispatch(myDetial.initiate())
+    await dispatch(myDetail.initiate())
     return validationData as TokenValidationRes
   },
   {
@@ -143,7 +143,7 @@ const authSlice = createSlice({
       state.status = "failed"
       state.user = initialUserState
     })
-    builder.addMatcher(myDetial.matchFulfilled, (state, { payload }) => {
+    builder.addMatcher(myDetail.matchFulfilled, (state, { payload }) => {
       const {
         data: { userId, role, profileImg },
       } = payload as MydetailRes
@@ -157,7 +157,7 @@ const authSlice = createSlice({
         JSON.stringify(profileImg || "")
       )
     })
-    builder.addMatcher(myDetial.matchRejected, (state) => {
+    builder.addMatcher(myDetail.matchRejected, (state) => {
       if (state.isloggedin === false) state.user = initialUserState
     })
     builder.addMatcher(reissue.matchFulfilled, (_state, { payload }) => {

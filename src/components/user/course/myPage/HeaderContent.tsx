@@ -3,7 +3,7 @@ import { Box } from "@mui/material"
 
 import { MydetailRes } from "types/API/user-service"
 import Profile from "components/user/profile/Profile"
-import { useMyDetialQuery } from "features/user/userSlice"
+import { useMyDetailQuery } from "features/user/userSlice"
 import ProfileSkeleton from "components/user/profile/ProfileSkeleton"
 import Basicframe, { QueryProps } from "components/common/BasicFrame/BasicFrame"
 import theme from "theme"
@@ -13,8 +13,8 @@ interface MyDetialQueryProps extends QueryProps {
 }
 
 const MyPageProfile = (): JSX.Element => {
-  const myDetialQuery = useMyDetialQuery() as MyDetialQueryProps
-  const Content = Basicframe(myDetialQuery, [ProfileSkeleton, Profile])
+  const myDetailQuery = useMyDetailQuery() as MyDetialQueryProps
+  const Content = Basicframe(myDetailQuery, [ProfileSkeleton, Profile])
   return (
     <>
       {Content}

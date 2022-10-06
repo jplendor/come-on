@@ -45,7 +45,7 @@ const TextInput = ({
       inputItem={
         <TextField
           multiline={multiline}
-          fullWidth
+          sx={{ width: "100%" }}
           name={name}
           value={value}
           rows={rows}

@@ -4,6 +4,7 @@ import RequireAuth from "components/auth/RequireAuth"
 
 import CoursePlaceeAdd from "pages/course/CoursePlaceAdd"
 import CourseRegiLayout from "./CourseRegiLayout"
+import CoursePage from "./CoursePage"
 
 const AuthCoursePage = (): JSX.Element => (
   <RequireAuth>
@@ -16,6 +17,7 @@ const Course = (): JSX.Element => {
     <Routes>
       <Route index element={<AuthCoursePage />} />
       <Route path="/register" element={<CoursePlaceeAdd />} />
+      <Route path="/:id" element={<CoursePage />} />
     </Routes>
   )
 }
