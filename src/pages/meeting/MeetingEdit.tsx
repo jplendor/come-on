@@ -9,6 +9,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  Tooltip,
 } from "@mui/material"
 import { generateComponent } from "utils"
 import { useTheme } from "@mui/material/styles"
@@ -97,11 +98,16 @@ const MeetingEdit = (): JSX.Element => {
           <Grid item xs={12}>
             <Stack direction="row" spacing={2}>
               {generateComponent(meeting.meetingUsers, (data, key) => (
-                <Avatar
+                <Tooltip
+                  title={data.nickname}
                   key={key}
-                  src={data.imageLink}
-                  alt={`${data.nickname} 프로필 이미지`}
-                />
+                  sx={{ cursor: "pointer" }}
+                >
+                  <Avatar
+                    src={data.imageLink}
+                    alt={`${data.nickname} 프로필 이미지`}
+                  />
+                </Tooltip>
               ))}
             </Stack>
           </Grid>
