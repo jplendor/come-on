@@ -145,7 +145,12 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     const imageOption = { offset: new kakao.maps.Point(27, 69) }
 
     const ps = new kakao.maps.services.Places()
-    const pageOptions = { size: 5 }
+    const pageOptions = {
+      size: 5, // 나중에 설정한 위치 기준으로 할 것
+      location: new kakao.maps.LatLng(37.566826, 126.9786567),
+      radius: 500, // 500미터 내외로 검색
+      SORT_BY: "DISTANCE",
+    }
 
     const placesSearchCB = (data: any, status: any, pagination: any): any => {
       pagination.gotoPage(selectedPage)
