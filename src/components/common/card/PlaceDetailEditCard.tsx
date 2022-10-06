@@ -14,6 +14,8 @@ import {
 import { styled } from "@mui/material/styles"
 import { Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
+import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
+import { useParams } from "react-router-dom"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -243,9 +245,32 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
     setMemo(e.target.value)
   }
 
-  const handleClickClose = (): void => {
-    // 장소 수정 api
-    setIsEditing(false)
+  const [updateMeetingPlaceMutation] = useUpdateMeetingPlaceMutation()
+
+  const { meetingId } = useParams()
+
+  const handleClickClose = async (): Promise<void> => {
+    if (mode === PlaceType.m) {
+      try {
+        const res = await updateMeetingPlaceMutation({
+          meetingId: Number(meetingId),
+          placeId: item.id,
+          updatedPlace: { ...item, category, memo },
+        }).unwrap()
+
+        setIsEditing(false)
+
+        if (res.code !== "SUCCESS") {
+          throw new Error(`error code: ${res.code}`)
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(error.message)
+        } else {
+          alert(`unexpected error: ${error}`)
+        }
+      }
+    }
   }
 
   return (

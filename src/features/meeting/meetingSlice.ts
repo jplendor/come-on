@@ -11,6 +11,7 @@ import {
   MeetingListQS,
   MeetingPlaceForCreate,
   MeetingPlaceForDelete,
+  MeetingPlaceForUpdate,
 } from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
@@ -98,6 +99,18 @@ export const meetingApiSlice = api.injectEndpoints({
       }),
       invalidatesTags: ["Meeting"],
     }),
+    // 모임 장소 수정
+    updateMeetingPlace: builder.mutation<
+      ServerResponse<null>,
+      MeetingPlaceForUpdate
+    >({
+      query: (meetingPlace) => ({
+        url: `/meetings/${meetingPlace.meetingId}/places/${meetingPlace.placeId}`,
+        method: "PATCH",
+        body: meetingPlace.updatedPlace,
+      }),
+      invalidatesTags: ["Meeting"],
+    }),
   }),
 })
 
@@ -110,4 +123,5 @@ export const {
   useGetMeetingListQuery,
   useCreateMeetingPlaceMutation,
   useDeleteMeetingPlaceMutation,
+  useUpdateMeetingPlaceMutation,
 } = meetingApiSlice

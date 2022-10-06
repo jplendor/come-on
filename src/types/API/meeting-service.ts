@@ -124,3 +124,9 @@ export interface MeetingPlaceForDelete {
   meetingId: number
   placeId: number
 }
+
+export interface MeetingPlaceForUpdate {
+  meetingId: number
+  placeId: number
+  updatedPlace: Partial<NewPlace>
+}
