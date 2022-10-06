@@ -176,6 +176,7 @@ export interface ListDetailCardProp {
   titleBottom: string
 }
 interface Place {
+  id: number
   order: number
   name: string
   lng: number // 경도 x
@@ -214,7 +215,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   maxLen,
   onRemove,
 }) => {
-  const { order: index, name: placeName, category, apiId, address } = item
+  const { order: index, name: placeName, category, apiId, address, id } = item
   let description = null
   let memo = null
 
@@ -229,6 +230,11 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   }
 
   const routeUrl = `https://map.kakao.com/link/to/${apiId}`
+
+  const handleClickClose = (e: React.MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
+    onRemove(id)
+  }
 
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
@@ -284,7 +290,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
             </Box>
           </Grid>
           <Grid item xs={2} sx={ButtonGroup}>
-            <IconButton sx={ICON}>
+            <IconButton sx={ICON} onClick={handleClickClose}>
               <Close />
             </IconButton>
             <a href={routeUrl} target="_blank" rel="noreferrer">

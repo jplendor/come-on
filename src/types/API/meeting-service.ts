@@ -119,3 +119,8 @@ export interface MeetingPlaceForCreate {
   meetingId: number
   newPlace: NewPlace
 }
+
+export interface MeetingPlaceForDelete {
+  meetingId: number
+  placeId: number
+}

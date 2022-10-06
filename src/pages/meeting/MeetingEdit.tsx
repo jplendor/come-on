@@ -13,7 +13,10 @@ import {
 import { generateComponent } from "utils"
 import { useTheme } from "@mui/material/styles"
 import Calendar from "components/meeting/Calendar"
-import { useGetMeetingQuery } from "features/meeting/meetingSlice"
+import {
+  useDeleteMeetingPlaceMutation,
+  useGetMeetingQuery,
+} from "features/meeting/meetingSlice"
 import PlaceDetailCard, {
   PlaceType,
 } from "components/common/card/PlaceDetailCard "
@@ -52,6 +55,27 @@ const MeetingEdit = (): JSX.Element => {
 
   const addNewPlace = (): void => {
     navigate(`/meeting/${meetingId}/place`)
+  }
+
+  const [deleteMeetingPlaceMutation] = useDeleteMeetingPlaceMutation()
+
+  const onRemove = async (placeId: number): Promise<void> => {
+    try {
+      const res = await deleteMeetingPlaceMutation({
+        meetingId: Number(meetingId),
+        placeId,
+      }).unwrap()
+
+      if (res.code !== "SUCCESS") {
+        throw new Error(`error code: ${res.code}`)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message)
+      } else {
+        alert(`unexpected error: ${error}`)
+      }
+    }
   }
 
   let content
@@ -110,9 +134,7 @@ const MeetingEdit = (): JSX.Element => {
                   onClick={() => {
                     console.log("click")
                   }}
-                  onRemove={() => {
-                    console.log("remove")
-                  }}
+                  onRemove={onRemove}
                 />
               ))}
             </div>
