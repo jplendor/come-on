@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
   Grid,
@@ -24,6 +24,8 @@ import PlaceDetailCard, {
 import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
+import MemberInfoModal from "components/meeting/MemberInfoModal"
+import { User } from "types/API/meeting-service"
 
 const NewPlace = {
   border: "dashed 2px gray",
@@ -43,6 +45,9 @@ const Title = styled(Typography)`
 
 const MeetingEdit = (): JSX.Element => {
   const { meetingId } = useParams()
+
+  const [memberInfoModalOpen, setmMemberInfoModalOpen] = useState(false)
+  const [clickedMember, setClickedMember] = useState<User>()
 
   const {
     data: response,
@@ -102,6 +107,10 @@ const MeetingEdit = (): JSX.Element => {
                   title={data.nickname}
                   key={key}
                   sx={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setClickedMember(data)
+                    setmMemberInfoModalOpen(true)
+                  }}
                 >
                   <Avatar
                     src={data.imageLink}
@@ -110,6 +119,15 @@ const MeetingEdit = (): JSX.Element => {
                 </Tooltip>
               ))}
             </Stack>
+            {clickedMember && (
+              <MemberInfoModal
+                open={memberInfoModalOpen}
+                onClose={() => {
+                  setmMemberInfoModalOpen(false)
+                }}
+                member={clickedMember}
+              />
+            )}
           </Grid>
           <Grid item xs={12}>
             <Title>모임일정</Title>

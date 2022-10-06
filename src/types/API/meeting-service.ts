@@ -45,7 +45,7 @@ export interface MeetingListQS {
 }
 
 // User, Place => 공통으로 빼기?
-interface User {
+export interface User {
   id: number
   nickname: string
   imageLink: string
