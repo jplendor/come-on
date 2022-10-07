@@ -46,7 +46,7 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
         sx={{
           top: "auto",
           bottom: 0,
-          height: "5.188em",
+          height: "65px",
           boxShadow: "none",
           touchAction: "pan-x pinch-zoom",
         }}
@@ -67,8 +67,7 @@ const Layout = ({ children }: { children: ReactNode }): JSX.Element => {
           // 2.875em -> 46px
           sx={{
             mt: "5px",
-            px: "20px",
-            height: "2.875em",
+            px: "30px",
           }}
         >
           <Navbar />

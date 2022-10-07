@@ -27,7 +27,8 @@ const CourseTap = ({
         <Stack
           spacing={2}
           sx={{
-            padding: "21px",
+            px: "21px",
+            pt: "14px",
           }}
         >
           {children}

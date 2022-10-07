@@ -28,7 +28,7 @@ const LoginTitle = styled(ThemeText)<TypographyProps>(
   })
 )
 
-const LoginBody = styled(ThemeText)<TypographyProps>(
+export const LoginBody = styled(ThemeText)<TypographyProps>(
   ({
     theme: {
       grayscale,
