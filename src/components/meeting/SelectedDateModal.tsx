@@ -2,15 +2,16 @@ import React from "react"
 import {
   Box,
   Dialog,
-  DialogTitle,
   Grid,
   Avatar,
-  Button,
   CircularProgress,
+  Typography,
 } from "@mui/material"
 
 import { generateComponent } from "utils"
 import { useGetMeetingDateQuery } from "features/meeting/meetingSlice"
+import theme from "theme"
+import styled from "@emotion/styled"
 
 interface TargetDateInfo {
   date: string
@@ -25,12 +26,45 @@ interface SelectedDateModalProps {
 }
 
 const DIALOG_TITLE = {
-  backgroundColor: "#8E8E8E",
-  color: "#FFFFFF",
+  height: "60px",
+  backgroundColor: theme.grayscale[100],
+  color: theme.grayscale[700],
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}
+
+const PAPER_PROPS = {
+  width: "155px",
+  minHeight: "200px",
+  borderRadius: "10px",
+  display: "flex",
 }
 
 const GRID_ITEM = {
   display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}
+
+const SUMMARY = {
+  height: "60px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  borderTop: `solid 2px ${theme.grayscale[200]}`,
+}
+
+const Count = styled.span`
+  color: ${theme.palette.primary.main};
+`
+
+const DAYOFWEEK_LIST = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+
+const getDayOfWeek = (date: string): string => {
+  const index = new Date(date).getDay()
+
+  return DAYOFWEEK_LIST[index]
 }
 
 const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
@@ -55,24 +89,40 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
     dateUsers: Array<any>
   ): any => {
     return (
-      <Dialog open={open} onClose={onClose}>
-        <>
-          <DialogTitle sx={DIALOG_TITLE}>{date}</DialogTitle>
-          <Grid container>
-            {userCount === 0
-              ? "해당 날짜를 선택한 멤버가 없습니다"
-              : generateComponent(dateUsers, (data, key) => (
-                  <Grid item key={key} sx={GRID_ITEM} xs={12}>
-                    <Avatar alt="프로필 이미지" src={data.imageLink} />
-                    <Box>{data.nickname}</Box>
-                  </Grid>
-                ))}
-          </Grid>
-          <Box>{`가능 인원 : ${userCount} / ${totalMemberNumber}`}</Box>
-        </>
-        <Button variant="contained" onClick={onClose}>
-          닫기
-        </Button>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            ...PAPER_PROPS,
+            flexDirection: "column",
+            justifyContent: "space-between",
+          },
+        }}
+      >
+        <Typography sx={DIALOG_TITLE} variant="subtitle1">
+          {`${date.replaceAll("-", ".")}(${getDayOfWeek(date)})`}
+        </Typography>
+        <Grid container>
+          {userCount === 0
+            ? "해당 날짜를 선택한 멤버가 없습니다"
+            : generateComponent(dateUsers, (data, key) => (
+                <Grid item key={key} sx={GRID_ITEM} xs={12}>
+                  <Avatar
+                    alt="프로필 이미지"
+                    src={data.imageLink}
+                    sx={{ mr: "10px" }}
+                  />
+                  <Typography variant="subtitle1">{data.nickname}</Typography>
+                </Grid>
+              ))}
+        </Grid>
+        <Box sx={SUMMARY}>
+          <Typography variant="subtitle1" fontWeight="bold">
+            {"가능 인원 : "} <Count> {userCount}</Count>
+            {` / ${totalMemberNumber}`}
+          </Typography>
+        </Box>
       </Dialog>
     )
   }
@@ -81,7 +131,17 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
 
   if (isFetching) {
     content = (
-      <Dialog open={open} onClose={onClose}>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            ...PAPER_PROPS,
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        }}
+      >
         <CircularProgress />
       </Dialog>
     )
@@ -94,7 +154,7 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
     )
   }
 
-  return <div>{content}</div>
+  return <Box>{content}</Box>
 }
 
 export default SelectedDateModal

@@ -71,19 +71,10 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     flexGrow: "1",
     textAlign: "center",
     lineHeight: "50px",
-    color: "#8E8E8E",
   }
 
   const MONTH_CONTAINER = {
     my: "30px",
-  }
-
-  const MONTH_NUMBER = {
-    height: "30px",
-    m: "10px",
-    textAlign: "center",
-    fontSize: "20px",
-    fontWeight: "bold",
   }
 
   const MONTH = {
@@ -93,11 +84,12 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
 
   const DATE = {
     width: 1 / 7,
-    height: "50px",
-    lineHeight: "50px",
+    height: "45px",
+    lineHeight: "45px",
     textAlign: "center",
     mt: "5px",
     mb: "5px",
+    p: "10px 5px",
   }
 
   const getAllDates = useCallback(
@@ -237,6 +229,13 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     setMode(mode === Mode.View ? Mode.Select : Mode.View)
   }
 
+  const getSunStyle = (dayOfWeek: string): { color: string } => {
+    if (dayOfWeek === "SUN") {
+      return { color: "red" }
+    }
+    return { color: theme.grayscale[500] }
+  }
+
   useEffect(() => {
     setAllDates(getAllDates(startDate, endDate))
   }, [startDate, endDate, getAllDates])
@@ -246,32 +245,42 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
       <Box sx={CALENDAR}>
         <Box sx={DAYOFTHEWEEK_CONTAINER}>
           {generateComponent(DAYOFWEEK_LIST, (data, key) => (
-            <Typography key={key} sx={DAYOFTHEWEEK}>
+            <Typography
+              key={key}
+              sx={{ ...DAYOFTHEWEEK, ...getSunStyle(data) }}
+            >
               {data}
             </Typography>
           ))}
         </Box>
         {generateComponent(allDates, (allData, key1) => (
           <Box key={key1} sx={MONTH_CONTAINER}>
-            <Box sx={MONTH_NUMBER}>{`${allData.month + 1}`}</Box>
+            <Typography>
+              {allData.year}년 {allData.month + 1}월
+            </Typography>
             <Box sx={MONTH}>
               {generateComponent(allData.dateData, (monthData, key2) => (
-                <Box
-                  key={key2}
-                  sx={{
-                    ...DATE,
-                    backgroundColor: `rgba(51,127,254, ${monthData.percentage})`,
-                  }}
-                  data-date={
-                    monthData.date === 0
-                      ? null
-                      : toStringYyyymmdd(
-                          new Date(allData.year, allData.month, monthData.date)
-                        )
-                  }
-                  onClick={handleDateClick}
-                >
-                  {monthData.date === 0 ? "" : monthData.date}
+                <Box key={key2} sx={DATE}>
+                  <Box
+                    data-date={
+                      monthData.date === 0
+                        ? null
+                        : toStringYyyymmdd(
+                            new Date(
+                              allData.year,
+                              allData.month,
+                              monthData.date
+                            )
+                          )
+                    }
+                    onClick={handleDateClick}
+                    sx={{
+                      backgroundColor: `rgba(51,127,254, ${monthData.percentage})`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {monthData.date === 0 ? "" : monthData.date}
+                  </Box>
                 </Box>
               ))}
             </Box>
