@@ -10,6 +10,7 @@ const CardBody = ({ children, sx }: CardBodyProps): JSX.Element => {
   return (
     <Grid
       item
+      px="20px"
       container
       wrap="nowrap"
       direction="column"

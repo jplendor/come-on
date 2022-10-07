@@ -9,6 +9,7 @@ import LikeButton from "./CardItemButton"
 
 interface CardImgProps {
   isLike: boolean
+  likeCount: number
   courseId: number
 }
 
@@ -36,6 +37,7 @@ const ItemBarTop = ({ title, actionIcon }: ItemBarTopProps): JSX.Element => {
 
 export const CardLikeButton = ({
   isLike,
+  likeCount,
   courseId,
 }: CardImgProps): JSX.Element => {
   const {
@@ -45,7 +47,13 @@ export const CardLikeButton = ({
     <ItemBarTop
       title={null}
       actionIcon={
-        isloggedin ? <LikeButton isLike={isLike} courseId={courseId} /> : null
+        isloggedin ? (
+          <LikeButton
+            isLike={isLike}
+            likeCount={likeCount}
+            courseId={courseId}
+          />
+        ) : null
       }
     />
   )
@@ -57,6 +65,24 @@ export const CardLikeButton = ({
  * 사용범위: 모임관리
  */
 
-export const CardTopInfo = (): JSX.Element => {
-  return <ItemBarTop title={<TopInfo />} actionIcon={<CardMenu />} />
+interface CardTopInfoProps {
+  userCount: number
+  meetingStatus: "UNFIXED" | "PROCEEDING" | "END"
+  meetingId: number
+  meetingCodeId: number
+}
+export const CardTopInfo = ({
+  userCount,
+  meetingId,
+  meetingStatus,
+  meetingCodeId,
+}: CardTopInfoProps): JSX.Element => {
+  return (
+    <ItemBarTop
+      title={<TopInfo userCount={userCount} meetingStatus={meetingStatus} />}
+      actionIcon={
+        <CardMenu meetingId={meetingId} meetingCodeId={meetingCodeId} />
+      }
+    />
+  )
 }

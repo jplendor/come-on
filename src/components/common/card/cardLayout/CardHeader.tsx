@@ -17,6 +17,7 @@ const CardHeader = ({
       <>
         <Grid
           item
+          px="20px"
           container
           component="header"
           alignItems="center"

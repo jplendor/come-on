@@ -4,7 +4,7 @@ import { Box, Skeleton, Stack } from "@mui/material"
 export const CardItemSkeleton = (): JSX.Element => (
   <Box
     sx={{
-      height: "240px",
+      height: "250px",
       maxHeight: "350px",
     }}
   >
