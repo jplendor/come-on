@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { isObject } from "@fxts/core"
 import React from "react"
-import { pullingProperty } from "utils"
+
+import { Option } from "hooks/course/InfiniteLoader"
 
 interface ServerRes {
   responseTime: any
@@ -23,22 +22,15 @@ interface BasicframeProps extends QueryProps {
 const Basicframe: <T extends BasicframeProps>(
   arg0: T,
   arg1: [() => JSX.Element, (arg0: any) => JSX.Element | JSX.Element[] | any],
-  option?: { height: number }
+  option?: Option
 ) => JSX.Element = (
   { data: info, isLoading, isSuccess, isError },
   [Skeleton, Component],
   option
 ) => {
-  const height = pullingProperty(option as { height: number }, ["height"])
   let content = <div />
   if (isError || isLoading) content = <Skeleton />
-  if (isSuccess)
-    content = (
-      <Component
-        info={info.data}
-        height={isObject(height) ? 585 : parseInt(height, 10)}
-      />
-    )
+  if (isSuccess) content = <Component info={info.data} option={option} />
   return content
 }
 
