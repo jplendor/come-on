@@ -93,11 +93,9 @@ export const coursePlaceSlice = createSlice({
       }
     },
     setCourseDetail: (state, action: PayloadAction<CourseDetailProps>): any => {
-      if (state.courseDetails.title === "undefined") {
-        state.courseDetails.title = action.payload.title
-        state.courseDetails.description = action.payload.description
-        state.courseDetails.imgFile = action.payload.imgFile
-      }
+      state.courseDetails.title = action.payload.title
+      state.courseDetails.description = action.payload.description
+      state.courseDetails.imgFile = action.payload.imgFile
     },
   },
 })

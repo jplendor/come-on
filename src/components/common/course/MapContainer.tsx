@@ -44,7 +44,7 @@ interface CoursePlaceState {
   lat: number // 위도 y
   apiId: number
   category: string
-  id: number
+  id?: number
 }
 
 export interface MapContainerProps {
@@ -137,7 +137,7 @@ const MapContainer = ({
         })
       })
     }
-  }, [selectedNumber, isSuccess, isLoading, totalView])
+  }, [selectedNumber, isSuccess, isLoading, totalView, placeLists])
 
   return (
     <>

@@ -91,6 +91,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   }
 
   const onClickNextPage = (): void => {
+    console.log("adasdasdasdaadasd")
     dispatch(
       setCourseDetail({
         title: changeInput.title,

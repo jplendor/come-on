@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, {
   Dispatch,
   SetStateAction,
@@ -16,6 +17,8 @@ import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailCard from "components/common/card/PlaceDetailCard "
+
+import { DragDropContext, Droppable } from "react-beautiful-dnd"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -52,12 +55,17 @@ interface pageProps {
   setPage: Dispatch<SetStateAction<number>>
 }
 
+interface MyData {
+  placeLists: CoursePlaceState[]
+}
+
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [isValid, setIsValid] = useState(false)
   const placeList = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
+  const [placeData, setPlacedata] = useState<CoursePlaceState[]>(placeList)
   const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
   const onValid = useCallback((): void => {
@@ -66,10 +74,9 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       setIsValid(false)
     }
   }, [])
-
+  console.log(placeData)
   useEffect(() => {
     onValid()
-    console.log(isValid)
   }, [isValid, onValid])
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
@@ -104,11 +111,50 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
     setPage(page + 1)
   }
 
+  const onDragEnd = (result: any): void => {
+    const { destination, source, draggableId } = result
+    if (!destination) {
+      return
+    }
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return
+    }
+
+    const newPlaceNames = placeData.map((place) => {
+      return place.name
+    })
+
+    console.log(newPlaceNames)
+    newPlaceNames.splice(source.index, 1)
+    newPlaceNames.splice(destination.index, 0, draggableId)
+    console.log(newPlaceNames)
+
+    const newPlace: Array<CoursePlaceState> = []
+    for (let i = 0; i < newPlaceNames.length; i += 1) {
+      const temp: any = placeData.filter((place) => {
+        return place.name === newPlaceNames[i]
+      })
+      const temp2 = { ...temp[0] }
+      const newState = {
+        ...temp2,
+        order: i + 1,
+      }
+      newPlace.push(newState)
+    }
+
+    console.log(newPlace)
+    setPlacedata(newPlace)
+  }
+  // order바꿔주기
+
   return (
     <MainContainer>
       <MapContainer
         selectedNumber={selectedNumber}
-        placeLists={placeList}
+        placeLists={placeData}
         isSuccess={placeList !== undefined}
         isLoading={placeList === undefined}
       />
@@ -120,22 +166,32 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
         </IconButton>
       </IconContainer>
       {/* 카카오톡 공유하기 */}
-      {/* 버튼만들기 */}
-      {placeList[0].order !== 0 &&
-        generateComponent(placeList, (item, key) => (
-          <PlaceDetailCard
-            item={item}
-            key={key}
-            onClick={onClickFocus}
-            isSelected={
-              item.order ===
-              (selectedNumber === "" ? -10 : Number(selectedNumber))
-            }
-            onRemove={onRemove}
-            maxLen={placeList.length}
-            mode={PlaceType.c}
-          />
-        ))}
+      {/* //dragDropContext */}
+      <DragDropContext onDragEnd={onDragEnd}>
+        {placeList[0].order !== 0 && (
+          // droppable
+          <Droppable droppableId="placeData">
+            {(provided) => (
+              <Box ref={provided.innerRef} {...provided.droppableProps}>
+                {generateComponent(placeData, (item, key) => (
+                  <PlaceDetailCard
+                    item={{ ...item, id: item.order + 1 }}
+                    key={key}
+                    onClick={onClickFocus}
+                    isSelected={
+                      item.order ===
+                      (selectedNumber === "" ? -10 : Number(selectedNumber))
+                    }
+                    onRemove={onRemove}
+                    maxLen={placeList.length}
+                    mode={PlaceType.c}
+                  />
+                ))}
+              </Box>
+            )}
+          </Droppable>
+        )}
+      </DragDropContext>
       <CourseNextStepButton
         content="다음단계"
         isValid={isValid}

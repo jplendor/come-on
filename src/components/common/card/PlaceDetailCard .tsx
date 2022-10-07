@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from "react"
 import {
   Box,
@@ -9,6 +10,8 @@ import {
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
+import { Draggable } from "react-beautiful-dnd"
+import { calculateProvidedBy } from "@reduxjs/toolkit/dist/query/endpointDefinitions"
 import PlaceDetailEditCard from "./PlaceDetailEditCard"
 
 // TODO: 버튼 2개 작업
@@ -219,8 +222,8 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   const [isEditing, setIsEditing] = useState(false)
 
   const { order: index, name: placeName, category, apiId, address, id } = item
-  let description = null
-  let memo = null
+  let description = "null"
+  let memo = "null"
 
   if (mode === PlaceType.m) {
     const { memo: itemMemo } = item as MeetingPlace
@@ -251,78 +254,92 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
     )
   }
 
+  /* //draggable */
+
   return (
-    <Grid container spacing={2} sx={GRID_WRAP}>
-      <Grid item xs={2} sx={NUMBERING_BOX}>
-        {maxLen !== 1 ? (
-          <Box
-            sx={
-              // eslint-disable-next-line no-nested-ternary
-              index === 1
-                ? LINE_FIRST
-                : index === maxLen
-                ? LINE_LAST
-                : LINE_MIDDLE
-            }
-          />
-        ) : (
-          ""
-        )}
-        <ThemeCardNumbering
-          align="center"
-          sx={isSelected ? SELECTED_NUM_CARD : CARD_NUMBERING}
-        >
-          {index}
-        </ThemeCardNumbering>
-      </Grid>
-      <Grid item xs={10}>
-        <ThemeGrid
+    <Draggable draggableId={item.name} index={item.order - 1}>
+      {(provided) => (
+        <Grid
           container
-          style={{ marginBottom: "12px" }}
-          id={String(index)}
-          onClick={onClick}
-          sx={isSelected ? SELECTED_CARD : DEFAULT_CARD}
+          spacing={2}
+          sx={GRID_WRAP}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
         >
+          <Grid item xs={2} sx={NUMBERING_BOX}>
+            {maxLen !== 1 ? (
+              <Box
+                sx={
+                  // eslint-disable-next-line no-nested-ternary
+                  index === 1
+                    ? LINE_FIRST
+                    : index === maxLen
+                    ? LINE_LAST
+                    : LINE_MIDDLE
+                }
+              />
+            ) : (
+              ""
+            )}
+            <ThemeCardNumbering
+              align="center"
+              sx={isSelected ? SELECTED_NUM_CARD : CARD_NUMBERING}
+            >
+              {index}
+            </ThemeCardNumbering>
+          </Grid>
+
           <Grid item xs={10}>
-            <Box sx={ITEM_BOX}>
-              <Box sx={TITLE_BOX}>
-                <Typography sx={TITLE_FONT}>{placeName}</Typography>
-                <Typography component="span" sx={TITLE_CATEGORY}>
-                  {category}
-                </Typography>
-                <IconButton
-                  sx={ICON}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setIsEditing(true)
-                  }}
-                >
-                  <Edit />
+            <ThemeGrid
+              container
+              style={{ marginBottom: "12px" }}
+              id={String(index)}
+              onClick={onClick}
+              sx={isSelected ? SELECTED_CARD : DEFAULT_CARD}
+            >
+              <Grid item xs={10}>
+                <Box sx={ITEM_BOX}>
+                  <Box sx={TITLE_BOX}>
+                    <Typography sx={TITLE_FONT}>{placeName}</Typography>
+                    <Typography component="span" sx={TITLE_CATEGORY}>
+                      {category}
+                    </Typography>
+                    <IconButton
+                      sx={ICON}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setIsEditing(true)
+                      }}
+                    >
+                      <Edit />
+                    </IconButton>
+                  </Box>
+                  <Box sx={DES_BOX}>
+                    <Typography variant="subtitle2" sx={TITLE_DES}>
+                      {description !== null ? description : memo}
+                    </Typography>
+                  </Box>
+                  <Typography variant="subtitle2" sx={ADDRESS_FONT}>
+                    {address}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={2} sx={ButtonGroup}>
+                <IconButton sx={ICON} onClick={handleClickClose}>
+                  <Close />
                 </IconButton>
-              </Box>
-              <Box sx={DES_BOX}>
-                <Typography variant="subtitle2" sx={TITLE_DES}>
-                  {description !== null ? description : memo}
-                </Typography>
-              </Box>
-              <Typography variant="subtitle2" sx={ADDRESS_FONT}>
-                {address}
-              </Typography>
-            </Box>
+                <a href={routeUrl} target="_blank" rel="noreferrer">
+                  <IconButton sx={ICON}>
+                    <KeyboardArrowRight />
+                  </IconButton>
+                </a>
+              </Grid>
+            </ThemeGrid>
           </Grid>
-          <Grid item xs={2} sx={ButtonGroup}>
-            <IconButton sx={ICON} onClick={handleClickClose}>
-              <Close />
-            </IconButton>
-            <a href={routeUrl} target="_blank" rel="noreferrer">
-              <IconButton sx={ICON}>
-                <KeyboardArrowRight />
-              </IconButton>
-            </a>
-          </Grid>
-        </ThemeGrid>
-      </Grid>
-    </Grid>
+        </Grid>
+      )}
+    </Draggable>
   )
 }
 

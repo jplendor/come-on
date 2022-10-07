@@ -7,6 +7,7 @@ import { styled } from "@mui/material/styles"
 import { generateComponent } from "utils"
 import SearchCard from "components/common/card/SearchCard"
 import { SearchCardProp } from "types/API/course-service"
+import useGeolocation from "hooks/geolocation/useGeolocation"
 
 const { kakao } = window
 
@@ -77,6 +78,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
   const [selectedPage, setSelectedPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const refPagenation = useRef<any>()
+  const { geoState } = useGeolocation()
 
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
@@ -174,7 +176,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
       ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
     }
   }, [selectedPage, searchKeyword])
-
+  console.log(geoState)
   return (
     <>
       <header>{/* 검색창 만들기 */}</header>
