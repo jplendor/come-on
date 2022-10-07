@@ -44,12 +44,14 @@ export interface MeetingListQS {
   endDate: string
 }
 
+export type RoleType = "HOST" | "EDITOR" | "PARTICIPANT"
+
 // User, Place => 공통으로 빼기?
 export interface User {
   id: number
   nickname: string
   imageLink: string
-  meetingRole: string
+  meetingRole: RoleType
 }
 
 enum DateStatusType {
@@ -129,4 +131,12 @@ export interface MeetingPlaceForUpdate {
   meetingId: number
   placeId: number
   updatedPlace: Partial<NewPlace>
+}
+interface Member {
+  meetingRole: RoleType
+}
+export interface MeetingUserForUpdate {
+  meetingId: number
+  userId: number
+  updatedMember: Member
 }

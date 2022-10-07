@@ -122,7 +122,7 @@ const MeetingEdit = (): JSX.Element => {
             {clickedMember && (
               <MemberInfoModal
                 open={memberInfoModalOpen}
-                onClose={() => {
+                handleClose={() => {
                   setmMemberInfoModalOpen(false)
                 }}
                 member={clickedMember}

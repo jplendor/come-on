@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
   Avatar,
   Dialog,
@@ -11,16 +11,49 @@ import {
   RadioGroup,
   Typography,
 } from "@mui/material"
-import { User } from "types/API/meeting-service"
+import { RoleType, User } from "types/API/meeting-service"
+import { useUpdateMeetingUserMutation } from "features/meeting/meetingSlice"
+import { useParams } from "react-router-dom"
 
 interface MemberInfoModalProp {
   open: boolean
-  onClose: () => void
+  handleClose: () => void
   member: User
 }
 
 const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
-  const { open, onClose, member } = props
+  const { open, handleClose, member } = props
+
+  const [meetingRole, setMeetingRole] = useState<RoleType>(member.meetingRole)
+
+  const isEditable = meetingRole !== "HOST"
+
+  const { meetingId } = useParams()
+  const [updateMeetingUserMutation] = useUpdateMeetingUserMutation()
+
+  const onClose = async (): Promise<void> => {
+    try {
+      if (isEditable) {
+        const res = await updateMeetingUserMutation({
+          meetingId: Number(meetingId),
+          userId: member.id,
+          updatedMember: { meetingRole },
+        }).unwrap()
+
+        if (res.code !== "SUCCESS") {
+          throw new Error(`error code: ${res.code}`)
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message)
+      } else {
+        alert(`unexpected error: ${error}`)
+      }
+    }
+
+    handleClose()
+  }
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -34,18 +67,32 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
         </Grid>
         <Grid item xs={12}>
           <FormControl>
-            <FormLabel>역할</FormLabel>
-            <RadioGroup defaultValue={member.meetingRole}>
-              <FormControlLabel value="HOST" control={<Radio />} label="HOST" />
+            <FormLabel>
+              역할 {!isEditable && "(HOST는 역할을 수정할 수 없습니다.)"}
+            </FormLabel>
+            <RadioGroup
+              value={meetingRole}
+              onChange={(e) => {
+                setMeetingRole(e.target.value as RoleType)
+              }}
+            >
+              <FormControlLabel
+                value="HOST"
+                control={<Radio />}
+                label="HOST"
+                disabled={!isEditable}
+              />
               <FormControlLabel
                 value="EDITOR"
                 control={<Radio />}
                 label="EDITOR"
+                disabled={!isEditable}
               />
               <FormControlLabel
                 value="PARTICIPANT"
                 control={<Radio />}
                 label="PARTICIPANT"
+                disabled={!isEditable}
               />
             </RadioGroup>
           </FormControl>
