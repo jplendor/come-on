@@ -14,6 +14,30 @@ export interface ServerResponse<T> {
   data: T
 }
 
+// 공통 응답 스펙 - Slice 응답의 경우
+interface SliceResponse<T> {
+  currentSlice: number
+  sizePerSlice: number
+  numberOfElements: number
+  hasPrevious: boolean
+  hasNext: boolean
+  contents: T[]
+  first: boolean
+  last: boolean
+}
+
+/**
+ * 코드 단건 조회
+ *
+ * GET /meetings/{meetingId}/codes/{codeId}
+ */
+
+export interface MeetingCode {
+  id: number
+  inviteCode: string
+  isExpired: boolean
+}
+
 /**
  * 모임 리스트 조회
  *
@@ -21,19 +45,28 @@ export interface ServerResponse<T> {
  */
 
 export interface MeetingList {
-  contents: {
-    id: number
-    hostNickname: string
-    userCount: number
-    myMeetingRole: "HOST" | "EDITOR" | "PARTICIPANT"
-    title: string
-    startDate: string
-    endDate: string
-    imageLink: string
-    meetingCodeId: number
-    fixedDates: string[]
-    meetingStatus: "UNFIXED" | "PROCEEDING" | "END"
-  }
+  id: number
+  hostNickname: string
+  userCount: number
+  myMeetingRole: "HOST" | "EDITOR" | "PARTICIPANT"
+  title: string
+  startDate: string
+  endDate: string
+  imageLink: string
+  meetingCodeId: number
+  fixedDates: string[]
+  meetingStatus: "UNFIXED" | "PROCEEDING" | "END"
+}
+
+export type MyCoursesSliceRes = SliceResponse<MeetingList>
+
+export interface DeleteMeetingQS {
+  meetingId: number
+}
+
+export interface MeetingCodeQS {
+  meetingId: number
+  codeId: number
 }
 
 export interface MeetingListQS {

@@ -11,6 +11,7 @@ export enum Url {
   login = "/auth/login",
   myPage = "/user/my-page",
   myMeetings = "/meeting",
+  meetingRegister = "/meeting/register",
 }
 
 export enum ParamName {
