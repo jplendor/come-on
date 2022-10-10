@@ -35,10 +35,21 @@ const DIALOG_TITLE = {
 }
 
 const PAPER_PROPS = {
-  width: "155px",
-  minHeight: "200px",
+  width: "280px",
+  minHeight: "150px",
   borderRadius: "10px",
   display: "flex",
+}
+
+const NO_MEMBER = {
+  height: "90px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}
+
+const GRID_CONTAINER = {
+  p: "15px",
 }
 
 const GRID_ITEM = {
@@ -103,10 +114,14 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
         <Typography sx={DIALOG_TITLE} variant="subtitle1">
           {`${date.replaceAll("-", ".")}(${getDayOfWeek(date)})`}
         </Typography>
-        <Grid container>
-          {userCount === 0
-            ? "해당 날짜를 선택한 멤버가 없습니다"
-            : generateComponent(dateUsers, (data, key) => (
+        {userCount === 0 ? (
+          <Box sx={NO_MEMBER}>
+            <Typography>가능한 인원이 없습니다</Typography>
+          </Box>
+        ) : (
+          <>
+            <Grid container sx={GRID_CONTAINER}>
+              {generateComponent(dateUsers, (data, key) => (
                 <Grid item key={key} sx={GRID_ITEM} xs={12}>
                   <Avatar
                     alt="프로필 이미지"
@@ -116,13 +131,15 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
                   <Typography variant="subtitle1">{data.nickname}</Typography>
                 </Grid>
               ))}
-        </Grid>
-        <Box sx={SUMMARY}>
-          <Typography variant="subtitle1" fontWeight="bold">
-            {"가능 인원 : "} <Count> {userCount}</Count>
-            {` / ${totalMemberNumber}`}
-          </Typography>
-        </Box>
+            </Grid>
+            <Box sx={SUMMARY}>
+              <Typography variant="subtitle1" fontWeight="bold">
+                {"가능 인원 : "} <Count> {userCount}</Count>
+                {` / ${totalMemberNumber}`}
+              </Typography>
+            </Box>
+          </>
+        )}
       </Dialog>
     )
   }
