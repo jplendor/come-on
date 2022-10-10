@@ -1,12 +1,11 @@
 import React, { useState } from "react"
 import {
   Avatar,
+  Box,
+  Button,
   Dialog,
-  DialogTitle,
   FormControl,
   FormControlLabel,
-  FormLabel,
-  Grid,
   Radio,
   RadioGroup,
   Typography,
@@ -14,19 +13,58 @@ import {
 import { RoleType, User } from "types/API/meeting-service"
 import { useUpdateMeetingUserMutation } from "features/meeting/meetingSlice"
 import { useParams } from "react-router-dom"
+import theme from "theme"
 
 interface MemberInfoModalProp {
   open: boolean
   handleClose: () => void
+  myMeetingRole: RoleType
   member: User
 }
 
+const PAPER_PROPS = {
+  width: "280px",
+  minHeight: "200px",
+  borderRadius: "10px",
+  display: "flex",
+}
+
+const DIALOG_TITLE = {
+  height: "60px",
+  backgroundColor: theme.grayscale[100],
+  color: theme.grayscale[700],
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  position: "relative",
+}
+
+const COMPLETE_BTN = {
+  position: "absolute",
+  right: "10px",
+}
+
+const INFO = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  m: "10px",
+}
+
+const WRAPPER = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "column",
+  p: "15px",
+}
+
 const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
-  const { open, handleClose, member } = props
+  const { open, handleClose, member, myMeetingRole } = props
 
   const [meetingRole, setMeetingRole] = useState<RoleType>(member.meetingRole)
 
-  const isEditable = meetingRole !== "HOST"
+  const isEditable = myMeetingRole === "HOST" && meetingRole !== "HOST"
 
   const { meetingId } = useParams()
   const [updateMeetingUserMutation] = useUpdateMeetingUserMutation()
@@ -56,48 +94,66 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>멤버 정보</DialogTitle>
-      <Grid container spacing={2}>
-        <Grid item xs={4}>
-          <Avatar src={member.imageLink} alt="프로필 이미지" />
-        </Grid>
-        <Grid item xs={8}>
-          <Typography>{member.nickname}</Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl>
-            <FormLabel>
-              역할 {!isEditable && "(HOST는 역할을 수정할 수 없습니다.)"}
-            </FormLabel>
-            <RadioGroup
-              value={meetingRole}
-              onChange={(e) => {
-                setMeetingRole(e.target.value as RoleType)
-              }}
-            >
-              <FormControlLabel
-                value="HOST"
-                control={<Radio />}
-                label="HOST"
-                disabled={!isEditable}
-              />
-              <FormControlLabel
-                value="EDITOR"
-                control={<Radio />}
-                label="EDITOR"
-                disabled={!isEditable}
-              />
-              <FormControlLabel
-                value="PARTICIPANT"
-                control={<Radio />}
-                label="PARTICIPANT"
-                disabled={!isEditable}
-              />
-            </RadioGroup>
-          </FormControl>
-        </Grid>
-      </Grid>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          ...PAPER_PROPS,
+          flexDirection: "column",
+          justifyContent: "space-between",
+        },
+      }}
+    >
+      <Box sx={DIALOG_TITLE}>
+        <Typography variant="subtitle1">
+          {isEditable ? "권한 수정" : "권한 보기"}
+        </Typography>
+        {isEditable && (
+          <Button sx={COMPLETE_BTN} onClick={onClose}>
+            수정완료
+          </Button>
+        )}
+      </Box>
+      <Box sx={WRAPPER}>
+        <Box sx={INFO}>
+          <Avatar
+            src={member.imageLink}
+            alt="프로필 이미지"
+            sx={{ mr: "10px" }}
+          />
+          <Typography variant="subtitle1" fontWeight="bold">
+            {member.nickname}
+          </Typography>
+        </Box>
+        <FormControl>
+          <RadioGroup
+            value={meetingRole}
+            onChange={(e) => {
+              setMeetingRole(e.target.value as RoleType)
+            }}
+          >
+            <FormControlLabel
+              value="HOST"
+              control={<Radio />}
+              label="생성자"
+              disabled={!isEditable}
+            />
+            <FormControlLabel
+              value="EDITOR"
+              control={<Radio />}
+              label="수정자"
+              disabled={!isEditable}
+            />
+            <FormControlLabel
+              value="PARTICIPANT"
+              control={<Radio />}
+              label="일반"
+              disabled={!isEditable}
+            />
+          </RadioGroup>
+        </FormControl>
+      </Box>
     </Dialog>
   )
 }

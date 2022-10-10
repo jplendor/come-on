@@ -123,6 +123,7 @@ const MeetingEdit = (): JSX.Element => {
               </Stack>
               {clickedMember && (
                 <MemberInfoModal
+                  myMeetingRole={meeting.myMeetingRole}
                   open={memberInfoModalOpen}
                   handleClose={() => {
                     setmMemberInfoModalOpen(false)

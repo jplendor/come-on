@@ -79,7 +79,7 @@ interface Place {
 export interface Meeting {
   id: number
   myMeetingUserId: number
-  myMeetingRold: string
+  myMeetingRole: RoleType
   title: string
   startDate: string
   endDate: string
