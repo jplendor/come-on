@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { useTheme } from "@mui/material/styles"
-import { Box, Button, Typography } from "@mui/material"
+import { Box, FormControlLabel, Typography } from "@mui/material"
+import Switch, { SwitchProps } from "@mui/material/Switch"
+import { useTheme, styled } from "@mui/material/styles"
 import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "utils"
 import {
   useCreateMeetingDateMutation,
@@ -29,6 +30,58 @@ enum Mode {
   View = "VIEW",
   Select = "SELECT",
 }
+
+const IOSSwitch = styled((props: SwitchProps) => (
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
+  width: 42,
+  height: 26,
+  padding: 0,
+  "& .MuiSwitch-switchBase": {
+    padding: 0,
+    margin: 2,
+    transitionDuration: "300ms",
+    "&.Mui-checked": {
+      transform: "translateX(16px)",
+      color: "#fff",
+      "& + .MuiSwitch-track": {
+        backgroundColor: theme.palette.mode === "dark" ? "#2ECA45" : "#65C466",
+        opacity: 1,
+        border: 0,
+      },
+      "&.Mui-disabled + .MuiSwitch-track": {
+        opacity: 0.5,
+      },
+    },
+    "&.Mui-focusVisible .MuiSwitch-thumb": {
+      color: "#33cf4d",
+      border: "6px solid #fff",
+    },
+    "&.Mui-disabled .MuiSwitch-thumb": {
+      color:
+        theme.palette.mode === "light"
+          ? theme.palette.grey[100]
+          : theme.palette.grey[600],
+    },
+    "&.Mui-disabled + .MuiSwitch-track": {
+      opacity: theme.palette.mode === "light" ? 0.7 : 0.3,
+    },
+  },
+  "& .MuiSwitch-thumb": {
+    boxSizing: "border-box",
+    width: 22,
+    height: 22,
+  },
+  "& .MuiSwitch-track": {
+    borderRadius: 26 / 2,
+    backgroundColor: theme.palette.mode === "light" ? "#E9E9EA" : "#39393D",
+    opacity: 1,
+    transition: theme.transitions.create(["background-color"], {
+      duration: 500,
+    }),
+  },
+}))
 
 const DAYOFWEEK_LIST = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
@@ -90,6 +143,16 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     mt: "5px",
     mb: "5px",
     p: "10px 5px",
+  }
+
+  const MODE_CONTROL = {
+    backgroundColor: theme.grayscale[100],
+    borderRadius: "inherit",
+    mt: "10px",
+    p: "10px 10px 10px 20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   }
 
   const getAllDates = useCallback(
@@ -243,6 +306,14 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
   return (
     <Box>
       <Box sx={CALENDAR}>
+        <Box sx={MODE_CONTROL}>
+          <Typography>날짜선택 모드로 변경</Typography>
+          <FormControlLabel
+            control={<IOSSwitch />}
+            label=""
+            onChange={toggleMode}
+          />
+        </Box>
         <Box sx={DAYOFTHEWEEK_CONTAINER}>
           {generateComponent(DAYOFWEEK_LIST, (data, key) => (
             <Typography
@@ -294,20 +365,6 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
           totalMemberNumber={meetingUsers.length}
         />
       </Box>
-      <Button
-        type="button"
-        variant="contained"
-        sx={{
-          bgcolor: theme.palette.secondary.main,
-          color: "white",
-          "&:hover": {
-            bgcolor: theme.palette.secondary.main,
-          },
-        }}
-        onClick={toggleMode}
-      >
-        {mode}
-      </Button>
     </Box>
   )
 }
