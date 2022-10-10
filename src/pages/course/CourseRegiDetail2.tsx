@@ -187,6 +187,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
                     mode={PlaceType.c}
                   />
                 ))}
+                {provided.placeholder}
               </Box>
             )}
           </Droppable>

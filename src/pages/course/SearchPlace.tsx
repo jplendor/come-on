@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, ReactElement } from "react"
+import React, { useEffect, useState, useRef, useCallback } from "react"
 
 import ReactDOMServer from "react-dom/server"
 import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
@@ -10,6 +10,7 @@ import { SearchCardProp } from "types/API/course-service"
 import useGeolocation from "hooks/geolocation/useGeolocation"
 
 const { kakao } = window
+const DELAY = 800
 
 const SearchBar = styled(TextField)(() => ({
   padding: "10px",
@@ -92,17 +93,39 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     setSelectedPage(page)
   }
 
+  // 디바운싱 함수
+
   // 검색창에서 엔터키를 칠때만 검색되도록 설정 - 모바일에서 문제 생기는지 확인
-  const onKeyPress = (e: React.KeyboardEvent): void => {
-    if (e.key === "Enter") {
+  const onKeyPress = (keyValue: string): void => {
+    if (keyValue === "Enter") {
       handleSearchBar()
       setSelectedPage(1)
+    }
+  }
+
+  const debounceFunc = (
+    callback: (v: string) => void,
+    delay: number
+  ): ((v: string) => void) => {
+    let timer: ReturnType<typeof setTimeout>
+
+    return (...args) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => callback(args[0]), delay)
     }
   }
 
   // 검색한 키워드의 페이지 네이션 개수 설정
   const setPageCount = (page: number): void => {
     setLastPage(page)
+  }
+
+  const search = useCallback(
+    debounceFunc((value: string) => onKeyPress(value), DELAY),
+    [inputedKeyword]
+  )
+  const eventHandler = (e: React.KeyboardEvent): void => {
+    search(e.key)
   }
 
   // 리스트 클릭했을 시 색 바뀌는 함수 + 목록에 추가되도록
@@ -176,7 +199,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
       ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
     }
   }, [selectedPage, searchKeyword])
-  console.log(geoState)
+
   return (
     <>
       <header>{/* 검색창 만들기 */}</header>
@@ -191,10 +214,10 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
             </InputAdornment>
           ),
         }}
-        onChange={(e) => {
-          setInputedKeyword(e.target.value)
+        onChange={(e) => setInputedKeyword(e.target.value)}
+        onKeyDown={(e) => {
+          eventHandler(e)
         }}
-        onKeyDown={onKeyPress}
       />
       <div
         id="map"
