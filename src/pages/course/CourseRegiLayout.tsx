@@ -39,7 +39,20 @@ const NAVBAR = {
   height: "42px",
 }
 
-const NAVICON = {}
+const TABARROW = {
+  width: "33.3%",
+  padding: "0",
+  margin: "0 auto",
+}
+
+const MIDTITLE = {
+  color: "black",
+  width: "33.3%",
+  fontSize: "18px",
+  lineHeight: "135%",
+  margin: "0 auto",
+  padding: "0",
+}
 
 interface PageState {
   state: number
@@ -58,12 +71,11 @@ const CourseRegiLayout = (): JSX.Element => {
   ): void => {
     setPage(newValue)
   }
-  let { state: pageState } = useLocation() as PageState
+  const { state: pageState } = useLocation() as PageState
 
   useEffect(() => {
-    if (pageState === 200) {
+    if (pageState === 2) {
       setPage(2)
-      pageState = 0
     }
   }, [pageState])
 
@@ -76,31 +88,24 @@ const CourseRegiLayout = (): JSX.Element => {
             aria-label="tab Navigation"
             sx={NAVBAR}
           >
-            <IconButton sx={ICONBOXLEFT} onClick={onClickPrev}>
-              <KeyboardArrowLeft fontSize="small" sx={ICON_STYLE} />
-            </IconButton>
             <Tab
-              label=""
+              label={
+                <Box>
+                  <KeyboardArrowLeft
+                    fontSize="small"
+                    sx={ICON_STYLE}
+                    onClick={onClickPrev}
+                  />
+                </Box>
+              }
               value="1"
-              sx={{
-                width: "33.3%",
-                padding: "0",
-                margin: "0 auto",
-              }}
-              disabled
+              sx={TABARROW}
             />
+            /
             <Tab
               label={`코스등록(${page}/3)`}
               value="2"
-              sx={{
-                width: "33.3%",
-                fontSize: "18px",
-                lineHeight: "135%",
-                margin: "0 auto",
-                padding: "0",
-                color: "black",
-              }}
-              style={{ color: "black" }}
+              sx={MIDTITLE}
               disabled
             />
             <Tab

@@ -1,12 +1,14 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* global kakao */
 
 import React, { useEffect, useRef, useState } from "react"
 import Face, { CollectionsOutlined } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
-import { Box } from "@mui/material"
+import { Box, Button } from "@mui/material"
 import ReactDOMServer from "react-dom/server"
 import { SearchCardProp } from "types/API/course-service"
+import zIndex from "@mui/material/styles/zIndex"
 import KakaoComponent from "./KakaoComponent"
 import MarkerOveray from "./MarkerOveray"
 
@@ -42,7 +44,7 @@ interface CoursePlaceState {
   lat: number // 위도 y
   apiId: number
   category: string
-  id: number
+  id?: number
 }
 
 export interface MapContainerProps {
@@ -53,6 +55,19 @@ export interface MapContainerProps {
 }
 // {첫번째 데이터를 중심으로 잡기}
 
+const makeData = (placeLists: CoursePlaceState[]): MapProps[] => {
+  const mapData2 = placeLists.map((place) => {
+    return {
+      order: place.order,
+      title: place.name,
+      position: new window.kakao.maps.LatLng(place.lat, place.lng),
+      apiId: place.apiId,
+    }
+  })
+
+  return mapData2
+}
+
 const MapContainer = ({
   selectedNumber,
   placeLists,
@@ -60,22 +75,25 @@ const MapContainer = ({
   isLoading,
 }: MapContainerProps): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
+  const [totalView, setTotalView] = useState<boolean>(true)
+  const [item, setItem] = useState(selectedNumber)
   let mapData: MapProps[]
 
-  const makeData = (): MapProps[] => {
-    const mapData2 = placeLists.map((place) => {
-      return {
-        order: place.order,
-        title: place.name,
-        position: new window.kakao.maps.LatLng(place.lat, place.lng),
-        apiId: place.apiId,
-      }
-    })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // const onClickTotalView = (): any => {
+  //   // eslint-disable-next-line no-param-reassign
 
-    return mapData2
-  }
+  //   const bounds = new kakao.maps.LatLngBounds()
+  //   if (placeLists !== undefined && selectedNumber === "") {
+  //     placeLists.map((place) =>
+  //       bounds.extend(new kakao.maps.LatLng(place.lat, place.lng))
+  //     )
+  //   }
+  //   return bounds
+  // }
+
   useEffect(() => {
-    mapData = makeData()
+    mapData = makeData(placeLists)
     if (isSuccess && mapData !== undefined) {
       const container = mapContainer.current
       const center =
@@ -84,23 +102,17 @@ const MapContainer = ({
           : mapData[Number(selectedNumber) - 1].position
       const options = {
         center, // 지도의 중심좌표
-        level: 2, // 지도의 확대 레벨
+        level: 3, // 지도의 확대 레벨
       }
 
       const map = new kakao.maps.Map(container, options)
-      // const imageSrc =
-      //   "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png" // 마커이미지의 주소입니다
-      // const imageSize = new kakao.maps.Size(30, 30) // 마커이미지의 크기입니다
-      // const imageOption = { offset: new kakao.maps.Point(15, 30) } // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-
-      // // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
-      // const markerImage = new kakao.maps.MarkerImage(
-      //   imageSrc,
-      //   imageSize,
-      //   imageOption
-      // )
-      // createMarker(map, markerImage, mapData)
-      // 마커가 지도 위에 표시되도록 설정합니다
+      if (totalView) {
+        const bounds = new kakao.maps.LatLngBounds()
+        placeLists.map((place) =>
+          bounds.extend(new kakao.maps.LatLng(place.lat, place.lng))
+        )
+        map.setBounds(bounds)
+      }
 
       // 커스텀 오버레이
       // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
@@ -125,20 +137,31 @@ const MapContainer = ({
         })
       })
     }
-  }, [selectedNumber, isSuccess, isLoading])
+  }, [selectedNumber, isSuccess, isLoading, totalView, placeLists])
 
   return (
-    <div
-      id="map"
-      ref={mapContainer}
-      style={{
-        width: "100%",
-        height: "180px",
-        margin: "0px",
-        padding: "0px",
-        borderRadius: "8px",
-      }}
-    />
+    <>
+      <div
+        id="map"
+        ref={mapContainer}
+        style={{
+          width: "100%",
+          height: "180px",
+          margin: "16px 0",
+          padding: "0px",
+          borderRadius: "8px",
+        }}
+      />
+
+      <Button
+        sx={{ zIndex: "1", marginBottom: "10px" }}
+        onClick={() => {
+          setTotalView(!totalView)
+        }}
+      >
+        {totalView === true ? "개별보기" : "전체보기"}
+      </Button>
+    </>
   )
 }
 export default MapContainer

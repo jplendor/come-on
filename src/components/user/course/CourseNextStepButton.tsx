@@ -1,15 +1,21 @@
 import React from "react"
 import { Button } from "@mui/material"
 
-const BUTTON_STYLE = {
-  width: "100%",
-  height: "50px",
-  lineHeight: "50px",
-  margin: "14px 0",
-  color: "white",
-  fontWeight: "800",
-  fontSize: "1rem",
-}
+const BUTTON_STYLE = [
+  {
+    width: "100%",
+    height: "50px",
+    lineHeight: "50px",
+    margin: "14px 0",
+    color: "white",
+    fontWeight: "800",
+    fontSize: "1rem",
+
+    "& + .nextButton": {
+      margin: "-7px 0px",
+    },
+  },
+]
 
 // ButtonComponent의 type 설정
 interface ButtonProps {
@@ -27,6 +33,7 @@ const CourseNextStepButton: React.FC<ButtonProps> = ({
   return (
     <Button
       sx={BUTTON_STYLE}
+      className="nextButton"
       variant="contained"
       disabled={!isValid}
       onClick={onClick}

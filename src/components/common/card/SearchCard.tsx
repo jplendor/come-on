@@ -149,7 +149,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
       alert(`${obj.placeName}이 코스로 추가되었습니다.`)
       const newPlace = makeNewPlace()
       dispatch(addCoursePlace(newPlace))
-      navigate("/course", { state: 200 })
+      navigate("/course", { state: 2 })
     }
   }
 
@@ -166,9 +166,9 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
 
   return (
     <>
-      <Grid item xs={10} sx={{ margin: "12px 0" }}>
+      <Grid container sx={{ margin: "12px 0" }}>
         <ThemeGrid
-          container
+          item
           id={String(obj.kakaoPlaceId)}
           onClick={onClickFocus}
           xs={12}

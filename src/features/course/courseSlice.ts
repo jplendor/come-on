@@ -93,11 +93,9 @@ export const coursePlaceSlice = createSlice({
       }
     },
     setCourseDetail: (state, action: PayloadAction<CourseDetailProps>): any => {
-      if (state.courseDetails.title === "undefined") {
-        state.courseDetails.title = action.payload.title
-        state.courseDetails.description = action.payload.description
-        state.courseDetails.imgFile = action.payload.imgFile
-      }
+      state.courseDetails.title = action.payload.title
+      state.courseDetails.description = action.payload.description
+      state.courseDetails.imgFile = action.payload.imgFile
     },
   },
 })
@@ -163,10 +161,10 @@ export const courseApi = api.injectEndpoints({
       }),
     }),
     addCoursePlace: builder.mutation<CourseDetailResponse, any>({
-      query: (data) => ({
-        url: `/courses/${data.courseId}/course-places/batch`,
+      query: ({ postData, courseId }) => ({
+        url: `/courses/${courseId}/course-places/batch`,
         method: "POST",
-        body: data.postData,
+        body: postData,
       }),
       transformResponse: (response: any, meta, args): any => {
         console.log(

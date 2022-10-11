@@ -17,7 +17,6 @@ interface ImageInputProps {
 const ImageInput = ({
   title,
   alt,
-
   message,
   previewImg,
   handleChangeImg,
