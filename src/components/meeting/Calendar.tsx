@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { useTheme } from "@mui/material/styles"
-import { Box, Button, Typography } from "@mui/material"
+import { Box, FormControlLabel, Typography } from "@mui/material"
+import Switch, { SwitchProps } from "@mui/material/Switch"
+import { useTheme, styled } from "@mui/material/styles"
 import { generateComponent, toStringYyyymmdd, getYyyymmddArray } from "utils"
 import {
   useCreateMeetingDateMutation,
@@ -29,6 +30,58 @@ enum Mode {
   View = "VIEW",
   Select = "SELECT",
 }
+
+const IOSSwitch = styled((props: SwitchProps) => (
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
+  width: 42,
+  height: 26,
+  padding: 0,
+  "& .MuiSwitch-switchBase": {
+    padding: 0,
+    margin: 2,
+    transitionDuration: "300ms",
+    "&.Mui-checked": {
+      transform: "translateX(16px)",
+      color: "#fff",
+      "& + .MuiSwitch-track": {
+        backgroundColor: theme.palette.mode === "dark" ? "#2ECA45" : "#65C466",
+        opacity: 1,
+        border: 0,
+      },
+      "&.Mui-disabled + .MuiSwitch-track": {
+        opacity: 0.5,
+      },
+    },
+    "&.Mui-focusVisible .MuiSwitch-thumb": {
+      color: "#33cf4d",
+      border: "6px solid #fff",
+    },
+    "&.Mui-disabled .MuiSwitch-thumb": {
+      color:
+        theme.palette.mode === "light"
+          ? theme.palette.grey[100]
+          : theme.palette.grey[600],
+    },
+    "&.Mui-disabled + .MuiSwitch-track": {
+      opacity: theme.palette.mode === "light" ? 0.7 : 0.3,
+    },
+  },
+  "& .MuiSwitch-thumb": {
+    boxSizing: "border-box",
+    width: 22,
+    height: 22,
+  },
+  "& .MuiSwitch-track": {
+    borderRadius: 26 / 2,
+    backgroundColor: theme.palette.mode === "light" ? "#E9E9EA" : "#39393D",
+    opacity: 1,
+    transition: theme.transitions.create(["background-color"], {
+      duration: 500,
+    }),
+  },
+}))
 
 const DAYOFWEEK_LIST = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
@@ -71,19 +124,10 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     flexGrow: "1",
     textAlign: "center",
     lineHeight: "50px",
-    color: "#8E8E8E",
   }
 
   const MONTH_CONTAINER = {
     my: "30px",
-  }
-
-  const MONTH_NUMBER = {
-    height: "30px",
-    m: "10px",
-    textAlign: "center",
-    fontSize: "20px",
-    fontWeight: "bold",
   }
 
   const MONTH = {
@@ -93,11 +137,22 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
 
   const DATE = {
     width: 1 / 7,
-    height: "50px",
-    lineHeight: "50px",
+    height: "45px",
+    lineHeight: "45px",
     textAlign: "center",
     mt: "5px",
     mb: "5px",
+    p: "10px 5px",
+  }
+
+  const MODE_CONTROL = {
+    backgroundColor: theme.grayscale[100],
+    borderRadius: "inherit",
+    mt: "10px",
+    p: "10px 10px 10px 20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   }
 
   const getAllDates = useCallback(
@@ -237,6 +292,13 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     setMode(mode === Mode.View ? Mode.Select : Mode.View)
   }
 
+  const getSunStyle = (dayOfWeek: string): { color: string } => {
+    if (dayOfWeek === "SUN") {
+      return { color: "red" }
+    }
+    return { color: theme.grayscale[500] }
+  }
+
   useEffect(() => {
     setAllDates(getAllDates(startDate, endDate))
   }, [startDate, endDate, getAllDates])
@@ -244,34 +306,52 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
   return (
     <Box>
       <Box sx={CALENDAR}>
+        <Box sx={MODE_CONTROL}>
+          <Typography>날짜선택 모드로 변경</Typography>
+          <FormControlLabel
+            control={<IOSSwitch />}
+            label=""
+            onChange={toggleMode}
+          />
+        </Box>
         <Box sx={DAYOFTHEWEEK_CONTAINER}>
           {generateComponent(DAYOFWEEK_LIST, (data, key) => (
-            <Typography key={key} sx={DAYOFTHEWEEK}>
+            <Typography
+              key={key}
+              sx={{ ...DAYOFTHEWEEK, ...getSunStyle(data) }}
+            >
               {data}
             </Typography>
           ))}
         </Box>
         {generateComponent(allDates, (allData, key1) => (
           <Box key={key1} sx={MONTH_CONTAINER}>
-            <Box sx={MONTH_NUMBER}>{`${allData.month + 1}`}</Box>
+            <Typography>
+              {allData.year}년 {allData.month + 1}월
+            </Typography>
             <Box sx={MONTH}>
               {generateComponent(allData.dateData, (monthData, key2) => (
-                <Box
-                  key={key2}
-                  sx={{
-                    ...DATE,
-                    backgroundColor: `rgba(51,127,254, ${monthData.percentage})`,
-                  }}
-                  data-date={
-                    monthData.date === 0
-                      ? null
-                      : toStringYyyymmdd(
-                          new Date(allData.year, allData.month, monthData.date)
-                        )
-                  }
-                  onClick={handleDateClick}
-                >
-                  {monthData.date === 0 ? "" : monthData.date}
+                <Box key={key2} sx={DATE}>
+                  <Box
+                    data-date={
+                      monthData.date === 0
+                        ? null
+                        : toStringYyyymmdd(
+                            new Date(
+                              allData.year,
+                              allData.month,
+                              monthData.date
+                            )
+                          )
+                    }
+                    onClick={handleDateClick}
+                    sx={{
+                      backgroundColor: `rgba(51,127,254, ${monthData.percentage})`,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {monthData.date === 0 ? "" : monthData.date}
+                  </Box>
                 </Box>
               ))}
             </Box>
@@ -285,20 +365,6 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
           totalMemberNumber={meetingUsers.length}
         />
       </Box>
-      <Button
-        type="button"
-        variant="contained"
-        sx={{
-          bgcolor: theme.palette.secondary.main,
-          color: "white",
-          "&:hover": {
-            bgcolor: theme.palette.secondary.main,
-          },
-        }}
-        onClick={toggleMode}
-      >
-        {mode}
-      </Button>
     </Box>
   )
 }
