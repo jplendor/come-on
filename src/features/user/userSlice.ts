@@ -9,7 +9,7 @@ import {
 
 export const userApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
-    myDetial: builder.query<MydetailRes | ExceptionRes, void>({
+    myDetail: builder.query<MydetailRes | ExceptionRes, void>({
       query: () => ({
         url: "/users/me",
         method: "GET",
@@ -41,8 +41,8 @@ export const userApiSlice = api.injectEndpoints({
 })
 
 export const {
-  useMyDetialQuery,
+  useMyDetailQuery,
   useModifyNameMutation,
   useProfileUploadMutation,
-  endpoints: { myDetial },
+  endpoints: { myDetail },
 } = userApiSlice

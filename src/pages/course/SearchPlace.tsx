@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, ReactElement } from "react"
+import React, { useEffect, useState, useRef, useCallback } from "react"
 
 import ReactDOMServer from "react-dom/server"
 import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
@@ -7,8 +7,11 @@ import { styled } from "@mui/material/styles"
 import { generateComponent } from "utils"
 import SearchCard from "components/common/card/SearchCard"
 import { SearchCardProp } from "types/API/course-service"
+import useGeolocation from "hooks/geolocation/useGeolocation"
+import LikeButton from "components/common/card/cardLayout/CardItemButton"
 
 const { kakao } = window
+const DELAY = 800
 
 const SearchBar = styled(TextField)(() => ({
   padding: "10px",
@@ -74,9 +77,10 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
-  const [selectedPage, setSelectedPage] = useState(0)
-  const [lastPage, setLastPage] = useState(0)
+  const [selectedPage, setSelectedPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
   const refPagenation = useRef<any>()
+  const { geoState } = useGeolocation()
 
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
@@ -90,17 +94,39 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     setSelectedPage(page)
   }
 
+  // 디바운싱 함수
+
   // 검색창에서 엔터키를 칠때만 검색되도록 설정 - 모바일에서 문제 생기는지 확인
-  const onKeyPress = (e: React.KeyboardEvent): void => {
-    if (e.key === "Enter") {
+  const onKeyPress = (keyValue: string): void => {
+    if (keyValue === "Enter") {
       handleSearchBar()
       setSelectedPage(1)
+    }
+  }
+
+  const debounceFunc = (
+    callback: (v: string) => void,
+    delay: number
+  ): ((v: string) => void) => {
+    let timer: ReturnType<typeof setTimeout>
+
+    return (...args) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => callback(args[0]), delay)
     }
   }
 
   // 검색한 키워드의 페이지 네이션 개수 설정
   const setPageCount = (page: number): void => {
     setLastPage(page)
+  }
+
+  const search = useCallback(
+    debounceFunc((value: string) => onKeyPress(value), DELAY),
+    [inputedKeyword]
+  )
+  const eventHandler = (e: React.KeyboardEvent): void => {
+    search(e.key)
   }
 
   // 리스트 클릭했을 시 색 바뀌는 함수 + 목록에 추가되도록
@@ -130,7 +156,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
   }
 
   useEffect(() => {
-    const infowindow = new kakao.maps.InfoWindow({ zIndex: 1 })
+    const infowindow = new kakao.maps.InfoWindow({ zIndex: 1, width: "100px" })
     const container = mapContainer.current
 
     const options = {
@@ -144,23 +170,20 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     const imageSize = new kakao.maps.Size(64, 69)
     const imageOption = { offset: new kakao.maps.Point(27, 69) }
 
-    // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+    const ps = new kakao.maps.services.Places()
+    const pageOptions = {
+      size: 5, // 나중에 설정한 위치 기준으로 할 것
+      location: new kakao.maps.LatLng(37.566826, 126.9786567),
+      radius: 500, // 500미터 내외로 검색
+      SORT_BY: "DISTANCE",
+    }
 
-    // 추후 커스텀 마커에 필요
-    // const markerImage = new kakao.maps.MarkerImage(
-    //   imageSrc,
-    //   imageSize,
-    //   imageOption
-    // )
-
-    // 검색정보를 받는 콜백함수
     const placesSearchCB = (data: any, status: any, pagination: any): any => {
       pagination.gotoPage(selectedPage)
 
       if (data !== "ERROR" && pagination.current === selectedPage) {
         setSearchedData(data)
       }
-
       setPageCount(pagination.last)
 
       if (status === kakao.maps.services.Status.OK) {
@@ -173,18 +196,16 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
       }
     }
 
-    const ps = new kakao.maps.services.Places()
-    const pageOptions = { size: 5 }
-    const value = searchKeyword
-
-    ps.keywordSearch(value, placesSearchCB, pageOptions)
-  }, [selectedPage])
+    if (searchKeyword !== "") {
+      ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
+    }
+  }, [selectedPage, searchKeyword])
 
   return (
     <>
       <header>{/* 검색창 만들기 */}</header>
       <SearchBar
-        fullWidth
+        sx={{ width: "100%" }}
         id="tfSearch"
         value={inputedKeyword}
         InputProps={{
@@ -194,10 +215,10 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
             </InputAdornment>
           ),
         }}
-        onChange={(e) => {
-          setInputedKeyword(e.target.value)
+        onChange={(e) => setInputedKeyword(e.target.value)}
+        onKeyDown={(e) => {
+          eventHandler(e)
         }}
-        onKeyDown={onKeyPress}
       />
       <div
         id="map"
@@ -210,6 +231,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
           generateComponent(searchedData, (item, key) => (
             <SearchCard
               item={item}
+              key={key}
               onClickFocus={onClickFocus}
               selectedNumber={selectedNumber}
               mode={mode}

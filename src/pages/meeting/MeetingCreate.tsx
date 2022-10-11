@@ -137,8 +137,8 @@ const MeetingCreate = (): JSX.Element => {
     }
   }
 
-  return (
-    <Container>
+  const content = (
+    <>
       <Header text="모임등록" />
       <Box
         component="form"
@@ -221,8 +221,10 @@ const MeetingCreate = (): JSX.Element => {
           </Grid>
         </Grid>
       </Box>
-    </Container>
+    </>
   )
+
+  return <Container>{content}</Container>
 }
 
 export default MeetingCreate

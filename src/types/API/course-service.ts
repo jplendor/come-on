@@ -19,7 +19,7 @@ export interface CourseData {
 }
 
 export interface CourseId {
-  courseId: number | undefined
+  courseId: number
 }
 
 export interface CourseDetail {
