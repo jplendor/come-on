@@ -1,77 +1,29 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { CSSProperties, memo } from "react"
-import memoize from "memoize-one"
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { isEmpty } from "@fxts/core"
+import memoizeOne from "memoize-one"
 import { FixedSizeList, areEqual } from "react-window"
+import ReactInfiniteLoader from "react-window-infinite-loader"
+import React, { CSSProperties, memo, useCallback, useEffect } from "react"
 
-import { CardItem, CardItem2 } from "components/common/card/cardLayout/CardItem"
-import {
-  useGetCourseListQuery,
-  useGetLikedCourseListQuery,
-  useGetMyCourseListQuery,
-} from "features/course/courseSlice"
-import {
-  ServerRes as CourseRes,
-  CourseListSliceRes,
-  CourseList,
-} from "types/API/course-service"
-import { useGetMeetingListQuery } from "features/meeting/meetingSlice"
-import Basicframe, { QueryProps } from "components/common/BasicFrame/BasicFrame"
-import { CardItemSkeletons } from "components/common/card/cardLayout/CardItemSkeleton"
-import {
-  MeetingList,
-  MyCoursesSliceRes,
-  ServerResponse as MeetingRes,
-} from "types/API/meeting-service"
-import { GetLatLng } from "hooks/geolocation/useGeolocation"
+import { MeetingList } from "types/API/meeting-service"
+import type { CourseList } from "types/API/course-service"
 import EmptyCard from "components/common/card/cardLayout/CardEmpty"
-import useCourse from "./useCourse"
+import { CardItem, CardItem2 } from "components/common/card/cardLayout/CardItem"
+import { CardItemSkeletons } from "components/common/card/cardLayout/CardItemSkeleton"
+
+import endpoint from "./endpoint"
+import useInfiniteScroll from "./useInfiniteScroll"
 
 export type LoaderType = "Metting" | "Neighborhood" | "MyCourse" | "LikedCourse"
 interface InfiniteLoaderProps {
   type: LoaderType
 }
-
-const endpoint = {
-  Metting: {
-    getCourseList: useGetMeetingListQuery,
-    height: 605,
-    itemSize: 277,
-    query: { size: 500 },
-  },
-  Neighborhood: {
-    getCourseList: useGetCourseListQuery,
-    height: 605,
-    itemSize: 267,
-    query: { size: 500 },
-  },
-  MyCourse: {
-    getCourseList: useGetMyCourseListQuery,
-    height: 275,
-    itemSize: 267,
-    query: {
-      courseStatus: "COMPLETE",
-      size: 500,
-    },
-  },
-  LikedCourse: {
-    getCourseList: useGetLikedCourseListQuery,
-    height: 275,
-    itemSize: 267,
-    query: { size: 500 },
-  },
-}
-
-interface MyDetialQueryProps extends QueryProps {
-  data: CourseRes | MeetingRes<MyCoursesSliceRes>
-}
-type Info = CourseListSliceRes | MyCoursesSliceRes
-export type Option = { height: number; itemSize: number; type: LoaderType }
+type Option = { type: LoaderType }
 interface ListProps {
-  info: Info
+  info: CourseList[] | MeetingList[]
   option: Option
+  clickLikeFunc: (courseId: number) => void
 }
-
 interface RowProps {
   index: number
   style: CSSProperties
@@ -80,63 +32,121 @@ interface RowProps {
 
 const Row = memo(({ index, style, data }: RowProps) => {
   const {
-    info: { contents = [] },
+    info,
+    clickLikeFunc,
     option: { type },
   } = data
   if (type !== "Metting") {
-    const course = contents[index] as CourseList
-    return <CardItem style={style} info={course} key={course.courseId} />
+    const course = info[index] as CourseList
+    return (
+      <CardItem
+        style={style}
+        info={course}
+        key={course.courseId}
+        onClickHandler={clickLikeFunc}
+      />
+    )
   }
-  const course = contents[index] as MeetingList
+  const course = info[index] as MeetingList
   return <CardItem2 style={style} info={course} key={course.id} />
 }, areEqual)
 
-const createItemData = memoize((info: Info, option: Option) => ({
-  info,
-  option,
-}))
-
-const List = ({ info, option }: ListProps): JSX.Element => {
-  const itemData = createItemData(info, option)
+const InfiniteLoader = memo(({ type }: InfiniteLoaderProps) => {
+  const { getCourseList, height, itemSize } = endpoint[type]
   const {
-    info: { contents },
-    option: { height, itemSize },
-  } = itemData
-  if (isEmpty(contents)) return <EmptyCard height={height} />
-  return (
-    <FixedSizeList
-      height={height}
-      width="100%"
-      itemCount={contents.length}
-      itemSize={itemSize}
-      itemData={itemData}
-    >
-      {Row}
-    </FixedSizeList>
-  )
-}
+    refresh,
+    isFetching,
+    readMore,
+    isLoading,
+    combinedData,
+    checkIfLoaded,
+    setCombinedData,
+  } = useInfiniteScroll(getCourseList, type)
 
-const ListInfiniteLoader = ({ type }: InfiniteLoaderProps): JSX.Element => {
-  const { lat, lng } = GetLatLng()
-  const { searchText } = useCourse()
-  const { getCourseList, height, itemSize, query } = endpoint[type]
-  const option = { type, height, itemSize }
-
-  const queryString = {
-    ...query,
-    lat,
-    lng,
-    title: searchText,
+  const changeItem = (
+    data: CourseList[] | MeetingList[],
+    courseId: number,
+    f: (
+      draft: CourseList[] | MeetingList[],
+      id: number
+    ) => CourseList[] | MeetingList[]
+  ) => {
+    if (data.length < 3) return data
+    return f(data, courseId)
   }
 
-  const CourseListQuery = getCourseList(queryString as any)
-  const Content = Basicframe(
-    CourseListQuery as MyDetialQueryProps,
-    [CardItemSkeletons, List],
-    option
+  const clickLike = useCallback(
+    (courseId: number) => {
+      const data = changeItem(combinedData, courseId, (draft, id) => {
+        const copyData = [...draft] as CourseList[]
+        const index = copyData.findIndex((info) => info.courseId === id)
+        const target = copyData[index]
+        if (!target) return draft
+        // 아이템 제거
+        if (type === "LikedCourse")
+          return copyData.filter((info) => info.courseId !== id)
+        const newUserLiked = !target.userLiked
+        const newLikeCount = newUserLiked
+          ? target.likeCount + 1
+          : target.likeCount - 1
+        const newItem = {
+          ...target,
+          userLiked: newUserLiked,
+          likeCount: newLikeCount,
+        }
+        copyData.splice(index, 1, newItem)
+        return copyData
+      })
+      setCombinedData(data)
+    },
+    [combinedData, setCombinedData, type]
   )
 
-  return Content
-}
+  // 페이지 리로드
+  useEffect(() => {
+    refresh()
+  }, [refresh])
 
-export default ListInfiniteLoader
+  if (isLoading) return <CardItemSkeletons />
+  if (!isLoading && !isFetching && isEmpty(combinedData))
+    return <EmptyCard height={height} />
+
+  const createItemData = memoizeOne(
+    (
+      info: CourseList[] | MeetingList[],
+      option: Option,
+      clickLikeFunc: (courseId: number) => void
+    ) => ({
+      info,
+      option,
+      clickLikeFunc,
+    })
+  )
+
+  return (
+    <ReactInfiniteLoader
+      itemCount={Infinity}
+      loadMoreItems={readMore}
+      isItemLoaded={checkIfLoaded}
+    >
+      {({ onItemsRendered, ref }) => {
+        const itemData = createItemData(combinedData, { type }, clickLike)
+        return (
+          <FixedSizeList
+            ref={ref}
+            width="100%"
+            height={height}
+            itemSize={itemSize}
+            itemCount={itemData.info.length}
+            onItemsRendered={onItemsRendered}
+            itemData={itemData}
+          >
+            {Row}
+          </FixedSizeList>
+        )
+      }}
+    </ReactInfiniteLoader>
+  )
+})
+
+export default InfiniteLoader

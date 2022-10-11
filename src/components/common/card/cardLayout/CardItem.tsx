@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { CSSProperties, useMemo } from "react"
+import React, { CSSProperties, memo, useMemo } from "react"
 import { styled } from "@mui/material/styles"
 import { join, map, pipe, split, toArray } from "@fxts/core"
 import type { ImageListItemProps, ImageListItemBarProps } from "@mui/material"
@@ -61,6 +61,12 @@ export const ThemeItemBar = styled(ImageListItemBar)<ImageListItemBarProps>(
 interface CardItemProps {
   info: CourseList | MyCourses | MeetingList
   style: CSSProperties
+  onClickHandler: (courseId: number) => void
+}
+
+interface CardItem2Props {
+  info: CourseList | MyCourses | MeetingList
+  style: CSSProperties
 }
 
 // 우리동네코스 & 모임관리 공통 레이아웃
@@ -91,75 +97,79 @@ const conversion = (arg0: string): string => pipe(arg0, split("-"), join("."))
 const conversionToString = (arg0: string[]): string[] =>
   pipe(map(conversion, arg0), toArray)
 
-// 인피니티 스크롤 전용 리스트 컴포넌트 (작업중)
-export const CardItem = ({ info, style }: CardItemProps): JSX.Element => {
-  const {
-    writer,
-    title,
-    courseId,
-    imageUrl,
-    userLiked,
-    likeCount,
-    updatedDate,
-  } = useMemo(() => info, [info]) as CourseList
-  return (
-    <CardItemLayout style={style}>
-      <ThemeImage>
-        <CardLikeButton
-          isLike={userLiked}
-          likeCount={likeCount}
-          courseId={courseId}
-        />
-        <img src={imageUrl} alt={title} />
-        <CardTexts
-          texts={{
-            title,
-            userName: writer.nickname,
-            time: updatedDate,
-          }}
-        />
-      </ThemeImage>
-    </CardItemLayout>
-  )
-}
+export const CardItem = memo(
+  ({ info, style, onClickHandler }: CardItemProps): JSX.Element => {
+    const {
+      writer,
+      title,
+      courseId,
+      imageUrl,
+      userLiked,
+      likeCount,
+      updatedDate,
+    } = useMemo(() => info, [info]) as CourseList
+    return (
+      <CardItemLayout style={style}>
+        <ThemeImage>
+          <CardLikeButton
+            isLike={userLiked}
+            likeCount={likeCount}
+            courseId={courseId}
+            onClickHandler={onClickHandler}
+          />
+          <img src={imageUrl} alt={title} />
+          <CardTexts
+            texts={{
+              title,
+              userName: writer.nickname,
+              time: updatedDate,
+            }}
+          />
+        </ThemeImage>
+      </CardItemLayout>
+    )
+  }
+)
 
 /**
  * 모임관리 컴포넌트
  */
 
-export const CardItem2 = ({ info, style }: CardItemProps): JSX.Element => {
-  const {
-    imageLink,
-    title,
-    endDate,
-    startDate,
-    userCount,
-    id: codeId,
-    meetingCodeId,
-    hostNickname,
-    meetingStatus,
-  } = useMemo(() => info, [info]) as MeetingList
+export const CardItem2 = memo(
+  ({ info, style }: CardItem2Props): JSX.Element => {
+    const {
+      imageLink,
+      title,
+      endDate,
+      startDate,
+      userCount,
+      id: codeId,
+      meetingCodeId,
+      hostNickname,
+      meetingStatus,
+    } = useMemo(() => info, [info]) as MeetingList
 
-  const [start, end] = conversionToString([startDate, endDate])
+    const [start, end] = conversionToString([startDate, endDate])
 
-  return (
-    <CardItemLayout style={style}>
-      <ThemeImageTwo>
-        <CardTopInfo
-          meetingId={codeId}
-          userCount={userCount}
-          meetingStatus={meetingStatus}
-          meetingCodeId={meetingCodeId}
-        />
-        <img src={imgT} alt={title} />
-        <CardTexts
-          texts={{
-            title,
-            userName: hostNickname,
-            time: `${start}~${end}`,
-          }}
-        />
-      </ThemeImageTwo>
-    </CardItemLayout>
-  )
-}
+    return (
+      <CardItemLayout style={style}>
+        <ThemeImageTwo>
+          <CardTopInfo
+            meetingId={codeId}
+            userCount={userCount}
+            meetingStatus={meetingStatus}
+            meetingCodeId={meetingCodeId}
+          />
+          <img src={imgT} alt={title} />
+          <CardTexts
+            texts={{
+              title,
+              userName: hostNickname,
+              time: `${start}~${end}`,
+            }}
+          />
+        </ThemeImageTwo>
+      </CardItemLayout>
+    )
+  }
+)

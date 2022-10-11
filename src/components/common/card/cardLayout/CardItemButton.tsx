@@ -9,6 +9,7 @@ interface LikeButtonProps {
   isLike: boolean
   courseId: number
   likeCount: number
+  onClickHandler: (courseId: number) => void
 }
 
 const ThemeButton = styled(Button)(
@@ -96,21 +97,23 @@ const UnclickedButton = ({ count, onClick }: likeButtonProps): JSX.Element => {
 }
 
 const LikeButton = memo(
-  ({ isLike, likeCount, courseId }: LikeButtonProps): JSX.Element => {
+  ({
+    isLike,
+    likeCount,
+    courseId,
+    onClickHandler,
+  }: LikeButtonProps): JSX.Element => {
     const [click] = useClickLikeCourseMutation()
-    const [like, setLike] = useState(isLike)
-    const [count, setCount] = useState(likeCount)
-    const onClickHandler = useCallback(() => click(courseId), [click, courseId])
 
-    useEffect(() => {
-      setLike(isLike)
-      setCount(likeCount)
-    }, [likeCount, isLike])
+    const onClick = useCallback(() => {
+      click(courseId)
+      onClickHandler(courseId)
+    }, [click, courseId, onClickHandler])
 
-    return like ? (
-      <ClickedButton count={count} onClick={onClickHandler} />
+    return isLike ? (
+      <ClickedButton count={likeCount} onClick={onClick} />
     ) : (
-      <UnclickedButton count={count} onClick={onClickHandler} />
+      <UnclickedButton count={likeCount} onClick={onClick} />
     )
   }
 )

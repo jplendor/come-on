@@ -11,6 +11,7 @@ interface CardImgProps {
   isLike: boolean
   likeCount: number
   courseId: number
+  onClickHandler: (courseId: number) => void
 }
 
 interface ItemBarTopProps {
@@ -39,6 +40,7 @@ export const CardLikeButton = ({
   isLike,
   likeCount,
   courseId,
+  onClickHandler,
 }: CardImgProps): JSX.Element => {
   const {
     LoginStatus: { isloggedin },
@@ -50,8 +52,9 @@ export const CardLikeButton = ({
         isloggedin ? (
           <LikeButton
             isLike={isLike}
-            likeCount={likeCount}
             courseId={courseId}
+            likeCount={likeCount}
+            onClickHandler={onClickHandler}
           />
         ) : null
       }

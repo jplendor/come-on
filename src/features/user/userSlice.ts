@@ -24,7 +24,7 @@ export const userApiSlice = api.injectEndpoints({
           nickname: name,
         },
       }),
-      invalidatesTags: ["Course"],
+      invalidatesTags: ["Course", "User"],
     }),
     profileUpload: builder.mutation<
       SaveProfileImageRes | ExceptionRes,
