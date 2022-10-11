@@ -20,10 +20,11 @@ import { Buffer } from "buffer"
 import { AccountCircleOutlined, DateRange, Favorite } from "@mui/icons-material"
 import PlaceDetailCard, {
   PlaceType,
-} from "components/common/card/PlaceDetailCard "
+} from "components/common/card/PlaceDetailCard"
 
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
+import { CourseId, CourseIdResponse } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -117,6 +118,10 @@ interface pageProps {
 
 // 코스등록 전 미리보기 페이지
 const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
+  const [winReady, setWinReady] = useState(false)
+  useEffect(() => {
+    setWinReady(true)
+  })
   /* **********************************************************************
 api연동부분
  2
@@ -127,7 +132,7 @@ api연동부분
   }
 
   const [selectedNumber, setselectedNumber] = useState<string>("")
-  const [addCourseDetail, { data: result, isSuccess }] =
+  const [addCourseDetail, { data, isSuccess, isLoading }] =
     useAddCourseDetailMutation()
   const [addCoursePlace] = useAddCoursePlaceMutation()
   const { data: userData, isLoading: isLoadingUser } =
@@ -152,41 +157,32 @@ api연동부분
 
   // 제출용 폼데이터 만드는 함수
   // base64 => File => blob으로 만들었다.
-  const makeFormData = (): FormData => {
+  const makeFormData = async (): Promise<FormData> => {
     const formData = new FormData()
     formData.append("title", courseDetail.title)
     formData.append("description", courseDetail.description)
-    const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
+    const myfile = await dataUrlToFile(courseDetail.imgFile, "코스화면.png")
 
     if (myfile !== undefined) {
-      myfile?.arrayBuffer().then((arrayBuffer) => {
+      await myfile?.arrayBuffer().then((arrayBuffer) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const blob = new Blob([new Uint8Array(arrayBuffer)], {
           type: myfile.type,
         })
       })
-      formData.append("imgFile", myfile)
+      await formData.append("imgFile", myfile)
     }
 
     return formData
   }
-  let courseId: number | undefined
+
   // async (): Promise<boolean>
   // 코스 디테일 전송하는 함수
-  const submitCourseDetail = async (): Promise<boolean> => {
-    try {
-      const submitData = makeFormData()
-      await addCourseDetail(submitData)
+  const submitCourseDetail = async (): Promise<number> => {
+    const submitData = await makeFormData()
+    const res = await addCourseDetail(submitData).unwrap()
 
-      if (isSuccess) {
-        const res = result
-        courseId = res?.data.courseId
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log("%s", err)
-    }
-    return Promise.resolve(true)
+    return Promise.resolve(res.data.courseId)
   }
 
   const courseList = useSelector((state: RootState) => {
@@ -210,7 +206,7 @@ api연동부분
   }
 
   // // 장소리스트 전송하는 함수
-  const submitPlaceList = async (): Promise<boolean> => {
+  const submitPlaceList = async (courseId: number): Promise<boolean> => {
     // map으로 toSave배열에 코스 추가하기
     // toSave 전처리
     postData.toSave.pop() // 첫번쨰 데이터 삭제
@@ -224,20 +220,19 @@ api연동부분
   // 무한리렌더링 조심 부분
 
   const submit = async (): Promise<boolean> => {
-    if ((await submitCourseDetail()) === true) {
-      await submitPlaceList()
-    }
+    const courseId = await submitCourseDetail()
+    await submitPlaceList(courseId)
     setIsSubmit(true)
     return Promise.resolve(true)
   }
 
-  if (isSubmit) {
-    navigate("/")
-  }
+  // if (isSubmit) {
+  //   navigate("/")
+  // }
 
   if (isLoadingUser) return <div>Loading...</div>
   return (
-    courseDetail && (
+    courseDetail && { winReady } && (
       <>
         <ImgContainer>
           <img

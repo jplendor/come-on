@@ -17,7 +17,6 @@ import { CourseData } from "types/API/course-service"
 
 import { useDispatch } from "react-redux"
 
-const FormBox = styled(Box)(() => ({}))
 const FORM_STYLE = {
   padding: "0 10px",
 }
@@ -91,7 +90,6 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   }
 
   const onClickNextPage = (): void => {
-    console.log("adasdasdasdaadasd")
     dispatch(
       setCourseDetail({
         title: changeInput.title,
@@ -107,46 +105,44 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   }, [changeInput, isValid, imageSrc, previewImg])
 
   return (
-    <FormBox sx={FORM_STYLE} onChange={onValid}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <ImageInput
-            title="이미지 등록"
-            alt="이미지를 등록해 주세요"
-            message="이미지를 등록해 주세요"
-            previewImg={previewImg}
-            handleChangeImg={handleChangeImg}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextInput
-            title="코스이름"
-            name="title"
-            value={changeInput.title}
-            placeholder="코스명을 입력해 주세요"
-            handleChange={onChangeInput}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextInput
-            multiline
-            title="코스설명"
-            placeholder="코스설명을 입력해주세요"
-            rows={8}
-            name="description"
-            value={changeInput.description}
-            handleChange={onChangeInput}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <CourseNextStepButton
-            content="다음단계"
-            isValid={isValid}
-            onClick={onClickNextPage}
-          />
-        </Grid>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <ImageInput
+          title="이미지 등록"
+          alt="이미지를 등록해 주세요"
+          message="이미지를 등록해 주세요"
+          previewImg={previewImg}
+          handleChangeImg={handleChangeImg}
+        />
       </Grid>
-    </FormBox>
+      <Grid item xs={12}>
+        <TextInput
+          title="코스이름"
+          name="title"
+          value={changeInput.title}
+          placeholder="코스명을 입력해 주세요"
+          handleChange={onChangeInput}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextInput
+          multiline
+          title="코스설명"
+          placeholder="코스설명을 입력해주세요"
+          rows={8}
+          name="description"
+          value={changeInput.description}
+          handleChange={onChangeInput}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <CourseNextStepButton
+          content="다음단계"
+          isValid={isValid}
+          onClick={onClickNextPage}
+        />
+      </Grid>
+    </Grid>
   )
 }
 

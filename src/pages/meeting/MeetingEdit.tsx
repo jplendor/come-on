@@ -19,7 +19,7 @@ import {
 } from "features/meeting/meetingSlice"
 import PlaceDetailCard, {
   PlaceType,
-} from "components/common/card/PlaceDetailCard "
+} from "components/common/card/PlaceDetailDraggableCard "
 import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"

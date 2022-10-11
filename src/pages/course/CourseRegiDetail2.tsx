@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react"
 import { useSelector } from "react-redux"
-
+import { Draggable, DragDropContext, Droppable } from "react-beautiful-dnd"
 import { styled } from "@mui/material/styles"
 import { Box, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
@@ -16,9 +16,7 @@ import MapContainer from "components/common/course/MapContainer"
 import { Link } from "react-router-dom"
 import { RootState } from "store"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-import PlaceDetailCard from "components/common/card/PlaceDetailCard "
-
-import { DragDropContext, Droppable } from "react-beautiful-dnd"
+import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -127,10 +125,8 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       return place.name
     })
 
-    console.log(newPlaceNames)
     newPlaceNames.splice(source.index, 1)
     newPlaceNames.splice(destination.index, 0, draggableId)
-    console.log(newPlaceNames)
 
     const newPlace: Array<CoursePlaceState> = []
     for (let i = 0; i < newPlaceNames.length; i += 1) {
@@ -144,8 +140,6 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       }
       newPlace.push(newState)
     }
-
-    console.log(newPlace)
     setPlacedata(newPlace)
   }
   // order바꿔주기
@@ -174,7 +168,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
                 {generateComponent(placeData, (item, key) => (
-                  <PlaceDetailCard
+                  <PlaceDetailDraggableCard
                     item={{ ...item, id: item.order + 1 }}
                     key={key}
                     onClick={onClickFocus}
@@ -187,6 +181,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
                     mode={PlaceType.c}
                   />
                 ))}
+
                 {provided.placeholder}
               </Box>
             )}

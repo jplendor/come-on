@@ -161,10 +161,10 @@ export const courseApi = api.injectEndpoints({
       }),
     }),
     addCoursePlace: builder.mutation<CourseDetailResponse, any>({
-      query: (data) => ({
-        url: `/courses/${data.courseId}/course-places/batch`,
+      query: ({ postData, courseId }) => ({
+        url: `/courses/${courseId}/course-places/batch`,
         method: "POST",
-        body: data.postData,
+        body: postData,
       }),
       transformResponse: (response: any, meta, args): any => {
         console.log(

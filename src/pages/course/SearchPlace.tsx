@@ -8,6 +8,7 @@ import { generateComponent } from "utils"
 import SearchCard from "components/common/card/SearchCard"
 import { SearchCardProp } from "types/API/course-service"
 import useGeolocation from "hooks/geolocation/useGeolocation"
+import LikeButton from "components/common/card/cardLayout/CardItemButton"
 
 const { kakao } = window
 const DELAY = 800
@@ -230,6 +231,7 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
           generateComponent(searchedData, (item, key) => (
             <SearchCard
               item={item}
+              key={key}
               onClickFocus={onClickFocus}
               selectedNumber={selectedNumber}
               mode={mode}

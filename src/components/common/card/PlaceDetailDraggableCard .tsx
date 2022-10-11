@@ -209,9 +209,10 @@ interface ListDetailCardProps {
   onRemove: (index: number) => void
   maxLen: number
   mode: PlaceType
+  // eslint-disable-next-line react/require-default-props
 }
 
-const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
+const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
   mode,
   onClick,
   isSelected,
@@ -258,14 +259,14 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
 
   return (
     <Draggable draggableId={item.name} index={item.order - 1}>
-      {(provided) => (
+      {(provided2) => (
         <Grid
           container
           spacing={2}
           sx={GRID_WRAP}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
+          {...provided2.draggableProps}
+          {...provided2.dragHandleProps}
+          ref={provided2.innerRef}
         >
           <Grid item xs={2} sx={NUMBERING_BOX}>
             {maxLen !== 1 ? (
@@ -343,4 +344,4 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   )
 }
 
-export default PlaceDetailCard
+export default PlaceDetailDraggableCard

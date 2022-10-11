@@ -166,9 +166,9 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
 
   return (
     <>
-      <Grid item xs={10} sx={{ margin: "12px 0" }}>
+      <Grid container sx={{ margin: "12px 0" }}>
         <ThemeGrid
-          container
+          item
           id={String(obj.kakaoPlaceId)}
           onClick={onClickFocus}
           xs={12}
