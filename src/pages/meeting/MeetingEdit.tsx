@@ -25,7 +25,10 @@ import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
 import MemberInfoModal from "components/meeting/MemberInfoModal"
-import { User } from "types/API/meeting-service"
+import { User, Place as MeetingPlace } from "types/API/meeting-service"
+import { Place as CoursePlace } from "components/common/card/SearchCard"
+import { useDispatch } from "react-redux"
+import { addCoursePlace } from "features/course/courseSlice"
 
 const NewPlace = {
   border: "dashed 2px gray",
@@ -58,6 +61,7 @@ const MeetingEdit = (): JSX.Element => {
   const theme = useTheme()
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const addNewPlace = (): void => {
     navigate(`/meeting/${meetingId}/place`)
@@ -84,11 +88,36 @@ const MeetingEdit = (): JSX.Element => {
     }
   }
 
+  const makeNewPlace = (place: MeetingPlace): CoursePlace => {
+    const newPlace = {
+      id: 0,
+      order: place.order,
+      name: place.name,
+      description: "값을 입력해 주세요",
+      lng: place.lng,
+      lat: place.lat,
+      apiId: place.apiId,
+      category: place.category,
+      address: place.address,
+    }
+
+    return newPlace
+  }
+
   let content
   if (isFetching) {
     content = <CircularProgress />
   } else if (isSuccess) {
     const { data: meeting } = response
+
+    const shareMeetingPlaceToCourse = (): void => {
+      const places = meeting.meetingPlaces
+      for (let i = 0; i < places.length; i += 1) {
+        const newPlace = makeNewPlace(places[i])
+        dispatch(addCoursePlace(newPlace))
+      }
+      navigate("/course")
+    }
 
     content = (
       <>
@@ -181,7 +210,11 @@ const MeetingEdit = (): JSX.Element => {
               </Box>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" fullWidth>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={shareMeetingPlaceToCourse}
+              >
                 코스로 공유하기
               </Button>
             </Grid>

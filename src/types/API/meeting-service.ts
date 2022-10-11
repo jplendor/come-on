@@ -65,7 +65,7 @@ interface MeetingDate {
   dateStatus: DateStatusType
 }
 
-interface Place {
+export interface Place {
   apiId: number
   category: string
   id: number
