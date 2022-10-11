@@ -7,9 +7,12 @@ import {
   MeetingDateForDelete,
   meetingDateForRead,
   MeetingDateDetail,
-  MeetingList,
   MeetingListQS,
   MeetingPlaceForCreate,
+  MyCoursesSliceRes,
+  MeetingCodeQS,
+  MeetingCode,
+  DeleteMeetingQS,
   MeetingPlaceForDelete,
   MeetingPlaceForUpdate,
   MeetingUserForUpdate,
@@ -17,16 +20,39 @@ import {
 
 export const meetingApiSlice = api.injectEndpoints({
   endpoints: (builder) => ({
+    // 모임 삭제
+    deleteMeeting: builder.mutation<ServerResponse<null>, DeleteMeetingQS>({
+      query: ({ meetingId }) => ({
+        url: `/meetings/${meetingId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Meeting"],
+    }),
+    // 코드 수정
+    updateMeetingCode: builder.mutation<ServerResponse<null>, MeetingCodeQS>({
+      query: ({ meetingId, codeId }) => ({
+        url: `/meetings/${meetingId}/codes/${codeId}`,
+        method: "PATCH",
+      }),
+    }),
+    // 코드 단건 조회
+    getMeetingCode: builder.query<ServerResponse<MeetingCode>, MeetingCodeQS>({
+      query: ({ meetingId, codeId }) => ({
+        url: `/meetings/${meetingId}/codes/${codeId}`,
+        method: "GET",
+      }),
+    }),
+    // 모임 리스트 조회
     getMeetingList: builder.query<
-      ServerResponse<MeetingList>,
+      ServerResponse<MyCoursesSliceRes>,
       Partial<MeetingListQS>
     >({
       query: (args) => ({
-        // eslint-disable-next-line max-len
         url: `/meetings`,
         method: "GET",
         params: { ...args },
       }),
+      providesTags: ["Meeting"],
     }),
     // 모임 생성
     createMeeting: builder.mutation<ServerResponse<number>, FormData>({
@@ -128,6 +154,9 @@ export const meetingApiSlice = api.injectEndpoints({
 })
 
 export const {
+  useDeleteMeetingMutation,
+  useUpdateMeetingCodeMutation,
+  useGetMeetingCodeQuery,
   useCreateMeetingMutation,
   useGetMeetingQuery,
   useCreateMeetingDateMutation,

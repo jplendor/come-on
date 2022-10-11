@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import { api } from "features/api/apiSlice"
 import {
   CourseIdResponse,
@@ -35,6 +34,7 @@ interface CoursePlaceState {
       address: string
     }
   ]
+  searchText: string | undefined
 }
 
 interface CoursePlaceProps {
@@ -74,6 +74,7 @@ const initialState: CoursePlaceState = {
       address: "",
     },
   ],
+  searchText: undefined,
 }
 
 // 전체에 적용될 order값 설정
@@ -82,7 +83,10 @@ export const coursePlaceSlice = createSlice({
   name: "coursePlace",
   initialState,
   reducers: {
-    addCoursePlace: (state, action: PayloadAction<CoursePlaceProps>): any => {
+    setSearchText: (state, action: PayloadAction<string | undefined>) => {
+      state.searchText = action.payload
+    },
+    addCoursePlace: (state, action: PayloadAction<CoursePlaceProps>) => {
       if (state.coursePlaces[0].order === 0) {
         state.coursePlaces[0] = { ...action.payload, order: 1 }
       } else {
@@ -100,7 +104,8 @@ export const coursePlaceSlice = createSlice({
   },
 })
 
-export const { addCoursePlace, setCourseDetail } = coursePlaceSlice.actions
+export const { addCoursePlace, setCourseDetail, setSearchText } =
+  coursePlaceSlice.actions
 export default coursePlaceSlice.reducer
 
 export const courseApi = api.injectEndpoints({
@@ -121,6 +126,7 @@ export const courseApi = api.injectEndpoints({
       }),
       providesTags: ["Course"],
     }),
+
     getMyCourseList: builder.query<MyCoursesRes, GetMyCourseListQS>({
       query: (args) => ({
         url: `/courses/my`,
@@ -166,7 +172,7 @@ export const courseApi = api.injectEndpoints({
         method: "POST",
         body: postData,
       }),
-      transformResponse: (response: any, meta, args): any => {
+      transformResponse: (response: any, meta, args) => {
         console.log(
           "courseId : %d courseStatus : %s",
           response.data.courseId,

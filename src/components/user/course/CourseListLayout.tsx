@@ -12,7 +12,8 @@ const CourseListLayout = ({
       component="article"
       spacing={1}
       sx={{
-        py: "21px",
+        height: "inherit",
+        justifyContent: "center",
       }}
     >
       {children}

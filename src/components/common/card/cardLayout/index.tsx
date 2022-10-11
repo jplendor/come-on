@@ -30,10 +30,9 @@ import CardHeader from "./CardHeader"
 const courseHeaderSx = {
   pb: "14px",
   height: "65px",
-  textAlign: "center",
 }
 const courseBodySx = {
-  maxHeight: "585px",
+  maxHeight: "605px",
   overflowY: "auto",
   overflowX: "hidden",
 }
@@ -46,8 +45,7 @@ const myPageHeaderSx = {
   borderBottom: "0.5px solid #EEEEEE",
 }
 const myPageBodySx = {
-  // 21.250em -> 340px
-  maxHeight: "21.250em",
+  px: "0px",
 }
 
 const CardType = {

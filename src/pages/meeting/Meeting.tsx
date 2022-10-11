@@ -1,6 +1,7 @@
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 import RequireAuth from "components/auth/RequireAuth"
+import ManagingMeetings from "pages/user/Meeting"
 import MeetingListRead from "./MeetingListRead"
 import MeetingCreate from "./MeetingCreate"
 import MeetingEdit from "./MeetingEdit"
@@ -8,7 +9,7 @@ import MeetingPlaceAdd from "./MeetingPlaceAdd"
 
 const AuthMeetingListRead = (): JSX.Element => (
   <RequireAuth>
-    <MeetingListRead />
+    <ManagingMeetings />
   </RequireAuth>
 )
 

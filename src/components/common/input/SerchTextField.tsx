@@ -11,7 +11,7 @@ const SerchTextField = styled(TextField)<TextFieldProps>(
   ({
     theme: {
       textStyles: {
-        body1: { regular },
+        title4: { regular },
       },
       grayscale,
     },

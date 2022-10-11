@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import React from "react"
+import React, { memo, useState } from "react"
 import Menu from "@mui/material/Menu"
 import { styled } from "@mui/material/styles"
 import MenuItem from "@mui/material/MenuItem"
 import IconButton from "@mui/material/IconButton"
 import MoreVertIcon from "@mui/icons-material/MoreVert"
 import { Typography, TypographyProps } from "@mui/material"
+
+import { useDeleteMeetingMutation } from "features/meeting/meetingSlice"
+import CardDialog from "./CardDialog"
 
 const MenuItemText = styled(Typography)<TypographyProps>(
   ({
@@ -33,12 +36,20 @@ const MenuItemText = styled(Typography)<TypographyProps>(
  * 3.모임 삭제
  */
 
-const CardMenu = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+interface CardMenuProps {
+  meetingId: number
+  meetingCodeId: number
+}
+const CardMenu = memo(({ meetingId, meetingCodeId }: CardMenuProps) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) =>
     setAnchorEl(event.currentTarget)
+  const [dialog, setDialog] = useState(false)
   const handleClose = () => setAnchorEl(null)
+  const handleOpenDialog = () => setDialog(true)
+  const [deleteMeeting, { isLoading }] = useDeleteMeetingMutation()
+
   return (
     <div>
       <IconButton
@@ -74,18 +85,27 @@ const CardMenu = () => {
           horizontal: "right",
         }}
       >
-        <MenuItem onClick={handleClose}>
+        <CardDialog
+          setAnchorEl={setAnchorEl}
+          dialog={dialog}
+          setDialog={setDialog}
+          meetingId={meetingId}
+          meetingCodeId={meetingCodeId}
+        />
+        <MenuItem onClick={handleOpenDialog}>
           <MenuItemText>초대코드 관리하기</MenuItemText>
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <MenuItemText>모임 수정하기</MenuItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <MenuItemText>모임 삭제하기</MenuItemText>
+        <MenuItem onClick={() => deleteMeeting({ meetingId })}>
+          <MenuItemText>
+            {isLoading ? "모임 삭제중..." : "모임 삭제하기"}
+          </MenuItemText>
         </MenuItem>
       </Menu>
     </div>
   )
-}
+})
 
 export default CardMenu

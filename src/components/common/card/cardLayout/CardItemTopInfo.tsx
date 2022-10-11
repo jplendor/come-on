@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import { styled } from "@mui/material/styles"
 import type { TypographyProps } from "@mui/material"
 import { Grid, Paper, Stack, Typography } from "@mui/material"
@@ -40,7 +40,7 @@ const ItemTwo = styled(ItemOne)(({ theme: { grayscale } }) => ({
  * 인원수 표시 컴포넌트
  */
 
-const NumberOfPeople = (): JSX.Element => {
+const NumberOfPeople = ({ userCount }: { userCount: number }): JSX.Element => {
   return (
     <ItemOne>
       <Grid container alignItems="center">
@@ -51,7 +51,7 @@ const NumberOfPeople = (): JSX.Element => {
             color: "#FFFFFF",
           }}
         />
-        <CardTitleText>999명</CardTitleText>
+        <CardTitleText>{`${userCount}명`}</CardTitleText>
       </Grid>
     </ItemOne>
   )
@@ -96,13 +96,19 @@ const Undecided = (): JSX.Element => {
  * 모임관리 카드에서 인원수와 모임 결정 여부를 알려주는 컴포넌트.
  */
 
-const TopInfo = (): JSX.Element => {
-  return (
-    <Stack direction="row" spacing="6px">
-      <NumberOfPeople />
-      <Undecided />
-    </Stack>
-  )
+interface TopInfoProps {
+  userCount: number
+  meetingStatus: "UNFIXED" | "PROCEEDING" | "END"
 }
+const TopInfo = memo(
+  ({ userCount, meetingStatus }: TopInfoProps): JSX.Element => {
+    return (
+      <Stack direction="row" spacing="6px">
+        <NumberOfPeople userCount={userCount} />
+        {meetingStatus === "END" ? <Decided /> : <Undecided />}
+      </Stack>
+    )
+  }
+)
 
 export default TopInfo
