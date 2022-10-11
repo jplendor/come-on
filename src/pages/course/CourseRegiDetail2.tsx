@@ -72,7 +72,9 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       setIsValid(false)
     }
   }, [])
-  console.log(placeData)
+
+  // setPage(2)
+
   useEffect(() => {
     onValid()
   }, [isValid, onValid])
@@ -102,8 +104,6 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
 
     setCourseData(data)
   }
-
-  setPage(2)
 
   const onClicKNextPage = (): void => {
     setPage(page + 1)

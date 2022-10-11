@@ -149,7 +149,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
       alert(`${obj.placeName}이 코스로 추가되었습니다.`)
       const newPlace = makeNewPlace()
       dispatch(addCoursePlace(newPlace))
-      navigate("/course", { state: 200 })
+      navigate("/course", { state: 2 })
     }
   }
 

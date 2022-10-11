@@ -74,7 +74,7 @@ const CourseRegiLayout = (): JSX.Element => {
   const { state: pageState } = useLocation() as PageState
 
   useEffect(() => {
-    if (pageState === 200) {
+    if (pageState === 2) {
       setPage(2)
     }
   }, [pageState])
