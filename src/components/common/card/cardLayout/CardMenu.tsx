@@ -8,6 +8,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert"
 import { Typography, TypographyProps } from "@mui/material"
 
 import { useDeleteMeetingMutation } from "features/meeting/meetingSlice"
+import useNavigateUrl from "hooks/auth/useNavigateUrl"
+import { Url } from "types/auth"
 import CardDialog from "./CardDialog"
 
 const MenuItemText = styled(Typography)<TypographyProps>(
@@ -49,6 +51,11 @@ const CardMenu = memo(({ meetingId, meetingCodeId }: CardMenuProps) => {
   const handleClose = () => setAnchorEl(null)
   const handleOpenDialog = () => setDialog(true)
   const [deleteMeeting, { isLoading }] = useDeleteMeetingMutation()
+  const { goUrl } = useNavigateUrl()
+  const handleEditMeeting = () => {
+    const url = `/meeting/${meetingId}` as Url
+    goUrl({ url })
+  }
 
   return (
     <div>
@@ -95,7 +102,7 @@ const CardMenu = memo(({ meetingId, meetingCodeId }: CardMenuProps) => {
         <MenuItem onClick={handleOpenDialog}>
           <MenuItemText>초대코드 관리하기</MenuItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleEditMeeting}>
           <MenuItemText>모임 수정하기</MenuItemText>
         </MenuItem>
         <MenuItem onClick={() => deleteMeeting({ meetingId })}>
