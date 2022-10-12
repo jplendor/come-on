@@ -292,6 +292,7 @@ api연동부분
                 }}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
+                isEditable
               />
             ))}
           <CourseNextStepButton

@@ -10,8 +10,6 @@ import {
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
-import { Draggable } from "react-beautiful-dnd"
-import { calculateProvidedBy } from "@reduxjs/toolkit/dist/query/endpointDefinitions"
 import PlaceDetailEditCard from "./PlaceDetailEditCard"
 
 // TODO: 버튼 2개 작업
@@ -165,7 +163,7 @@ const ICON = {
   color: "#BDBDBD",
 }
 
-const ButtonGroup = {
+let ButtonGroup = {
   display: "flex",
   flexDirection: "column",
   alignItems: "end",
@@ -209,6 +207,7 @@ interface ListDetailCardProps {
   onRemove: (index: number) => void
   maxLen: number
   mode: PlaceType
+  isEditable: boolean
   // eslint-disable-next-line react/require-default-props
 }
 
@@ -219,12 +218,17 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   item,
   maxLen,
   onRemove,
+  isEditable,
 }) => {
   const [isEditing, setIsEditing] = useState(false)
 
+  if (!isEditable) {
+    ButtonGroup = { ...ButtonGroup, justifyContent: "end" }
+  }
+
   const { order: index, name: placeName, category, apiId, address, id } = item
-  let description = "null"
-  let memo = "null"
+  let description = null
+  let memo = null
 
   if (mode === PlaceType.m) {
     const { memo: itemMemo } = item as MeetingPlace
@@ -254,8 +258,6 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
       />
     )
   }
-
-  /* //draggable */
 
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
@@ -297,15 +299,17 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
                 <Typography component="span" sx={TITLE_CATEGORY}>
                   {category}
                 </Typography>
-                <IconButton
-                  sx={ICON}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setIsEditing(true)
-                  }}
-                >
-                  <Edit />
-                </IconButton>
+                {isEditable && (
+                  <IconButton
+                    sx={ICON}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsEditing(true)
+                    }}
+                  >
+                    <Edit />
+                  </IconButton>
+                )}
               </Box>
               <Box sx={DES_BOX}>
                 <Typography variant="subtitle2" sx={TITLE_DES}>
@@ -318,9 +322,11 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
             </Box>
           </Grid>
           <Grid item xs={2} sx={ButtonGroup}>
-            <IconButton sx={ICON} onClick={handleClickClose}>
-              <Close />
-            </IconButton>
+            {isEditable && (
+              <IconButton sx={ICON} onClick={handleClickClose}>
+                <Close />
+              </IconButton>
+            )}
             <a href={routeUrl} target="_blank" rel="noreferrer">
               <IconButton sx={ICON}>
                 <KeyboardArrowRight />

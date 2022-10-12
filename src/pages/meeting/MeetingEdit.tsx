@@ -31,6 +31,7 @@ import { Place as CoursePlace } from "components/common/card/SearchCard"
 import { useDispatch } from "react-redux"
 import { addCoursePlace } from "features/course/courseSlice"
 import { DragDropContext, Droppable } from "react-beautiful-dnd"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
 
 const CATEGORY_LIST = [
   { name: "SCHOOL", value: "학교" },
@@ -67,7 +68,7 @@ const MeetingEdit = (): JSX.Element => {
 
   const [memberInfoModalOpen, setmMemberInfoModalOpen] = useState(false)
   const [clickedMember, setClickedMember] = useState<User>()
-  // const [placeData, setPlacedata] = useState<MeetingPlace[]>([])
+  const [selectedNumber, setselectedNumber] = useState<string>("")
 
   const {
     data: response,
@@ -122,11 +123,23 @@ const MeetingEdit = (): JSX.Element => {
     return newPlace
   }
 
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const e = event?.currentTarget
+    if (e) {
+      setselectedNumber(e.id)
+    } else {
+      setselectedNumber("")
+    }
+  }
+
   let content
   if (isFetching) {
     content = <CircularProgress />
   } else if (isSuccess) {
     const { data: meeting } = response
+
+    const isHost = meeting.myMeetingRole === "HOST"
+    const isEditable = isHost || meeting.myMeetingRole === "EDITOR"
 
     const onDragEnd = async (result: any): Promise<void> => {
       const placeData = meeting.meetingPlaces
@@ -266,43 +279,71 @@ const MeetingEdit = (): JSX.Element => {
               <Title>모임장소</Title>
             </Grid>
             <Grid item xs={12}>
-              <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="placeData">
-                  {(provided) => (
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    <Box ref={provided.innerRef} {...provided.droppableProps}>
-                      {generateComponent(meeting.meetingPlaces, (data, key) => (
-                        <PlaceDetailDraggableCard
-                          mode={PlaceType.m}
-                          item={data}
-                          key={key}
-                          isSelected
-                          maxLen={meeting.meetingPlaces.length}
-                          onClick={() => {
-                            console.log("click")
-                          }}
-                          onRemove={onRemove}
-                        />
-                      ))}
-                      {provided.placeholder}
-                    </Box>
-                  )}
-                </Droppable>
-              </DragDropContext>
-              <Box sx={NewPlace} onClick={addNewPlace}>
-                <MapOutlined />
-                <Typography>새로운 장소를 추가해보세요</Typography>
-              </Box>
+              {isEditable ? (
+                <DragDropContext onDragEnd={onDragEnd}>
+                  <Droppable droppableId="placeData">
+                    {(provided) => (
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      <Box ref={provided.innerRef} {...provided.droppableProps}>
+                        {generateComponent(
+                          meeting.meetingPlaces,
+                          (data, key) => (
+                            <PlaceDetailDraggableCard
+                              mode={PlaceType.m}
+                              item={data}
+                              key={key}
+                              isSelected={
+                                data.order ===
+                                (selectedNumber === ""
+                                  ? -10
+                                  : Number(selectedNumber))
+                              }
+                              maxLen={meeting.meetingPlaces.length}
+                              onClick={onClickFocus}
+                              onRemove={onRemove}
+                            />
+                          )
+                        )}
+                        {provided.placeholder}
+                      </Box>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              ) : (
+                generateComponent(meeting.meetingPlaces, (data, key) => (
+                  <PlaceDetailCard
+                    mode={PlaceType.m}
+                    item={data}
+                    key={key}
+                    isSelected={
+                      data.order ===
+                      (selectedNumber === "" ? -10 : Number(selectedNumber))
+                    }
+                    maxLen={meeting.meetingPlaces.length}
+                    onClick={onClickFocus}
+                    onRemove={onRemove}
+                    isEditable={false}
+                  />
+                ))
+              )}
+              {isEditable && (
+                <Box sx={NewPlace} onClick={addNewPlace}>
+                  <MapOutlined />
+                  <Typography>새로운 장소를 추가해보세요</Typography>
+                </Box>
+              )}
             </Grid>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={shareMeetingPlaceToCourse}
-              >
-                코스로 공유하기
-              </Button>
-            </Grid>
+            {isHost && (
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={shareMeetingPlaceToCourse}
+                >
+                  코스로 공유하기
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Box>
       </>
