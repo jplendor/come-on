@@ -11,7 +11,6 @@ import {
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
 import { Draggable } from "react-beautiful-dnd"
-import { calculateProvidedBy } from "@reduxjs/toolkit/dist/query/endpointDefinitions"
 import PlaceDetailEditCard from "./PlaceDetailEditCard"
 
 // TODO: 버튼 2개 작업
@@ -223,8 +222,8 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
   const [isEditing, setIsEditing] = useState(false)
 
   const { order: index, name: placeName, category, apiId, address, id } = item
-  let description = "null"
-  let memo = "null"
+  let description: string | null = null
+  let memo: string | null = null
 
   if (mode === PlaceType.m) {
     const { memo: itemMemo } = item as MeetingPlace
