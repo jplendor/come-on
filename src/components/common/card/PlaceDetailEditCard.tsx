@@ -15,6 +15,7 @@ import { styled } from "@mui/material/styles"
 import { Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
+import { useUpdateCoursePlaceMutation } from "features/course/courseSlice"
 import { useParams } from "react-router-dom"
 
 // TODO: 버튼 2개 작업
@@ -33,6 +34,7 @@ const CATEGORY_LIST = [
   { name: "ACCOMMODATION", value: "숙박" },
   { name: "CULTURE", value: "문화시설" },
   { name: "ACTIVITY", value: "액티비티" },
+  { name: "기타", value: "ETC" },
 ]
 
 const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
@@ -205,6 +207,9 @@ interface PlaceDetailEditCard {
   isSelected: boolean
   maxLen: number
   mode: PlaceType
+  // course일 경우에만 courseId가 필요함, 따라서 type.c일경우 무조건 들어옴
+  // eslint-disable-next-line react/require-default-props
+  courseId?: number
   setIsEditing: Dispatch<SetStateAction<boolean>>
 }
 
@@ -214,6 +219,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   item,
   maxLen,
   setIsEditing,
+  courseId,
 }) => {
   const { order: index, name: placeName, address } = item
 
@@ -245,7 +251,12 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
     setMemo(e.target.value)
   }
 
+  const handleDesChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setDescription(e.target.value)
+  }
+
   const [updateMeetingPlaceMutation] = useUpdateMeetingPlaceMutation()
+  const [updateCoursePlace] = useUpdateCoursePlaceMutation()
 
   const { meetingId } = useParams()
 
@@ -270,6 +281,10 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
           alert(`unexpected error: ${error}`)
         }
       }
+    }
+    if (mode === PlaceType.c) {
+      const myItem = item as CoursePlace
+      // 전역에 저장해둔 상태값을 받아온다.
     }
   }
 
@@ -331,7 +346,13 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
                     onChange={handleMemoChange}
                   />
                 )}
-                {description && <TextField size="small" value={description} />}
+                {description && (
+                  <TextField
+                    size="small"
+                    value={description}
+                    onChange={handleDesChange}
+                  />
+                )}
               </Box>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 {address}
@@ -348,5 +369,4 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
     </Grid>
   )
 }
-
 export default PlaceDetailEditCard

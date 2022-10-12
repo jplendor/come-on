@@ -22,6 +22,39 @@ export interface CourseId {
   courseId: number
 }
 
+export interface CourseUpdatePlaceProps {
+  courseId: number
+  toSave?: [
+    {
+      order: number
+      name: string
+      description: string
+      lng: number // 경도 x
+      lat: number // 위도 y
+      apiId: number
+      category: string
+      address: string
+    }
+  ]
+  toModify?: [
+    {
+      id: number
+      description: string
+      order: number
+      category: string
+    },
+    {
+      id: number
+      description: string
+      order: number
+      category: string
+    }
+  ]
+  toDelete?: {
+    id: number
+  }
+}
+
 export interface CourseDetail {
   courseId: number
   title: string
@@ -49,32 +82,19 @@ export interface CourseDetail {
     }
   ]
 }
+/**
+ * 코스 업데이트 및 삭제
+ */
 
-interface placeProps {
-  toSave: [
-    {
-      name: string
-      description: string
-      lat: number
-      lng: number
-      order: number
-      apiId: number
-      category: string
-    }
-  ]
-  toModify: [
-    {
-      id: number | undefined
-      description: string
-      order: number
-      category: string
-    }
-  ]
-  toDelete: [
-    {
-      id: number | undefined
-    }
-  ]
+enum CourseStatus {
+  COMPLETE = "COMPLETE",
+  WRITING = "WRITING",
+}
+
+interface UpdateCourse {
+  courseId: number
+  courseStatus: CourseStatus
+  message: string
 }
 
 /**
@@ -261,4 +281,8 @@ export interface CourseIdResponse extends ServerRes {
 
 export interface CourseDetailResponse extends ServerRes {
   data: CourseDetail
+}
+
+export interface CourseUpdateRes extends ServerRes {
+  data: UpdateCourse
 }

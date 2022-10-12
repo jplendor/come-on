@@ -2,6 +2,8 @@ import { api } from "features/api/apiSlice"
 import {
   CourseIdResponse,
   CourseDetailResponse,
+  CourseUpdateRes,
+  CourseUpdatePlaceProps,
 } from "types/API/course-service"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -96,6 +98,14 @@ export const coursePlaceSlice = createSlice({
         })
       }
     },
+    updateCoursePlace: (state, action: PayloadAction<CoursePlaceProps[]>) => {
+      for (let i = 0; i < action.payload.length; i += 1) {
+        state.coursePlaces.pop()
+      }
+      for (let i = 0; i < action.payload.length; i += 1) {
+        state.coursePlaces.push(action.payload[i])
+      }
+    },
     setCourseDetail: (state, action: PayloadAction<CourseDetailProps>): any => {
       state.courseDetails.title = action.payload.title
       state.courseDetails.description = action.payload.description
@@ -104,8 +114,12 @@ export const coursePlaceSlice = createSlice({
   },
 })
 
-export const { addCoursePlace, setCourseDetail, setSearchText } =
-  coursePlaceSlice.actions
+export const {
+  addCoursePlace,
+  setCourseDetail,
+  setSearchText,
+  updateCoursePlace,
+} = coursePlaceSlice.actions
 export default coursePlaceSlice.reducer
 
 export const courseApi = api.injectEndpoints({
@@ -181,6 +195,25 @@ export const courseApi = api.injectEndpoints({
         return response.data.courseId
       },
     }),
+    updateCoursePlace: builder.mutation<
+      CourseUpdateRes,
+      CourseUpdatePlaceProps
+    >({
+      query: ({ toModify, courseId, toDelete }) => ({
+        url: `/courses/${courseId}/course-places/batch`,
+        method: "POST",
+        body: { toModify, toDelete },
+      }),
+      transformResponse: (response: CourseUpdateRes) => {
+        console.log(
+          "courseId:%d , courseStatus:%s , message:%s",
+          response.data.courseId,
+          response.data.courseStatus,
+          response.data.message
+        )
+        return response
+      },
+    }),
   }),
 })
 
@@ -195,4 +228,5 @@ export const {
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
   useGetCourseDetailQuery,
+  useUpdateCoursePlaceMutation,
 } = courseApi

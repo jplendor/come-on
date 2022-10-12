@@ -208,6 +208,7 @@ interface ListDetailCardProps {
   maxLen: number
   mode: PlaceType
   // eslint-disable-next-line react/require-default-props
+  courseId?: number
 }
 
 const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
@@ -217,13 +218,14 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   item,
   maxLen,
   onRemove,
+  courseId,
 }) => {
   const [isEditing, setIsEditing] = useState(false)
 
   const { order: index, name: placeName, category, apiId, address, id } = item
   let description = "null"
   let memo = "null"
-
+  console.log(item)
   if (mode === PlaceType.m) {
     const { memo: itemMemo } = item as MeetingPlace
     memo = itemMemo
@@ -249,6 +251,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
         mode={mode}
         maxLen={maxLen}
         setIsEditing={setIsEditing}
+        courseId={courseId}
       />
     )
   }

@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { DragDropContext, Droppable } from "react-beautiful-dnd"
 import { styled } from "@mui/material/styles"
 import { Box, IconButton } from "@mui/material"
@@ -15,6 +15,7 @@ import { generateComponent } from "utils"
 import MapContainer from "components/common/course/MapContainer"
 import { Link } from "react-router-dom"
 import { RootState } from "store"
+import { updateCoursePlace } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 
@@ -46,6 +47,7 @@ interface CoursePlaceState {
   apiId: number
   category: string
   address: string
+  id: number
 }
 
 interface pageProps {
@@ -83,6 +85,8 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       setselectedNumber("")
     }
   }
+
+  const dispatch = useDispatch()
 
   const onRemove = (index: number): void => {
     const filteredData = courseData.filter((place) => place.order !== index)
@@ -137,6 +141,8 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       newPlace.push(newState)
     }
     setPlacedata(newPlace)
+
+    dispatch(updateCoursePlace(newPlace))
   }
   // order바꿔주기
 

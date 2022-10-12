@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState, SetStateAction, Dispatch, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { MydetailRes } from "types/API/user-service"
@@ -24,6 +25,7 @@ import PlaceDetailCard, {
 
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
+import LikeButton from "components/common/card/cardLayout/CardItemButton"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -131,9 +133,9 @@ api연동부분
   }
 
   const [selectedNumber, setselectedNumber] = useState<string>("")
-  const [addCourseDetail, { data, isSuccess, isLoading }] =
-    useAddCourseDetailMutation()
+  const [addCourseDetail] = useAddCourseDetailMutation()
   const [addCoursePlace] = useAddCoursePlaceMutation()
+  const [courseIdProps, setCourseIdProps] = useState<number>()
   const { data: userData, isLoading: isLoadingUser } =
     useMyDetailQuery() as MyDetailQueryProps
 
@@ -160,7 +162,7 @@ api연동부분
     const formData = new FormData()
     formData.append("title", courseDetail.title)
     formData.append("description", courseDetail.description)
-    const myfile = await dataUrlToFile(courseDetail.imgFile, "코스화면.png")
+    const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
 
     if (myfile !== undefined) {
       await myfile?.arrayBuffer().then((arrayBuffer) => {
@@ -169,7 +171,7 @@ api연동부분
           type: myfile.type,
         })
       })
-      await formData.append("imgFile", myfile)
+      formData.append("imgFile", myfile)
     }
 
     return formData
@@ -217,9 +219,26 @@ api연동부분
   }
 
   // 무한리렌더링 조심 부분
+  // 하트 컴포넌트
+  const [isLike, setIsLike] = useState<boolean>(true)
+  let likeCount = 999
 
+  const changeLikeCount = (): number => {
+    if (isLike) return likeCount + 1
+    return likeCount
+  }
+
+  const onClickLike = (): void => {
+    console.log(isLike)
+    setIsLike(!isLike)
+  }
+  useEffect(() => {
+    likeCount = changeLikeCount()
+  }, [isLike])
+  // 제출
   const submit = async (): Promise<boolean> => {
     const courseId = await submitCourseDetail()
+    setCourseIdProps(courseId)
     await submitPlaceList(courseId)
     setIsSubmit(true)
     return Promise.resolve(true)
@@ -247,7 +266,16 @@ api연동부분
               <Typography variant="h5" sx={FONT_TITLE}>
                 {courseDetail?.title}
               </Typography>
-              <Favorite color="secondary" sx={FAVORITE_BOX} />
+              {likeCount && (
+                <LikeButton
+                  isLike={isLike!}
+                  courseId={0}
+                  onClickHandler={() => {
+                    onClickLike()
+                  }}
+                  likeCount={changeLikeCount()}
+                />
+              )}
             </Box>
             <Box className="subTitle" sx={SUBTITLE}>
               <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
@@ -286,6 +314,7 @@ api연동부분
                   item.order ===
                   (selectedNumber === "" ? -10 : Number(selectedNumber))
                 }
+                courseId={courseIdProps}
                 onRemove={() => {
                   console.log("dd")
                 }}
