@@ -1,14 +1,13 @@
 import { styled } from "@mui/material/styles"
 import { Button, Typography } from "@mui/material"
-import React, { memo, useCallback, useEffect, useState } from "react"
+import React, { memo, useCallback } from "react"
 import { FavoriteRounded, FavoriteBorderRounded } from "@mui/icons-material"
-
-import { useClickLikeCourseMutation } from "features/course/courseSlice"
 
 interface LikeButtonProps {
   isLike: boolean
   courseId: number
   likeCount: number
+  // eslint-disable-next-line react/require-default-props
   onClickHandler: (courseId: number) => void
 }
 
@@ -103,12 +102,9 @@ const LikeButton = memo(
     courseId,
     onClickHandler,
   }: LikeButtonProps): JSX.Element => {
-    const [click] = useClickLikeCourseMutation()
-
     const onClick = useCallback(() => {
-      click(courseId)
       onClickHandler(courseId)
-    }, [click, courseId, onClickHandler])
+    }, [courseId, onClickHandler])
 
     return isLike ? (
       <ClickedButton count={likeCount} onClick={onClick} />

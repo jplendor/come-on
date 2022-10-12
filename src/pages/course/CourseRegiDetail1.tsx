@@ -5,8 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react"
-import { styled } from "@mui/material/styles"
-import { Box, Grid } from "@mui/material"
+import { Grid } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import TextInput from "components/common/input/TextInput"
@@ -17,9 +16,6 @@ import { CourseData } from "types/API/course-service"
 
 import { useDispatch } from "react-redux"
 
-const FORM_STYLE = {
-  padding: "0 10px",
-}
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>

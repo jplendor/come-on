@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react"
 import { useSelector } from "react-redux"
-import { Draggable, DragDropContext, Droppable } from "react-beautiful-dnd"
+import { DragDropContext, Droppable } from "react-beautiful-dnd"
 import { styled } from "@mui/material/styles"
 import { Box, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
@@ -51,10 +51,6 @@ interface CoursePlaceState {
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
-}
-
-interface MyData {
-  placeLists: CoursePlaceState[]
 }
 
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {

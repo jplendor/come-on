@@ -24,7 +24,6 @@ import PlaceDetailCard, {
 
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
-import { CourseId, CourseIdResponse } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",

@@ -10,8 +10,6 @@ import {
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
-import { Draggable } from "react-beautiful-dnd"
-import { calculateProvidedBy } from "@reduxjs/toolkit/dist/query/endpointDefinitions"
 import PlaceDetailEditCard from "./PlaceDetailEditCard"
 
 // TODO: 버튼 2개 작업
