@@ -85,12 +85,6 @@ const TITLE = {
   justifyContent: "space-between",
 }
 
-const FAVORITE_BOX = {
-  width: "24px",
-  height: "24px",
-  margin: "auto 10px",
-}
-
 const DES_STYLE = {
   fontSize: "14px",
   lineHeight: "140%",

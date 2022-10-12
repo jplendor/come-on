@@ -225,7 +225,6 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   const { order: index, name: placeName, category, apiId, address, id } = item
   let description = "null"
   let memo = "null"
-  console.log(item)
   if (mode === PlaceType.m) {
     const { memo: itemMemo } = item as MeetingPlace
     memo = itemMemo

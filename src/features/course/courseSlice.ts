@@ -106,6 +106,14 @@ export const coursePlaceSlice = createSlice({
         state.coursePlaces.push(action.payload[i])
       }
     },
+    editCoursePlaceDetail: (state, action: PayloadAction<CoursePlaceProps>) => {
+      const result = state.coursePlaces.find(
+        (place) => place.name === action.payload.name
+      )
+      const index = state.coursePlaces.indexOf(result!)
+      state.coursePlaces[index].description = action.payload.description
+      state.coursePlaces[index].category = action.payload.category
+    },
     setCourseDetail: (state, action: PayloadAction<CourseDetailProps>): any => {
       state.courseDetails.title = action.payload.title
       state.courseDetails.description = action.payload.description
@@ -119,6 +127,7 @@ export const {
   setCourseDetail,
   setSearchText,
   updateCoursePlace,
+  editCoursePlaceDetail,
 } = coursePlaceSlice.actions
 export default coursePlaceSlice.reducer
 

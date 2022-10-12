@@ -15,8 +15,12 @@ import { styled } from "@mui/material/styles"
 import { Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
-import { useUpdateCoursePlaceMutation } from "features/course/courseSlice"
+import {
+  useUpdateCoursePlaceMutation,
+  editCoursePlaceDetail,
+} from "features/course/courseSlice"
 import { useParams } from "react-router-dom"
+import { useDispatch } from "react-redux"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -259,7 +263,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   const [updateCoursePlace] = useUpdateCoursePlaceMutation()
 
   const { meetingId } = useParams()
-
+  const dispatch = useDispatch()
   const handleClickClose = async (): Promise<void> => {
     if (mode === PlaceType.m) {
       try {
@@ -284,8 +288,11 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
     }
     if (mode === PlaceType.c) {
       const myItem = item as CoursePlace
-      // 전역에 저장해둔 상태값을 받아온다.
+      const newItem = { ...myItem, description, category } as CoursePlace
+      // 수정한 값을 전역에 저장
+      dispatch(editCoursePlaceDetail(newItem))
     }
+    setIsEditing(false)
   }
 
   return (
