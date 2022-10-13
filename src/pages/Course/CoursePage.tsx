@@ -159,7 +159,7 @@ const CoursePage = (): JSX.Element => {
             <Typography variant="h5" sx={FONT_TITLE}>
               {resultCourseDetail?.data.title}
             </Typography>
-            <LikeButton isLike={false} courseId={Number(id)} />
+            {/* <LikeButton isLike={false} courseId={Number(id)} /> */}
           </Box>
           <Box className="subTitle" sx={SUBTITLE}>
             <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
