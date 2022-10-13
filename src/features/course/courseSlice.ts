@@ -108,9 +108,11 @@ export const coursePlaceSlice = createSlice({
     },
     editCoursePlaceDetail: (state, action: PayloadAction<CoursePlaceProps>) => {
       const result = state.coursePlaces.find(
-        (place) => place.name === action.payload.name
+        (place) => place.order === action.payload.order
       )
       const index = state.coursePlaces.indexOf(result!)
+
+      console.log(index)
       state.coursePlaces[index].description = action.payload.description
       state.coursePlaces[index].category = action.payload.category
     },

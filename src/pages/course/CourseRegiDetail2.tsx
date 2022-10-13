@@ -169,7 +169,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
           <Droppable droppableId="placeData">
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
-                {generateComponent(placeData, (item, key) => (
+                {generateComponent(placeList, (item, key) => (
                   <PlaceDetailDraggableCard
                     item={{ ...item, id: item.order + 1 }}
                     key={key}

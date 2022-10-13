@@ -12,7 +12,7 @@ import {
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { Close } from "@mui/icons-material"
+import { Category, Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import {
@@ -232,9 +232,9 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   const [description, setDescription] = useState<string>()
 
   useEffect(() => {
-    setCategory(
-      CATEGORY_LIST.filter((it) => it.value === item.category)[0].name
-    )
+    setCategory(CATEGORY_LIST.filter((it) => it.name === item.category)[0].name)
+
+    // 이미 category_list의 key랑 같을경우 오류가 남
 
     if (mode === PlaceType.m) {
       const { memo: itemMemo } = item as MeetingPlace
@@ -290,6 +290,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
       const myItem = item as CoursePlace
       const newItem = { ...myItem, description, category } as CoursePlace
       // 수정한 값을 전역에 저장
+      console.log(category)
       dispatch(editCoursePlaceDetail(newItem))
     }
     setIsEditing(false)
@@ -336,7 +337,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
                     value={category}
                     onChange={handleCategoryChange}
                   >
-                    <MenuItem value="">카테고리</MenuItem>
+                    <MenuItem value={category}>카테고리</MenuItem>
                     {generateComponent(CATEGORY_LIST, (data, key) => (
                       <MenuItem value={data.name} key={key}>
                         {data.value}

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   Button,
@@ -14,6 +14,9 @@ import TextInput from "components/common/input/TextInput"
 import { PlaceType } from "components/common/card/PlaceDetailDraggableCard "
 import { Place } from "components/common/card/SearchCard"
 import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
+import { useDispatch } from "react-redux"
+import { addCoursePlace } from "features/course/courseSlice"
+import { Description } from "@mui/icons-material"
 
 interface PlaceAddModalProps {
   open: boolean
@@ -41,7 +44,6 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
 
   const [category, setCategory] = useState("")
   const [memo, setMemo] = useState("")
-
   const handleCategoryChange = (e: SelectChangeEvent): void => {
     setCategory(e.target.value)
   }
@@ -90,6 +92,18 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
     }
   }
 
+  const dispatch = useDispatch()
+
+  const onClickAddCoursePlace = (): void => {
+    const myPlace = {
+      ...newPlace,
+      description: memo,
+      category,
+    }
+    dispatch(addCoursePlace(myPlace))
+    navigate("/course", { state: 2 })
+  }
+
   const makeContent = (): JSX.Element => {
     return (
       <Dialog open={open} onClose={handleClose}>
@@ -116,9 +130,34 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
     )
   }
 
-  const content = makeContent()
+  const makeCourseContent = (): JSX.Element => {
+    return (
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>코스 장소</DialogTitle>
+        <Typography variant="h5">{newPlace.name}</Typography>
+        <Typography>{newPlace.address}</Typography>
+        <Select value={category} onChange={handleCategoryChange} displayEmpty>
+          <MenuItem value="">카테고리</MenuItem>
+          {generateComponent(CATEGORY_LIST, (data, key) => (
+            <MenuItem value={data.name} key={key}>
+              {data.value}
+            </MenuItem>
+          ))}
+        </Select>
+        <TextInput
+          title="코스메모"
+          name="memo"
+          value={memo}
+          placeholder="코스 장소에 대한 메모를 남겨보세요."
+          handleChange={handleMemoChange}
+        />
+        <Button onClick={onClickAddCoursePlace}>추가하기</Button>
+      </Dialog>
+    )
+  }
+  const content = mode === PlaceType.m ? makeContent() : makeCourseContent()
 
-  return <div>{content}</div>
+  return content && <div>{content}</div>
 }
 
 export default PlaceAddModal

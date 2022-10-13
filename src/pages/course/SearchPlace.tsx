@@ -228,10 +228,19 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
 
       <ListContainer>
         {searchedData?.length !== 0 &&
-          generateComponent(searchedData, (item, key) => (
+          // generateComponent(searchedData, (item, key) => (
+          //   <SearchCard
+          //     item={item}
+          //     key={key}
+          //     onClickFocus={onClickFocus}
+          //     selectedNumber={selectedNumber}
+          //     mode={mode}
+          //   />
+          // ))
+          searchedData.map((item) => (
             <SearchCard
               item={item}
-              key={key}
+              key={item.id}
               onClickFocus={onClickFocus}
               selectedNumber={selectedNumber}
               mode={mode}

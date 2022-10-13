@@ -19,7 +19,6 @@ import {
   useGetCourseDetailQuery,
 } from "features/course/courseSlice"
 import PlaceDetailCard from "components/common/card/PlaceDetailCard"
-import { CourseDetailResponse } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",

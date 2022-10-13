@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { Box, Grid, GridProps, IconButton, Typography } from "@mui/material"
@@ -95,19 +95,16 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   onClickFocus,
   selectedNumber,
   item,
-
   mode,
 }) => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const [open, setOpen] = useState<boolean>(false)
 
-  const [open, setOpen] = useState(false)
-
-  const openModal = (): void => {
-    setOpen(true)
-  }
+  // const openModal = (): void => {
+  //   setOpen(true)
+  // }
 
   const closeModal = (): void => {
+    console.log("close")
     setOpen(false)
   }
 
@@ -141,16 +138,16 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
 
   const onClickAddCourse = (): void => {
     // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
-    const result: boolean = window.confirm(
-      `${obj.placeName}을 코스로 추가하시겠습니까?`
-    )
+    // const result: boolean = window.confirm(
+    //   `${obj.placeName}을 코스로 추가하시겠습니까?`
+    // )
+    setOpen(true)
+    console.log("open", open)
+    // console.log(result, "안녕")
+    // console.log(typeof result)
+    // if (result === true) {
 
-    if (result === true) {
-      alert(`${obj.placeName}이 코스로 추가되었습니다.`)
-      const newPlace = makeNewPlace()
-      dispatch(addCoursePlace(newPlace))
-      navigate("/course", { state: 2 })
-    }
+    // }
   }
 
   const onClickAddMeeting = (): void => {
@@ -160,9 +157,13 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
     )
 
     if (result === true) {
-      openModal()
+      // openModal()
     }
   }
+
+  useEffect(() => {
+    console.log(open)
+  }, [open])
 
   return (
     <>
@@ -206,8 +207,9 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
           </Grid>
         </ThemeGrid>
       </Grid>
+      {console.log("open2", open)}
       <PlaceAddModal
-        open={open}
+        open={open ?? false}
         onClose={closeModal}
         newPlace={makeNewPlace()}
         mode={mode}
