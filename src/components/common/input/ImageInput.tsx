@@ -11,6 +11,7 @@ interface ImageInputProps {
 
   message: string
   previewImg: string | null
+
   handleChangeImg: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -19,6 +20,7 @@ const ImageInput = ({
   alt,
   message,
   previewImg,
+
   handleChangeImg,
 }: ImageInputProps): JSX.Element => {
   const theme = useTheme()

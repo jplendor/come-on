@@ -6,11 +6,12 @@ interface TextInputProps {
   title: string
   name: string
   value: string
-  placeholder: string
+  placeholder?: string
   multiline?: boolean
   rows?: number
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   maxLength?: number
+  defaultVal?: string
 }
 
 const TextInput = ({
@@ -22,6 +23,7 @@ const TextInput = ({
   rows,
   handleChange,
   maxLength,
+  defaultVal,
 }: TextInputProps): JSX.Element => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const inputValue = e.target.value
@@ -34,6 +36,28 @@ const TextInput = ({
     handleChange(e)
   }
 
+  const item =
+    defaultVal !== "" ? (
+      <TextField
+        multiline={multiline}
+        sx={{ width: "100%" }}
+        name={name}
+        rows={rows}
+        defaultValue={defaultVal}
+        onChange={onChange}
+      />
+    ) : (
+      <TextField
+        multiline={multiline}
+        sx={{ width: "100%" }}
+        name={name}
+        value={value}
+        rows={rows}
+        placeholder={placeholder}
+        onChange={onChange}
+      />
+    )
+
   return (
     <InputWrapper
       title={title}
@@ -42,23 +66,15 @@ const TextInput = ({
           {value.length}/{maxLength}
         </div>
       }
-      inputItem={
-        <TextField
-          multiline={multiline}
-          sx={{ width: "100%" }}
-          name={name}
-          value={value}
-          rows={rows}
-          placeholder={placeholder}
-          onChange={onChange}
-        />
-      }
+      inputItem={item}
     />
   )
 }
 TextInput.defaultProps = {
   multiline: false,
   rows: 1,
+  placeholder: "",
   maxLength: 30,
+  defaultVal: "",
 }
 export default TextInput

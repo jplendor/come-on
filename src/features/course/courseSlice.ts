@@ -4,6 +4,8 @@ import {
   CourseDetailResponse,
   CourseUpdateRes,
   CourseUpdatePlaceProps,
+  ServerRes,
+  UpdateCourseDetailQProps,
 } from "types/API/course-service"
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -16,6 +18,7 @@ import type {
   OptionalQueryString,
   LikeCourseRes,
 } from "types/API/course-service"
+import { Params } from "react-router-dom"
 
 interface CoursePlaceState {
   courseDetails: {
@@ -51,7 +54,7 @@ interface CoursePlaceProps {
   address: string
 }
 
-interface CourseDetailProps {
+export interface CourseDetailProps {
   title: string
   description: string
   imgFile: string
@@ -179,7 +182,7 @@ export const courseApi = api.injectEndpoints({
       invalidatesTags: ["Course"],
     }),
     getCourseDetail: builder.query<CourseDetailResponse, any>({
-      query: ({ id }) => ({
+      query: (id) => ({
         url: `/courses/${id}`,
         method: "GET",
       }),
@@ -225,6 +228,16 @@ export const courseApi = api.injectEndpoints({
         return response
       },
     }),
+    updateCourseDetail: builder.mutation<ServerRes, UpdateCourseDetailQProps>({
+      query: ({ data, id }) => ({
+        url: `/courses/${id}`,
+        method: "POST",
+        body: data,
+        hearders: {
+          "Content-type": "multipart/form-data; charset=UTF-8",
+        },
+      }),
+    }),
   }),
 })
 
@@ -240,4 +253,5 @@ export const {
   useAddCoursePlaceMutation,
   useGetCourseDetailQuery,
   useUpdateCoursePlaceMutation,
+  useUpdateCourseDetailMutation,
 } = courseApi

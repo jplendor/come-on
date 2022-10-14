@@ -112,7 +112,7 @@ interface pageProps {
 }
 
 // 코스등록 전 미리보기 페이지
-const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
+const CourseEditDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
   const [winReady, setWinReady] = useState(false)
   useEffect(() => {
     setWinReady(true)
@@ -338,4 +338,4 @@ api연동부분
     )
   )
 }
-export default CourseRegiDetail3
+export default CourseEditDetail3

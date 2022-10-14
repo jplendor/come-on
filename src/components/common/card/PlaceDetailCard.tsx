@@ -163,7 +163,7 @@ const ICON = {
   color: "#BDBDBD",
 }
 
-const ButtonGroup = {
+const BUTTON_GROUP = {
   display: "flex",
   flexDirection: "column",
   alignItems: "end",
@@ -317,7 +317,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={2} sx={ButtonGroup}>
+          <Grid item xs={2} sx={BUTTON_GROUP}>
             <IconButton sx={ICON} onClick={handleClickClose}>
               <Close />
             </IconButton>

@@ -112,13 +112,13 @@ const CoursePage = (): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
+  console.log(id)
   const {
     data: resultCourseDetail,
     isSuccess,
     isLoading,
-  } = useGetCourseDetailQuery({
-    id,
-  })
+    isFetching,
+  } = useGetCourseDetailQuery(id)
   const [clickLikeCourse] = useClickLikeCourseMutation()
   const loadData = resultCourseDetail?.data?.coursePlaces
   const imgUrl = resultCourseDetail?.data?.imageUrl
@@ -159,8 +159,11 @@ const CoursePage = (): JSX.Element => {
     }
   }, [isSuccess, imgUrl])
 
-  return (
-    { resultCourseDetail } && (
+  let content
+  if (isFetching) {
+    console.log("loading...")
+  } else if (isSuccess) {
+    content = (
       <>
         <ImgContainer>
           <img src={imgSrc} width="100%" height="100%" alt="img" />
@@ -238,7 +241,8 @@ const CoursePage = (): JSX.Element => {
         </MainContainer>
       </>
     )
-  )
+  }
+  return <div>{content}</div>
 }
 
 export default CoursePage

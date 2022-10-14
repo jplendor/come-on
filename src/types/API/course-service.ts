@@ -286,3 +286,8 @@ export interface CourseDetailResponse extends ServerRes {
 export interface CourseUpdateRes extends ServerRes {
   data: UpdateCourse
 }
+
+export interface UpdateCourseDetailQProps {
+  id: number
+  data: FormData
+}
