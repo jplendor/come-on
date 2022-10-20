@@ -1,7 +1,7 @@
-import React, { useEffect } from "react"
-import { useLocation, useParams } from "react-router-dom"
+import React, { useState } from "react"
+import { useLocation, useParams, useNavigate } from "react-router-dom"
 
-import { Tab, Box, IconButton } from "@mui/material"
+import { Tab, Box } from "@mui/material"
 import { KeyboardArrowLeft, Close } from "@mui/icons-material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 
@@ -58,13 +58,10 @@ interface PageState {
   state: number
 }
 
-const CourseRegiLayout = (): JSX.Element => {
+const CourseEditLayout = (): JSX.Element => {
   const { id } = useParams<string>()
-  const [page, setPage] = React.useState(1)
-
-  const onClickPrev = (): void => {
-    if (page !== 1) setPage(page - 1)
-  }
+  const [page, setPage] = useState<number>(1)
+  const navigate = useNavigate()
 
   const handleChange = (
     event: React.SyntheticEvent,
@@ -72,18 +69,20 @@ const CourseRegiLayout = (): JSX.Element => {
   ): void => {
     setPage(newValue)
   }
+
   const { state: pageState } = useLocation() as PageState
 
-  useEffect(() => {
-    if (pageState === 2) {
-      setPage(2)
+  const onClickPrev = (): void => {
+    if (pageState < 0) {
+      navigate(`/course/${id}/update`, { state: 1 })
     }
-  }, [pageState])
+    navigate(`/course/${id}/update`, { state: pageState - 1 })
+  }
 
   return (
     { id } && (
       <Box sx={{ width: "100%", typography: "body1" }}>
-        <TabContext value={String(page)}>
+        <TabContext value={pageState > 1 ? String(pageState) : String(page)}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList
               onChange={handleChange}
@@ -103,9 +102,10 @@ const CourseRegiLayout = (): JSX.Element => {
                 value="1"
                 sx={TABARROW}
               />
-              /
               <Tab
-                label={`코스등록(${page}/3)`}
+                label={`코스등록(${
+                  pageState !== null ? String(pageState) : String(page)
+                }/3)`}
                 value="2"
                 sx={MIDTITLE}
                 disabled
@@ -122,19 +122,26 @@ const CourseRegiLayout = (): JSX.Element => {
               />
             </TabList>
           </Box>
-          <TabPanel value="1">
-            <CourseEditDetail1 id={Number(id)} page={1} setPage={setPage} />
-          </TabPanel>
-          <TabPanel value="2">
-            <CourseEditDetail2 id={Number(id)} page={2} setPage={setPage} />
-          </TabPanel>
-          <TabPanel value="3">
-            <CourseEditDetail3 page={3} setPage={setPage} />
-          </TabPanel>
+          <Box>
+            <TabPanel value="1">
+              <CourseEditDetail1 id={Number(id)} page={1} setPage={setPage} />
+            </TabPanel>
+            <TabPanel value="2">
+              <CourseEditDetail2 id={Number(id)} page={2} setPage={setPage} />
+            </TabPanel>
+            <TabPanel value="3">
+              <CourseEditDetail3 page={3} setPage={setPage} />
+            </TabPanel>
+          </Box>
+          {/* 
+          <CourseNavBar
+            page={pageState != null ? pageState : page}
+            setPage={setPage}
+            id={id!} /> */}
         </TabContext>
       </Box>
     )
   )
 }
 
-export default CourseRegiLayout
+export default CourseEditLayout

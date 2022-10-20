@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
@@ -7,7 +9,7 @@ import { Add as AddIcon } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { addCoursePlace } from "features/course/courseSlice"
 import PlaceAddModal from "components/meeting/PlaceAddModal"
-import { SearchCardProp } from "types/API/course-service"
+import { CoursePlaceProps, SearchCardProp } from "types/API/course-service"
 
 const SELECTED_CARD = {
   border: "1px solid #1951B2",
@@ -69,6 +71,7 @@ const URL_ICON = {
 enum PlaceType {
   m = "meeting",
   c = "course",
+  e = "editing",
 }
 
 interface ListDetailCardProps {
@@ -76,6 +79,9 @@ interface ListDetailCardProps {
   onClickFocus: (event: React.MouseEvent<HTMLDivElement>) => void
   selectedNumber: string
   mode: PlaceType
+  editing?: boolean
+  id?: number
+  itemsLen?: number
 }
 
 export interface Place {
@@ -96,13 +102,12 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   selectedNumber,
   item,
   mode,
+  editing,
+  id,
+  itemsLen,
 }) => {
   const [open, setOpen] = useState<boolean>(false)
-
-  // const openModal = (): void => {
-  //   setOpen(true)
-  // }
-
+  console.log(itemsLen)
   const closeModal = (): void => {
     console.log("close")
     setOpen(false)
@@ -122,7 +127,6 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
 
   const makeNewPlace = (): Place => {
     const newPlace = {
-      id: 0,
       order: obj.index,
       name: obj.placeName,
       description: "값을 입력해 주세요",
@@ -131,6 +135,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
       apiId: obj.kakaoPlaceId,
       category: "ETC",
       address: obj.address,
+      id: obj.index,
     }
 
     return newPlace
@@ -138,11 +143,12 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
 
   const onClickAddCourse = (): void => {
     // 클릭시 해당 컴포넌트 정보가 상태에 저장됨
-    // const result: boolean = window.confirm(
-    //   `${obj.placeName}을 코스로 추가하시겠습니까?`
-    // )
-    setOpen(true)
-    console.log("open", open)
+    const result: boolean = window.confirm(
+      `${obj.placeName}을 코스로 추가하시겠습니까?`
+    )
+
+    if (result === true) setOpen(true)
+
     // console.log(result, "안녕")
     // console.log(typeof result)
     // if (result === true) {
@@ -157,7 +163,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
     )
 
     if (result === true) {
-      // openModal()
+      setOpen(true)
     }
   }
 
@@ -186,7 +192,9 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
                 <IconButton
                   type="button"
                   onClick={
-                    mode === PlaceType.c ? onClickAddCourse : onClickAddMeeting
+                    editing === true || mode === PlaceType.c
+                      ? onClickAddCourse
+                      : onClickAddMeeting
                   }
                 >
                   <AddIcon sx={URL_ICON} color="secondary" fontSize="large" />
@@ -209,13 +217,19 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
       </Grid>
       {console.log("open2", open)}
       <PlaceAddModal
-        open={open ?? false}
+        open={open}
         onClose={closeModal}
         newPlace={makeNewPlace()}
-        mode={mode}
+        mode={editing === true ? PlaceType.e : mode}
+        id={id}
       />
     </>
   )
 }
 
+SearchCard.defaultProps = {
+  editing: false,
+  id: undefined,
+  itemsLen: 0,
+}
 export default SearchCard

@@ -31,7 +31,6 @@ import { AppDispatch, RootState } from "store"
 import { Details } from "@mui/icons-material"
 import { useSetState } from "rooks"
 import { setOriginalNode } from "typescript"
-import { useNavigate } from "react-router-dom"
 
 interface pageProps {
   page: number
@@ -44,7 +43,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   const [image, setImage] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
-  const navigate = useNavigate()
+
   // rtkq에서 데이터 불러오기
   // store에 데이터 저장하기
 
@@ -61,8 +60,8 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   }, [dispatch, id])
 
   useEffect(() => {
-    if (page === 1) dis()
-  }, [dis, page])
+    dis()
+  }, [dis])
 
   const c = useSelector((state: RootState) => {
     return state.course.courseDetails
@@ -127,6 +126,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
 
     newDetail.append("title", title)
     newDetail.append("description", description)
+    console.log(imageFile)
 
     if (imageFile) {
       await encodeFileToBase64(imageFile)
@@ -137,10 +137,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
       dispatch(setCourseDetail({ title, description, imgFile: image }))
     }
     // 이미지가 바뀐 경우 base64로 바꿔서 전송
-    console.log(page)
-
-    navigate(`/course/${id}/update`, { state: 2 })
-    setPage(2)
+    setPage(page + 1)
   }
 
   useEffect(() => {

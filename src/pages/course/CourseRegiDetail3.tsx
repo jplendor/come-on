@@ -19,10 +19,8 @@ import {
 
 import { Buffer } from "buffer"
 import { AccountCircleOutlined, DateRange, Favorite } from "@mui/icons-material"
-import PlaceDetailCard, {
-  PlaceType,
-} from "components/common/card/PlaceDetailCard"
-
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { CoursePlaceProps, PlaceType } from "types/API/course-service"
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
@@ -136,7 +134,7 @@ api연동부분
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })
-  const placeList = useSelector((state: RootState) => {
+  const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
   const [isSubmit, setIsSubmit] = useState<boolean>(false)
@@ -205,7 +203,7 @@ api연동부분
     // map으로 toSave배열에 코스 추가하기
     // toSave 전처리
     postData.toSave.pop() // 첫번쨰 데이터 삭제
-    courseList.map((place) => postData.toSave.push(place))
+    courseList.map((place: CoursePlaceProps) => postData.toSave.push(place))
 
     await addCoursePlace({ courseId, postData })
 

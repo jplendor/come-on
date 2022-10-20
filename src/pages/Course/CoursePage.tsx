@@ -172,7 +172,7 @@ const CoursePage = (): JSX.Element => {
           <TitleContainer>
             <Box className="Title" sx={TITLE}>
               <Typography variant="h5" sx={FONT_TITLE}>
-                {resultCourseDetail?.data.title}
+                {resultCourseDetail?.data?.title}
               </Typography>
               {resultCourseDetail && (
                 <LikeButton
@@ -189,7 +189,7 @@ const CoursePage = (): JSX.Element => {
               <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
                 <Box sx={ICON_BOX}>
                   <AccountCircleOutlined sx={ICON_STYLE} />
-                  {resultCourseDetail?.data.writer.nickname}
+                  {resultCourseDetail?.data?.writer.nickname}
                   <Typography
                     variant="subtitle1"
                     sx={FONT_SUBTITLE}
@@ -198,12 +198,12 @@ const CoursePage = (): JSX.Element => {
                     |
                   </Typography>
                   <DateRange sx={ICON_STYLE} />
-                  {resultCourseDetail?.data.updatedDate}
+                  {resultCourseDetail?.data?.updatedDate}
                 </Box>
               </Typography>
             </Box>
           </TitleContainer>
-          <Box sx={DES_STYLE}>{resultCourseDetail?.data.description}</Box>
+          <Box sx={DES_STYLE}>{resultCourseDetail?.data?.description}</Box>
           {loadData !== null && loadData !== undefined && (
             <MapContainer
               selectedNumber={String(selectedNumber)}

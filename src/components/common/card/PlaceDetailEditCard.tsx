@@ -12,6 +12,7 @@ import {
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
+import { PlaceType } from "types/API/course-service"
 import { Category, Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
@@ -192,11 +193,6 @@ interface Place {
   apiId: number
   category: string
   address: string
-}
-
-export enum PlaceType {
-  m = "meeting",
-  c = "course",
 }
 
 interface CoursePlace extends Place {

@@ -1,5 +1,7 @@
 // Course-Service API Docs 참고
 
+import { Server } from "http"
+
 export interface SearchCardProp {
   index: number // 카드의 인덱스 넘버 - order
   address_name: string // 주소
@@ -18,13 +20,68 @@ export interface CourseData {
   imgFile: string
 }
 
+export interface StateCourseData {
+  courseDetails: CourseData
+  done: boolean
+}
+
 export interface CourseId {
   courseId: number
 }
 
-export interface CourseUpdatePlaceProps {
-  courseId: number
-  toSave?: [
+export enum PlaceType {
+  m = "meeting",
+  c = "course",
+  e = "editMode",
+}
+
+export interface CoursePlaceProps {
+  id: number
+  name: string
+  description: string
+  lat: number
+  lng: number
+  address: string
+  order: number
+  apiId: number
+  category: string
+}
+
+export interface GetCoursePlacesRes {
+  count: number
+  contents: CoursePlaceProps[]
+}
+
+export interface coursePlaceToModify {
+  id: number
+  description: string
+  order: number
+  category: string
+}
+
+export interface coursePlaceToDelete {
+  id: number
+}
+
+export interface coursePlacesToSaveProps {
+  name: string
+  description: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  address: string
+  order: number
+  apiId: number
+  category: string
+}
+
+export interface CoursePlaceState {
+  done: boolean
+  courseDetails: {
+    title: string
+    description: string
+    imgFile: string
+  }
+  coursePlaces: [
     {
       order: number
       name: string
@@ -33,7 +90,30 @@ export interface CourseUpdatePlaceProps {
       lat: number // 위도 y
       apiId: number
       category: string
+      id: number
       address: string
+    }
+  ]
+  searchText: string | undefined
+  updatePlaces: {
+    toSave: coursePlacesToSaveProps[]
+    toModify?: coursePlaceToModify[]
+    toDelete?: coursePlaceToDelete[]
+  }
+}
+
+export interface CourseUpdatePlaceProps {
+  courseId: number
+  toSave?: [
+    {
+      name: string
+      description: string
+      lng: number // 경도 x
+      lat: number // 위도 y
+      address: string
+      order: number
+      apiId: number
+      category: string
     }
   ]
   toModify?: [
@@ -50,9 +130,7 @@ export interface CourseUpdatePlaceProps {
       category: string
     }
   ]
-  toDelete?: {
-    id: number
-  }
+  toDelete?: coursePlaceToDelete[]
 }
 
 export interface CourseDetail {
@@ -232,6 +310,7 @@ export interface ServerRes {
     | AddCourse
     | LikeCourse
     | CourseId
+    | undefined
 }
 
 // GET /courses/my & GET /courses/like
@@ -290,4 +369,9 @@ export interface CourseUpdateRes extends ServerRes {
 export interface UpdateCourseDetailQProps {
   id: number
   data: FormData
+}
+
+export interface CoursePlacesRes extends Server {
+  id: number
+  data: GetCoursePlacesRes
 }

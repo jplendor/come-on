@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useRef, useCallback } from "react"
 
 import ReactDOMServer from "react-dom/server"
@@ -6,9 +7,10 @@ import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { generateComponent } from "utils"
 import SearchCard from "components/common/card/SearchCard"
-import { SearchCardProp } from "types/API/course-service"
+import { CoursePlaceProps, SearchCardProp } from "types/API/course-service"
 import useGeolocation from "hooks/geolocation/useGeolocation"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
+import { useLocation } from "react-router-dom"
 
 const { kakao } = window
 const DELAY = 800
@@ -49,9 +51,13 @@ export interface MapProps {
 enum PlaceType {
   m = "meeting",
   c = "course",
+  e = "editMode",
 }
 interface SearchPlaceProps {
   mode: PlaceType
+  editMode?: boolean
+  id?: number | undefined
+  itemsLen?: number
 }
 
 const MyMarker = ({
@@ -72,7 +78,12 @@ const MyMarker = ({
   )
 }
 
-const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
+const SearchPlace = ({
+  mode,
+  editMode,
+  id,
+  itemsLen,
+}: SearchPlaceProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
@@ -244,6 +255,8 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
               onClickFocus={onClickFocus}
               selectedNumber={selectedNumber}
               mode={mode}
+              editing={editMode}
+              id={id}
             />
           ))}
       </ListContainer>
@@ -259,4 +272,9 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
   )
 }
 
+SearchPlace.defaultProps = {
+  editMode: false,
+  id: undefined,
+  itemsLen: 0,
+}
 export default SearchPlace

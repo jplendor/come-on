@@ -10,6 +10,7 @@ import {
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
+import { PlaceType } from "types/API/course-service"
 import PlaceDetailEditCard from "./PlaceDetailEditCard"
 
 // TODO: 버튼 2개 작업
@@ -186,11 +187,6 @@ interface Place {
   apiId: number
   category: string
   address: string
-}
-
-export enum PlaceType {
-  m = "meeting",
-  c = "course",
 }
 
 interface CoursePlace extends Place {

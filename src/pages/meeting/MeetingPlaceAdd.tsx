@@ -1,5 +1,5 @@
 import React from "react"
-import { PlaceType } from "components/common/card/PlaceDetailDraggableCard "
+import { PlaceType } from "types/API/course-service"
 import SearchPlace from "pages/course/SearchPlace"
 
 const MeetingPlaceAdd = (): JSX.Element => {

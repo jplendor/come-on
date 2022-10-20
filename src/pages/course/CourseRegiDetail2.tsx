@@ -18,6 +18,7 @@ import { RootState } from "store"
 import { updateCoursePlace } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
+import { CoursePlaceProps } from "types/API/course-service"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -58,7 +59,7 @@ interface pageProps {
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [isValid, setIsValid] = useState(false)
-  const placeList = useSelector((state: RootState) => {
+  const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
   const [placeData, setPlacedata] = useState<CoursePlaceState[]>(placeList)

@@ -18,9 +18,8 @@ import {
   useDeleteMeetingPlaceMutation,
   useGetMeetingQuery,
 } from "features/meeting/meetingSlice"
-import PlaceDetailCard, {
-  PlaceType,
-} from "components/common/card/PlaceDetailDraggableCard "
+import PlaceDetailCard from "components/common/card/PlaceDetailDraggableCard "
+import { PlaceType } from "types/API/course-service"
 import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"

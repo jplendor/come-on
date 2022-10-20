@@ -13,11 +13,12 @@ import { Box, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import MapContainer from "components/common/course/MapContainer"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { RootState } from "store"
 import { updateCoursePlace } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
+import { CoursePlaceProps } from "types/API/course-service"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -52,14 +53,14 @@ interface CoursePlaceState {
 
 interface pageProps {
   page: number
-  id: number
   setPage: Dispatch<SetStateAction<number>>
+  id: number
 }
 
-const CourseEditDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
+const CourseEditDetail2 = ({ id, setPage, page }: pageProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [isValid, setIsValid] = useState(false)
-  const placeList = useSelector((state: RootState) => {
+  const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
   const [placeData, setPlacedata] = useState<CoursePlaceState[]>(placeList)
@@ -88,7 +89,7 @@ const CourseEditDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   }
 
   const dispatch = useDispatch()
-
+  const navigate = useNavigate()
   const onRemove = (index: number): void => {
     const filteredData = courseData.filter((place) => place.order !== index)
     setCourseData(filteredData)
@@ -102,12 +103,11 @@ const CourseEditDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       }
       return temp
     })
-
     setCourseData(data)
   }
 
   const onClicKNextPage = (): void => {
-    setPage(page + 1)
+    navigate(`/course/${id}/update`, { state: 3 })
   }
 
   const onDragEnd = (result: any): void => {
@@ -146,6 +146,10 @@ const CourseEditDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     dispatch(updateCoursePlace(newPlace))
   }
   // order바꿔주기
+  console.log(placeList)
+  // 다음으로 가는 버튼을 누르면 toSave에 Save된 것들이
+  // toModify엔 toModify 배열이, toDelete엔 삭제할 것들의 정보가.
+  // 전역으로 담겨있어야 할까? 아니면 props로 ?
 
   return (
     <MainContainer>
@@ -157,7 +161,7 @@ const CourseEditDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       />
       <IconContainer>
         <IconButton type="button">
-          <Link to="/course/register">
+          <Link to="register">
             <Add sx={ICON_STYLE} color="secondary" fontSize="large" />
           </Link>
         </IconButton>

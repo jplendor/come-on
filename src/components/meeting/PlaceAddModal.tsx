@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   Button,
@@ -11,18 +11,19 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
-import { PlaceType } from "components/common/card/PlaceDetailDraggableCard "
 import { Place } from "components/common/card/SearchCard"
 import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
-import { useDispatch } from "react-redux"
-import { addCoursePlace } from "features/course/courseSlice"
-import { Description } from "@mui/icons-material"
+import { useDispatch, useSelector } from "react-redux"
+import { addCoursePlace, updateToSave } from "features/course/courseSlice"
+import { PlaceType } from "types/API/course-service"
+import { RootState } from "store"
 
 interface PlaceAddModalProps {
   open: boolean
   onClose: () => void
   newPlace: Place
   mode: PlaceType
+  id?: number
 }
 
 const CATEGORY_LIST = [
@@ -40,10 +41,12 @@ const CATEGORY_LIST = [
 ]
 
 const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
-  const { open, onClose, newPlace, mode } = props
-
+  const { open, onClose, newPlace, mode, id } = props
   const [category, setCategory] = useState("")
   const [memo, setMemo] = useState("")
+  const placeItems = useSelector((state: RootState) => {
+    return state.course.coursePlaces
+  })
   const handleCategoryChange = (e: SelectChangeEvent): void => {
     setCategory(e.target.value)
   }
@@ -68,6 +71,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
       const res = await createMeetingPlace({
         meetingId: Number(meetingId),
         newPlace: {
+          id: newPlace.id,
           apiId: newPlace.apiId,
           name: newPlace.name,
           lat: newPlace.lat,
@@ -102,6 +106,40 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
     }
     dispatch(addCoursePlace(myPlace))
     navigate("/course", { state: 2 })
+  }
+
+  // 업데이트 로직
+  const onClickUpdateAddCoursePlace = (): void => {
+    const place = {
+      ...newPlace,
+      id: 0,
+      description: memo,
+      category,
+    }
+
+    dispatch(addCoursePlace(place))
+
+    const typePlace = {
+      apiId: newPlace.apiId,
+      name: newPlace.name,
+      lat: newPlace.lat,
+      lng: newPlace.lng,
+      description: memo,
+      category,
+      address: newPlace.address,
+    }
+
+    const itemsLen = placeItems.length
+    const order = itemsLen === 0 ? 0 : itemsLen + 1
+    const myPlace = {
+      ...typePlace,
+      order,
+      description: memo,
+      category,
+    }
+
+    dispatch(updateToSave({ toSave: myPlace }))
+    navigate(`/course/${id}/update`, { state: 2 })
   }
 
   const makeContent = (): JSX.Element => {
@@ -151,7 +189,15 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
           placeholder="코스 장소에 대한 메모를 남겨보세요."
           handleChange={handleMemoChange}
         />
-        <Button onClick={onClickAddCoursePlace}>추가하기</Button>
+        <Button
+          onClick={
+            mode === PlaceType.c
+              ? onClickAddCoursePlace
+              : onClickUpdateAddCoursePlace
+          }
+        >
+          추가하기
+        </Button>
       </Dialog>
     )
   }
@@ -160,4 +206,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
   return content && <div>{content}</div>
 }
 
+PlaceAddModal.defaultProps = {
+  id: undefined,
+}
 export default PlaceAddModal
