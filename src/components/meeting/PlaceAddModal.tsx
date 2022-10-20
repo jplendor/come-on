@@ -1,8 +1,10 @@
 import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
+  Box,
   Button,
   Dialog,
+  DialogContent,
   DialogTitle,
   MenuItem,
   Select,
@@ -17,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { addCoursePlace, updateToSave } from "features/course/courseSlice"
 import { PlaceType } from "types/API/course-service"
 import { RootState } from "store"
+import { PlaceOutlined } from "@mui/icons-material"
 
 interface PlaceAddModalProps {
   open: boolean
@@ -24,6 +27,65 @@ interface PlaceAddModalProps {
   newPlace: Place
   mode: PlaceType
   id?: number
+}
+
+const CATEGORY_BOX = {
+  height: "80px",
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "center",
+  flexDirection: "column",
+  margin: "12px",
+}
+
+const DIALOG_STYLE = {
+  "& .MuiDialog-paper": {
+    width: "350px",
+    maxHeight: "500px",
+    padding: "0 12px",
+  },
+}
+
+const DIALOG_TITLE = {
+  textAlign: "center",
+  fontWeight: "bold",
+  fontSize: "22px",
+  marginTop: "20px",
+  marginBottom: "8px",
+  paddingBottom: "0px",
+}
+
+const CATEGORY_FONTSTYLE = {
+  fontSize: "16px",
+  fontWeight: "bold",
+  lineHeight: "140%",
+  marginTop: "12px",
+}
+
+const SELECT_STYLE = { margin: "12px 0" }
+
+const INPUTBOX_STYLE = {
+  height: "100px",
+  display: "flex",
+  justifyContent: "space-between",
+  flexDirection: "column",
+  margin: "12px",
+  marginTop: "17px",
+}
+
+const ADDRESS_STYLE = {
+  display: "flex",
+  fontSize: "14px",
+  textAlign: "center",
+  color: "#616161",
+  justifyContent: "center",
+  marginBottom: "14px",
+}
+
+const BUTTON_STYLE = {
+  backgroundColor: "#337FFE",
+  height: "48px",
+  margin: "20px 12px 14px 12px",
 }
 
 const CATEGORY_LIST = [
@@ -170,26 +232,44 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
 
   const makeCourseContent = (): JSX.Element => {
     return (
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>코스 장소</DialogTitle>
-        <Typography variant="h5">{newPlace.name}</Typography>
-        <Typography>{newPlace.address}</Typography>
-        <Select value={category} onChange={handleCategoryChange} displayEmpty>
-          <MenuItem value="">카테고리</MenuItem>
-          {generateComponent(CATEGORY_LIST, (data, key) => (
-            <MenuItem value={data.name} key={key}>
-              {data.value}
-            </MenuItem>
-          ))}
-        </Select>
-        <TextInput
-          title="코스메모"
-          name="memo"
-          value={memo}
-          placeholder="코스 장소에 대한 메모를 남겨보세요."
-          handleChange={handleMemoChange}
-        />
+      <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
+        <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
+
+        <Box sx={ADDRESS_STYLE}>
+          <PlaceOutlined sx={{ color: "#616161", fontSize: "20px" }} />
+          <Typography sx={{ color: "#616161" }}>{newPlace.address}</Typography>
+        </Box>
+        <Box sx={CATEGORY_BOX}>
+          <Typography sx={CATEGORY_FONTSTYLE}>카테고리 선택</Typography>
+          <Select
+            sx={SELECT_STYLE}
+            value={category}
+            onChange={handleCategoryChange}
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value="">카테고리</MenuItem>
+            {generateComponent(CATEGORY_LIST, (data, key) => (
+              <MenuItem value={data.name} key={key}>
+                {data.value}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+        <Box sx={INPUTBOX_STYLE}>
+          <TextInput
+            title="코스메모"
+            name="memo"
+            value={memo}
+            placeholder="코스 장소에 대한 메모를 남겨보세요."
+            handleChange={handleMemoChange}
+            multiline
+            rows={2}
+          />
+        </Box>
         <Button
+          variant="contained"
+          sx={BUTTON_STYLE}
           onClick={
             mode === PlaceType.c
               ? onClickAddCoursePlace
