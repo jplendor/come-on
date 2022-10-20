@@ -8,7 +8,6 @@ import React, {
 import { Box, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
-import { MeetingInfoType } from "pages/meeting/MeetingCreate"
 import { generateComponent, getYyyymmddArray, toStringYyyymmdd } from "utils"
 
 interface YmInfo {
@@ -36,20 +35,26 @@ interface SelectedDateStyle {
 }
 
 interface CalendarRangePickerProps {
-  meetingInfo: MeetingInfoType
-  setMeetingInfo: Dispatch<SetStateAction<MeetingInfoType>>
+  startDate: string
+  endDate: string
+  setStartDate: Dispatch<SetStateAction<string>>
+  setEndDate: Dispatch<SetStateAction<string>>
+  minDate: string
+  maxDate: string
 }
 
 const DAYOFWEEK_LIST = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
 const CalendarRangePicker = ({
-  meetingInfo,
-  setMeetingInfo,
+  startDate,
+  endDate,
+  setStartDate,
+  setEndDate,
+  minDate,
+  maxDate,
 }: CalendarRangePickerProps): JSX.Element => {
-  const { startDate, endDate } = meetingInfo
-
   const [ymInfo, setYmInfo] = useState<YmInfo[]>()
-  const [dateInfo, setDateInfo] = useState<DateInfo[]>()
+  const [rangeDate, setRangeDate] = useState<DateInfo[]>()
 
   const theme = useTheme()
 
@@ -114,6 +119,7 @@ const CalendarRangePicker = ({
     height: "60px",
     lineHeight: "60px",
     textAlign: "center",
+    cursor: "pointer",
   }
 
   const handleClcik = (e: React.MouseEvent<HTMLDivElement>): void => {
@@ -127,15 +133,16 @@ const CalendarRangePicker = ({
 
     if (ymd) {
       if (startDate.length === 0 && endDate.length === 0) {
-        setMeetingInfo({ ...meetingInfo, startDate: ymd })
+        setStartDate(ymd)
       } else if (startDate.length !== 0 && endDate.length === 0) {
         if (startDate < ymd) {
-          setMeetingInfo({ ...meetingInfo, endDate: ymd })
+          setEndDate(ymd)
         } else {
-          setMeetingInfo({ ...meetingInfo, startDate: ymd })
+          setStartDate(ymd)
         }
       } else if (startDate.length !== 0 && endDate.length !== 0) {
-        setMeetingInfo({ ...meetingInfo, startDate: ymd, endDate: "" })
+        setStartDate(ymd)
+        setEndDate("")
       }
     }
   }
@@ -170,13 +177,13 @@ const CalendarRangePicker = ({
     [startDate, endDate]
   )
 
-  const setOneYearDateInfo = useCallback((): void => {
-    const [y, m, d] = getYyyymmddArray(new Date())
+  const makeRangeDate = useCallback((): void => {
+    const [ey, em, ed] = getYyyymmddArray(new Date(maxDate))
 
     const YmArr = []
     for (
-      let i = new Date(y, m, d);
-      i <= new Date(y + 1, m, 0);
+      let i = new Date(minDate);
+      i <= new Date(ey, em + 1, ed);
       i.setMonth(i.getMonth() + 1)
     ) {
       const [iY, iM] = getYyyymmddArray(i)
@@ -186,8 +193,8 @@ const CalendarRangePicker = ({
 
     const dateArr = []
     for (
-      let i = new Date(y, m, d);
-      i <= new Date(y + 1, m, 0);
+      let i = new Date(minDate);
+      i <= new Date(maxDate);
       i.setDate(i.getDate() + 1)
     ) {
       const [iY, iM, iD] = getYyyymmddArray(i)
@@ -199,8 +206,8 @@ const CalendarRangePicker = ({
       })
     }
 
-    setDateInfo(dateArr)
-  }, [getSelectedType])
+    setRangeDate(dateArr)
+  }, [minDate, maxDate, getSelectedType])
 
   const getStyle = (selected: string): SelectedDateStyle => {
     if (selected === selectedType.s) {
@@ -216,7 +223,7 @@ const CalendarRangePicker = ({
   }
 
   const dateInfoByMonth = (y: number, m: number): DateInfo[] => {
-    let currentMonthDateInfo = dateInfo?.filter(
+    let currentMonthDateInfo = rangeDate?.filter(
       (item) => item.y === y && item.m === m
     )
 
@@ -246,8 +253,8 @@ const CalendarRangePicker = ({
   }
 
   useEffect((): void => {
-    setOneYearDateInfo()
-  }, [setOneYearDateInfo])
+    makeRangeDate()
+  }, [makeRangeDate])
 
   return (
     <Box sx={CALENDAR}>
@@ -265,7 +272,7 @@ const CalendarRangePicker = ({
               {data1.y}년 {data1.m + 1}월
             </Typography>
             <Box sx={MONTH}>
-              {dateInfo &&
+              {rangeDate &&
                 generateComponent(
                   dateInfoByMonth(data1.y, data1.m),
                   (data2, key2) => (
