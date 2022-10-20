@@ -235,7 +235,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
 
   const handleClickClose = (e: React.MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
-    onRemove(id)
+    onRemove(index)
   }
 
   if (isEditing) {

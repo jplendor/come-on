@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { api } from "features/api/apiSlice"
@@ -10,6 +12,7 @@ import {
   UpdateCourseDetailQProps,
   CoursePlacesRes,
   CoursePlaceState,
+  coursePlaceToDelete,
 } from "types/API/course-service"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -150,7 +153,7 @@ export const courseApi = api.injectEndpoints({
         method: "POST",
         body: postData,
       }),
-      transformResponse: (response: any, meta, args) => {
+      transformResponse: (response: any) => {
         console.log(
           "courseId : %d courseStatus : %s",
           response.data.courseId,
@@ -218,7 +221,7 @@ export const fetchByIdCourseDetail = createAsyncThunk<
   }
 >(
   "coursePlace/fetchByIdCourseDetail",
-  async (id, { rejectWithValue, dispatch }): Promise<CourseDetailResponse> => {
+  async (id, { dispatch }): Promise<CourseDetailResponse> => {
     const data = await dispatch(getCourseDetail.initiate(id))
     return data.data as CourseDetailResponse
   }
@@ -253,6 +256,7 @@ export const coursePlaceSlice = createSlice({
       const result = state.coursePlaces.find(
         (place) => place.order === action.payload.order
       )
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const index = state.coursePlaces.indexOf(result!)
       state.coursePlaces[index].description = action.payload.description
       state.coursePlaces[index].category = action.payload.category
@@ -267,6 +271,12 @@ export const coursePlaceSlice = createSlice({
       action: PayloadAction<coursePlacesToSaveProps>
     ): any => {
       state.updatePlaces.toSave?.push(action.payload.toSave)
+    },
+    updateToDelete: (
+      state,
+      action: PayloadAction<coursePlaceToDelete>
+    ): any => {
+      state.updatePlaces.toDelete?.push(action.payload)
     },
   },
   extraReducers: (builder) => {
@@ -293,6 +303,7 @@ export const {
   setSearchText,
   updateCoursePlace,
   updateToSave,
+  updateToDelete,
   editCoursePlaceDetail,
 } = coursePlaceSlice.actions
 export default coursePlaceSlice.reducer

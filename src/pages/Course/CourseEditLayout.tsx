@@ -17,12 +17,6 @@ import CourseEditDetail3 from "./CourseEditDetail3"
 작성자 : 강예정
 issue : 중간에 코스등록이 취소 될 시 데이터를 기억해서 다시 불러오는 기능을 추가할 수 있을지 고민 */
 
-const ICONBOXLEFT = {
-  zIndex: "10",
-  position: "absolute",
-  left: "20px",
-}
-
 const ICONBOXRIGHT = {
   zIndex: "10",
   position: "absolute",

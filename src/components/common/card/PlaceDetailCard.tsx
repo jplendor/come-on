@@ -200,7 +200,7 @@ interface ListDetailCardProps {
   item: CoursePlace | MeetingPlace
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: boolean
-  onRemove: (index: number) => void
+  onRemove?: (index: number) => void
   maxLen: number
   mode: PlaceType
   // eslint-disable-next-line react/require-default-props
@@ -235,7 +235,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
 
   const handleClickClose = (e: React.MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
-    onRemove(id)
+    if (onRemove) onRemove(id)
   }
 
   if (isEditing) {
@@ -327,6 +327,10 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
       </Grid>
     </Grid>
   )
+}
+
+PlaceDetailCard.defaultProps = {
+  onRemove: () => console.warn("onRemove not defined"),
 }
 
 export default PlaceDetailCard

@@ -223,7 +223,6 @@ api연동부분
   }
 
   const onClickLike = (): void => {
-    console.log(isLike)
     setIsLike(!isLike)
   }
   useEffect(() => {
@@ -309,9 +308,6 @@ api연동부분
                   (selectedNumber === "" ? -10 : Number(selectedNumber))
                 }
                 courseId={courseIdProps}
-                onRemove={() => {
-                  console.log("dd")
-                }}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
               />

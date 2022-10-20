@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, {
   Dispatch,
@@ -11,11 +12,10 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd"
 import { styled } from "@mui/material/styles"
 import { Box, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
-import { generateComponent } from "utils"
 import MapContainer from "components/common/course/MapContainer"
 import { Link, useNavigate } from "react-router-dom"
 import { RootState } from "store"
-import { updateCoursePlace } from "features/course/courseSlice"
+import { updateCoursePlace, updateToDelete } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 import { CoursePlaceProps } from "types/API/course-service"
@@ -57,7 +57,7 @@ interface pageProps {
   id: number
 }
 
-const CourseEditDetail2 = ({ id, setPage, page }: pageProps): JSX.Element => {
+const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [isValid, setIsValid] = useState(false)
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
@@ -71,7 +71,7 @@ const CourseEditDetail2 = ({ id, setPage, page }: pageProps): JSX.Element => {
     else {
       setIsValid(false)
     }
-  }, [])
+  }, [placeList])
 
   // setPage(2)
 
@@ -90,20 +90,37 @@ const CourseEditDetail2 = ({ id, setPage, page }: pageProps): JSX.Element => {
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
   const onRemove = (index: number): void => {
+    const toDeleteData = courseData.filter((place) => place.order === index)
+    dispatch(updateToDelete({ id: toDeleteData[0].id }))
     const filteredData = courseData.filter((place) => place.order !== index)
-    setCourseData(filteredData)
-    /* eslint array-callback-return: "error" */
-    // eslint-disable-next-line array-callback-return
-    const data = courseData.map((place: CoursePlaceState): any => {
-      const temp = place
-      if (place.order > index) {
-        temp.order -= 1
-        return temp
+
+    const newData = []
+
+    // 마지막 값 pop
+    if (courseData.length !== 1)
+      for (let i = 0; i < filteredData.length; i += 1) {
+        if (filteredData[i].order > index) {
+          const temp = { ...filteredData[i], order: filteredData[i].order - 1 }
+          newData.push(temp)
+        }
+        newData.push(filteredData[i])
       }
-      return temp
-    })
-    setCourseData(data)
+    if (index !== courseData.length) newData.pop()
+
+    // const data = filteredData.map((place: CoursePlaceState) => {
+    //   const temp = place
+    //   console.log(temp)
+    //   if (index > place.order) {
+    //     // eslint-disable-next-line no-param-reassign
+    //     place.order -= 1
+    //     return temp
+    //   }
+    //   return temp
+    // })
+
+    setCourseData(newData)
   }
 
   const onClicKNextPage = (): void => {
@@ -145,11 +162,6 @@ const CourseEditDetail2 = ({ id, setPage, page }: pageProps): JSX.Element => {
 
     dispatch(updateCoursePlace(newPlace))
   }
-  // order바꿔주기
-  console.log(placeList)
-  // 다음으로 가는 버튼을 누르면 toSave에 Save된 것들이
-  // toModify엔 toModify 배열이, toDelete엔 삭제할 것들의 정보가.
-  // 전역으로 담겨있어야 할까? 아니면 props로 ?
 
   return (
     <MainContainer>
@@ -169,22 +181,21 @@ const CourseEditDetail2 = ({ id, setPage, page }: pageProps): JSX.Element => {
       {/* 카카오톡 공유하기 */}
       {/* //dragDropContext */}
       <DragDropContext onDragEnd={onDragEnd}>
-        {placeList[0].order !== 0 && (
+        {courseData.length !== 0 && (
           // droppable
           <Droppable droppableId="placeData">
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
-                {generateComponent(placeList, (item, key) => (
+                {courseData.map((item) => (
                   <PlaceDetailDraggableCard
-                    item={{ ...item, id: item.order + 1 }}
-                    key={key}
+                    item={{ ...item, id }}
                     onClick={onClickFocus}
                     isSelected={
                       item.order ===
                       (selectedNumber === "" ? -10 : Number(selectedNumber))
                     }
                     onRemove={onRemove}
-                    maxLen={placeList.length}
+                    maxLen={courseData.length}
                     mode={PlaceType.c}
                   />
                 ))}
