@@ -15,10 +15,18 @@ import { Add } from "@mui/icons-material"
 import MapContainer from "components/common/course/MapContainer"
 import { Link, useNavigate } from "react-router-dom"
 import { RootState } from "store"
-import { updateCoursePlace, updateToDelete } from "features/course/courseSlice"
+import {
+  deleteToSave,
+  updateCoursePlace,
+  updateToDelete,
+  updateToSave,
+} from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
-import { CoursePlaceProps } from "types/API/course-service"
+import {
+  CoursePlaceProps,
+  CourseUpdatePlaceProps,
+} from "types/API/course-service"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -63,6 +71,12 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
+  const updatePlaces: CourseUpdatePlaceProps = useSelector(
+    (state: RootState) => {
+      return state.course.updatePlaces
+    }
+  )
+
   const [placeData, setPlacedata] = useState<CoursePlaceState[]>(placeList)
   const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
@@ -93,9 +107,20 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
 
   const onRemove = (index: number): void => {
     const toDeleteData = courseData.filter((place) => place.order === index)
-    dispatch(updateToDelete({ id: toDeleteData[0].id }))
-    const filteredData = courseData.filter((place) => place.order !== index)
+    // 삭제할 데이터가 ToSave에 있는지 확인 ToSave에 없다면 delete에 올림
+    const { toSave } = updatePlaces
+    const newSave = toSave?.filter(
+      (place) => place.order !== toDeleteData[0].order
+    )
+    console.log(newSave)
+    // 삭제할 원본 데이터 toDelete에 올림
+    if (newSave?.length === 0)
+      dispatch(updateToDelete({ id: toDeleteData[0].id }))
+    // 삭제할 데이터가 toSave에만 있는경우
+    else dispatch(deleteToSave(newSave!))
 
+    // 새로운 coursePlaces 갱신하는 코드
+    const filteredData = courseData.filter((place) => place.order !== index)
     const newData = []
 
     // 마지막 값 pop
@@ -109,18 +134,8 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       }
     if (index !== courseData.length) newData.pop()
 
-    // const data = filteredData.map((place: CoursePlaceState) => {
-    //   const temp = place
-    //   console.log(temp)
-    //   if (index > place.order) {
-    //     // eslint-disable-next-line no-param-reassign
-    //     place.order -= 1
-    //     return temp
-    //   }
-    //   return temp
-    // })
-
-    setCourseData(newData)
+    // 코스 플레이스 갱신
+    dispatch(updateCoursePlace(newData))
   }
 
   const onClicKNextPage = (): void => {
@@ -139,12 +154,15 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       return
     }
 
-    const newPlaceNames = placeData.map((place) => {
+    const newPlaceNames = placeList.map((place) => {
       return place.name
     })
 
+    // [김밥집, 국밥집] => [국밥집 김밥집]
     newPlaceNames.splice(source.index, 1)
+    // [국밥집]
     newPlaceNames.splice(destination.index, 0, draggableId)
+    // [국밥집, 김밥집]
 
     const newPlace: Array<CoursePlaceState> = []
     for (let i = 0; i < newPlaceNames.length; i += 1) {
@@ -158,8 +176,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       }
       newPlace.push(newState)
     }
-    setPlacedata(newPlace)
-
+    setCourseData(newPlace)
     dispatch(updateCoursePlace(newPlace))
   }
 
@@ -181,14 +198,14 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       {/* 카카오톡 공유하기 */}
       {/* //dragDropContext */}
       <DragDropContext onDragEnd={onDragEnd}>
-        {courseData.length !== 0 && (
-          // droppable
+        {placeList.length !== 0 && (
           <Droppable droppableId="placeData">
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
-                {courseData.map((item) => (
+                {placeList.map((item) => (
                   <PlaceDetailDraggableCard
                     item={{ ...item, id }}
+                    key={item.id}
                     onClick={onClickFocus}
                     isSelected={
                       item.order ===

@@ -52,6 +52,17 @@ export interface CoursePlaceProps {
   address: string
 }
 
+export interface CoursePlacePropsNoId {
+  order: number
+  name: string
+  description: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  apiId: number
+  category: string
+  address: string
+}
+
 export interface CourseDetailProps {
   title: string
   description: string
@@ -245,12 +256,7 @@ export const coursePlaceSlice = createSlice({
       }
     },
     updateCoursePlace: (state, action: PayloadAction<CoursePlaceProps[]>) => {
-      for (let i = 0; i < action.payload.length; i += 1) {
-        state.coursePlaces.pop()
-      }
-      for (let i = 0; i < action.payload.length; i += 1) {
-        state.coursePlaces.push(action.payload[i])
-      }
+      state.coursePlaces = action.payload
     },
     editCoursePlaceDetail: (state, action: PayloadAction<CoursePlaceProps>) => {
       const result = state.coursePlaces.find(
@@ -270,8 +276,16 @@ export const coursePlaceSlice = createSlice({
       state,
       action: PayloadAction<coursePlacesToSaveProps>
     ): any => {
+      console.log(action.payload)
       state.updatePlaces.toSave?.push(action.payload.toSave)
     },
+    deleteToSave: (
+      state,
+      action: PayloadAction<CoursePlacePropsNoId[]>
+    ): any => {
+      state.updatePlaces.toSave = action.payload
+    },
+
     updateToDelete: (
       state,
       action: PayloadAction<coursePlaceToDelete>
@@ -304,6 +318,7 @@ export const {
   updateCoursePlace,
   updateToSave,
   updateToDelete,
+  deleteToSave,
   editCoursePlaceDetail,
 } = coursePlaceSlice.actions
 export default coursePlaceSlice.reducer

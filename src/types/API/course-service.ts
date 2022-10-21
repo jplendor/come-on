@@ -81,19 +81,7 @@ export interface CoursePlaceState {
     description: string
     imgFile: string
   }
-  coursePlaces: [
-    {
-      order: number
-      name: string
-      description: string
-      lng: number // 경도 x
-      lat: number // 위도 y
-      apiId: number
-      category: string
-      id: number
-      address: string
-    }
-  ]
+  coursePlaces: CoursePlaceProps[]
   searchText: string | undefined
   updatePlaces: {
     toSave: coursePlacesToSaveProps[]

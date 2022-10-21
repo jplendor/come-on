@@ -199,33 +199,52 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
       description: memo,
       category,
     }
-
+    console.log("s")
+    console.log(myPlace)
     dispatch(updateToSave({ toSave: myPlace }))
     navigate(`/course/${id}/update`, { state: 2 })
   }
 
   const makeContent = (): JSX.Element => {
     return (
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>모임 장소</DialogTitle>
-        <Typography variant="h5">{newPlace.name}</Typography>
-        <Typography>{newPlace.address}</Typography>
-        <Select value={category} onChange={handleCategoryChange} displayEmpty>
-          <MenuItem value="">카테고리</MenuItem>
-          {generateComponent(CATEGORY_LIST, (data, key) => (
-            <MenuItem value={data.name} key={key}>
-              {data.value}
-            </MenuItem>
-          ))}
-        </Select>
-        <TextInput
-          title="모임메모"
-          name="memo"
-          value={memo}
-          placeholder="모임 장소에 대한 메모를 남겨보세요."
-          handleChange={handleMemoChange}
-        />
-        <Button onClick={addPlace}>추가하기</Button>
+      <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
+        <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
+
+        <Box sx={ADDRESS_STYLE}>
+          <PlaceOutlined sx={{ color: "#616161", fontSize: "20px" }} />
+          <Typography sx={{ color: "#616161" }}>{newPlace.address}</Typography>
+        </Box>
+        <Box sx={CATEGORY_BOX}>
+          <Typography sx={CATEGORY_FONTSTYLE}>카테고리 선택</Typography>
+          <Select
+            sx={SELECT_STYLE}
+            value={category}
+            onChange={handleCategoryChange}
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value="">카테고리</MenuItem>
+            {generateComponent(CATEGORY_LIST, (data, key) => (
+              <MenuItem value={data.name} key={key}>
+                {data.value}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+        <Box sx={INPUTBOX_STYLE}>
+          <TextInput
+            title="모임메모"
+            name="memo"
+            value={memo}
+            placeholder="모임 장소에 대한 메모를 남겨보세요."
+            handleChange={handleMemoChange}
+            multiline
+            rows={2}
+          />
+        </Box>
+        <Button variant="contained" sx={BUTTON_STYLE} onClick={addPlace}>
+          추가하기
+        </Button>
       </Dialog>
     )
   }
