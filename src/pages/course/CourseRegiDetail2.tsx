@@ -179,6 +179,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
                       item.order ===
                       (selectedNumber === "" ? -10 : Number(selectedNumber))
                     }
+                    editing={false}
                     onRemove={onRemove}
                     maxLen={placeList.length}
                     mode={PlaceType.c}

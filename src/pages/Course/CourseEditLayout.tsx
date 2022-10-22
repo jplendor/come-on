@@ -124,7 +124,7 @@ const CourseEditLayout = (): JSX.Element => {
               <CourseEditDetail2 id={Number(id)} page={2} setPage={setPage} />
             </TabPanel>
             <TabPanel value="3">
-              <CourseEditDetail3 page={3} setPage={setPage} />
+              <CourseEditDetail3 id={Number(id)} page={3} setPage={setPage} />
             </TabPanel>
           </Box>
           {/* 

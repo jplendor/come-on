@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState, SetStateAction, Dispatch, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
@@ -107,15 +108,16 @@ const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
 }
 interface pageProps {
   page: number
+  id: number
   setPage: Dispatch<SetStateAction<number>>
 }
 
 // 코스등록 전 미리보기 페이지
-const CourseEditDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
+const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
   const [winReady, setWinReady] = useState(false)
   useEffect(() => {
     setWinReady(true)
-  })
+  }, [])
   /* **********************************************************************
 api연동부분
  2
@@ -226,20 +228,13 @@ api연동부분
     setIsLike(!isLike)
   }
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     likeCount = changeLikeCount()
   }, [isLike])
   // 제출
-  const submit = async (): Promise<boolean> => {
-    const courseId = await submitCourseDetail()
-    setCourseIdProps(courseId)
-    await submitPlaceList(courseId)
-    setIsSubmit(true)
-    return Promise.resolve(true)
+  const submit = (courseId: number): void => {
+    navigate(`/course/${courseId}`)
   }
-
-  // if (isSubmit) {
-  //   navigate("/")
-  // }
 
   if (isLoadingUser) return <div>Loading...</div>
   return (
@@ -314,17 +309,10 @@ api연동부분
             ))}
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <CourseNextStepButton
-              content="수정하기"
-              width="49%"
+              content="수정완료"
+              width="100%"
               onClick={() => {
-                console.log("수정하기")
-              }}
-            />
-            <CourseNextStepButton
-              content="코스등록 완료"
-              width="49%"
-              onClick={() => {
-                submit()
+                submit(id)
               }}
               isValid
             />

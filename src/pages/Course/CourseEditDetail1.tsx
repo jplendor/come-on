@@ -15,22 +15,12 @@ import ImageInput from "components/common/input/ImageInput"
 import {
   fetchByIdCourseDetail,
   setCourseDetail,
-  useGetCourseDetailQuery,
   useUpdateCourseDetailMutation,
 } from "features/course/courseSlice"
-import {
-  CourseData,
-  CourseDetail,
-  CourseDetailResponse,
-  CoursePlaceProps,
-  StateCourseData,
-} from "types/API/course-service"
 
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "store"
-import { Details } from "@mui/icons-material"
-import { useSetState } from "rooks"
-import { setOriginalNode } from "typescript"
+
 import { useNavigate } from "react-router-dom"
 
 interface pageProps {
@@ -44,6 +34,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   const [image, setImage] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
+  const [updateCourseDetail, { data: res }] = useUpdateCourseDetailMutation()
   const navigate = useNavigate()
   // rtkq에서 데이터 불러오기
   // store에 데이터 저장하기
@@ -52,9 +43,9 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   // useEffect를 쓰면 여러번호출이 안된다. 왜냐하면 마운트 될때만 실행되거나
   // 값이 바뀔 때만 실행되기 때문에.
   const dis = useCallback(async () => {
-    const didi = await dispatch(fetchByIdCourseDetail(id))
-    const myData: any = didi.payload
-    console.log(myData.data)
+    const detailData = await dispatch(fetchByIdCourseDetail(id))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const myData: any = detailData.payload
     setDescription(myData.data.description)
     setTitle(myData.data.title)
     setImage(myData.data.imageUrl)
@@ -71,21 +62,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   // 문제 : api의 pending이나 reject가 오면 mount 될 때 바인딩 할 수가 없음
 
   const [isValid, setIsValid] = useState(false)
-  const [image64, setImage64] = useState<ArrayBuffer | string>("")
   const [imageFile, setImageFile] = useState<Blob>()
-
-  const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
-    const reader = new FileReader()
-    reader.readAsDataURL(fileBlob)
-    return new Promise<void>((resolve) => {
-      reader.onload = () => {
-        if (!reader.result) {
-          throw new Error("No img result")
-        }
-        resolve(setImage64(reader.result))
-      }
-    })
-  }
 
   const onValid = useCallback((): void => {
     if (title === "") return
@@ -96,6 +73,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
 
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
+
     console.log(fileUrl)
     return fileUrl
   }
@@ -118,10 +96,6 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     setDescription(e.target.value)
   }
 
-  const changeObjectUrlToFile = async (): Promise<Blob> => {
-    const file = await fetch(image || "").then((r) => r.blob())
-    return file
-  }
   const onClickNextPage = async (): Promise<void> => {
     const newDetail = new FormData()
 
@@ -129,23 +103,25 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     newDetail.append("description", description)
 
     if (imageFile) {
-      await encodeFileToBase64(imageFile)
+      newDetail.append("imgFile", imageFile)
       dispatch(
-        setCourseDetail({ title, description, imgFile: String(image64) })
+        setCourseDetail({ title, description, imgFile: String(imageFile) })
       )
     } else {
+      newDetail.append("imgFile", image)
       dispatch(setCourseDetail({ title, description, imgFile: image }))
     }
     // 이미지가 바뀐 경우 base64로 바꿔서 전송
-    console.log(page)
 
+    updateCourseDetail({ id, data: newDetail })
+    console.log(res)
     navigate(`/course/${id}/update`, { state: 2 })
     setPage(2)
   }
 
   useEffect(() => {
     onValid()
-  }, [image, title, description])
+  }, [image, title, description, onValid])
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>

@@ -13,6 +13,7 @@ import {
   CoursePlacesRes,
   CoursePlaceState,
   coursePlaceToDelete,
+  coursePlaceToModify,
 } from "types/API/course-service"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -26,6 +27,7 @@ import type {
   LikeCourseRes,
 } from "types/API/course-service"
 import { AppDispatch } from "store"
+import { idText } from "typescript"
 
 export interface coursePlacesToSaveProps {
   toSave: {
@@ -173,14 +175,14 @@ export const courseApi = api.injectEndpoints({
         return response.data.courseId
       },
     }),
-    updateCoursePlace: builder.mutation<
+    updateCoursePlaceToDB: builder.mutation<
       CourseUpdateRes,
       CourseUpdatePlaceProps
     >({
-      query: ({ toSave, toModify, courseId, toDelete }) => ({
+      query: ({ toSave, toModify, toDelete, courseId }) => ({
         url: `/courses/${courseId}/course-places/batch`,
         method: "POST",
-        body: { toSave, toModify, toDelete: null },
+        body: { toSave, toModify, toDelete },
       }),
       transformResponse: (response: CourseUpdateRes) => {
         console.log(
@@ -219,7 +221,7 @@ export const {
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
   useGetCourseDetailQuery,
-  useUpdateCoursePlaceMutation,
+  useUpdateCoursePlaceToDBMutation,
   useUpdateCourseDetailMutation,
 } = courseApi
 
@@ -246,7 +248,7 @@ export const coursePlaceSlice = createSlice({
       state.searchText = action.payload
     },
     addCoursePlace: (state, action: PayloadAction<CoursePlaceProps>) => {
-      if (state.coursePlaces[0].order === 0) {
+      if (state.coursePlaces.length === 0) {
         state.coursePlaces[0] = { ...action.payload, order: 1 }
       } else {
         state.coursePlaces.push({
@@ -255,7 +257,32 @@ export const coursePlaceSlice = createSlice({
         })
       }
     },
+    addToModify: (state, action: PayloadAction<CoursePlaceProps>) => {
+      const targetIndex = state.updatePlaces.toModify?.findIndex(
+        (place) => place.order === action.payload.order
+      )
+
+      // modify형식에 맞춰서 데이터 재가공
+
+      const modifyPlace = {
+        id: action.payload.id,
+        description: action.payload.description,
+        order: action.payload.order,
+        category: action.payload.category,
+      }
+
+      console.log(targetIndex)
+      // 해당 인덱스의 값 삭제후 다시 끼워넣으며 원하는 값으로 교체~
+      if (targetIndex === -1) {
+        state.updatePlaces.toModify?.push(modifyPlace)
+      } else if (targetIndex !== undefined) {
+        state.updatePlaces.toModify?.splice(targetIndex, 1)
+        state.updatePlaces.toModify?.splice(targetIndex, 0, modifyPlace)
+      }
+    },
+    // 드래그앤 드롭할때 사용
     updateCoursePlace: (state, action: PayloadAction<CoursePlaceProps[]>) => {
+      console.log(action.payload)
       state.coursePlaces = action.payload
     },
     editCoursePlaceDetail: (state, action: PayloadAction<CoursePlaceProps>) => {
@@ -270,6 +297,7 @@ export const coursePlaceSlice = createSlice({
     setCourseDetail: (state, action: PayloadAction<CourseDetailProps>): any => {
       state.courseDetails.title = action.payload.title
       state.courseDetails.description = action.payload.description
+      console.log(action.payload)
       state.courseDetails.imgFile = action.payload.imgFile
     },
     updateToSave: (
@@ -279,13 +307,48 @@ export const coursePlaceSlice = createSlice({
       console.log(action.payload)
       state.updatePlaces.toSave?.push(action.payload.toSave)
     },
-    deleteToSave: (
-      state,
-      action: PayloadAction<CoursePlacePropsNoId[]>
-    ): any => {
-      state.updatePlaces.toSave = action.payload
-    },
+    deleteToSave: (state, action: PayloadAction<CoursePlacePropsNoId>): any => {
+      const targetIndex = state.updatePlaces.toSave.findIndex(
+        (place) => place.order === action.payload.order
+      )
 
+      state.updatePlaces.toSave.splice(targetIndex, 1)
+    },
+    deleteToModify: (
+      state,
+      action: PayloadAction<CoursePlacePropsNoId>
+    ): any => {
+      const targetIndex = state.updatePlaces.toSave.findIndex(
+        (place) => place.order === action.payload.order
+      )
+      state.updatePlaces.toModify?.splice(targetIndex, 1)
+    },
+    modifyToSave: (state, action: PayloadAction<CoursePlacePropsNoId>): any => {
+      // 있으면 index반환 없으면 -1반환, 근데 -1일 이유가 없음.
+      const targetIndex = state.updatePlaces.toSave.findIndex(
+        (place) => place.order === action.payload.order
+      )
+      // 해당 인덱스의 값 삭제후 다시 끼워넣으며 원하는 값으로 교체~
+      state.updatePlaces.toSave.splice(targetIndex, 1)
+      state.updatePlaces.toSave.splice(targetIndex, 0, action.payload)
+    },
+    modifyCoursePlaces: (
+      state,
+      action: PayloadAction<CoursePlaceProps>
+    ): any => {
+      const targetIndex = state.coursePlaces.findIndex(
+        (place) => place.order === action.payload.order
+      )
+      state.coursePlaces.splice(targetIndex, 1)
+      state.coursePlaces.splice(targetIndex, 0, action.payload)
+    },
+    updateToModify: (
+      state,
+      action: PayloadAction<coursePlaceToModify[]>
+    ): any => {
+      // payload의 객체의 인덱스를 찾고
+      // 그 인덱스를 splice
+    },
     updateToDelete: (
       state,
       action: PayloadAction<coursePlaceToDelete>
@@ -299,6 +362,11 @@ export const coursePlaceSlice = createSlice({
       state.courseDetails.title = action.payload?.data?.title
       state.courseDetails.description = action.payload?.data?.description
       state.courseDetails.imgFile = action.payload?.data?.imageUrl
+
+      // 초기화
+      state.updatePlaces.toSave = []
+      state.updatePlaces.toModify = []
+      state.updatePlaces.toDelete = []
 
       state.coursePlaces = action.payload?.data.coursePlaces
     })
@@ -316,7 +384,11 @@ export const {
   setCourseDetail,
   setSearchText,
   updateCoursePlace,
+  modifyCoursePlaces,
+  addToModify,
   updateToSave,
+  deleteToModify,
+  modifyToSave,
   updateToDelete,
   deleteToSave,
   editCoursePlaceDetail,

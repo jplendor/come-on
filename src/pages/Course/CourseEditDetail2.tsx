@@ -16,10 +16,11 @@ import MapContainer from "components/common/course/MapContainer"
 import { Link, useNavigate } from "react-router-dom"
 import { RootState } from "store"
 import {
+  deleteToModify,
   deleteToSave,
   updateCoursePlace,
   updateToDelete,
-  updateToSave,
+  useUpdateCoursePlaceToDBMutation,
 } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
@@ -76,12 +77,12 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       return state.course.updatePlaces
     }
   )
-
-  const [placeData, setPlacedata] = useState<CoursePlaceState[]>(placeList)
+  const [updateCoursePlaceToDB, { data }] = useUpdateCoursePlaceToDBMutation()
+  const [placeData] = useState<CoursePlaceState[]>(placeList)
   const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
   const onValid = useCallback((): void => {
-    if (placeList[0].order !== 0) setIsValid(true)
+    if (placeList.length !== 0 || undefined) setIsValid(true)
     else {
       setIsValid(false)
     }
@@ -102,29 +103,57 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
     }
   }
 
+  const setUpdateCourse = (): void => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const updateCourse = {
+      courseId: id,
+      toSave: updatePlaces.toSave,
+      toModify: updatePlaces.toModify,
+      toDelete: updatePlaces.toDelete,
+    }
+    // 오류나면 updatePlaces로 바꿀것
+    updateCoursePlaceToDB(updateCourse)
+  }
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  // 1. 수정했던 데이터를 삭제할경우 = toModify배열에서 삭제하고, toCourse에서 삭제해야함
+  // 1-1. 추가리스트의 경우 - toSave에서 삭제, course에서 삭제
+  // 1-2. 원본의 경우 - toModify에서 삭제, toCOurse에서 삭제, toDelete에 올림
+
+  // 원본데이터를 삭제할 경우, toDelete에 올리고 courseList에서 삭제하고, modify에 있다면 삭제
+  // 추가데이터를 삭제할 경우, courseList에서 삭제하고 toSave에서 삭제함
+
   const onRemove = (index: number): void => {
-    const toDeleteData = courseData.filter((place) => place.order === index)
+    const toDeleteData = placeList.filter((place) => place.order === index)
+
     // 삭제할 데이터가 ToSave에 있는지 확인 ToSave에 없다면 delete에 올림
-    const { toSave } = updatePlaces
-    const newSave = toSave?.filter(
-      (place) => place.order !== toDeleteData[0].order
+    const { toSave, toModify } = updatePlaces
+    const saveIndex = toSave?.findIndex(
+      (place) => place.order === toDeleteData[0].order
     )
-    console.log(newSave)
-    // 삭제할 원본 데이터 toDelete에 올림
-    if (newSave?.length === 0)
+
+    // newSave배열의 길이가 0일 경우 삭제할 원본 데이터 toDelete에 올림
+    // toSave에 속하는 추가데이터라면, ToSave에서 삭제시킴
+    if (saveIndex !== -1) {
+      dispatch(deleteToSave(toDeleteData[0]))
+    }
+    // toSave에 없는 원본데이터라면 toDelete에 올리고, toModify에 있다면 삭제함
+    else if (saveIndex === -1 && toDeleteData[0].id !== 0) {
       dispatch(updateToDelete({ id: toDeleteData[0].id }))
-    // 삭제할 데이터가 toSave에만 있는경우
-    else dispatch(deleteToSave(newSave!))
+      const modifyIndex = toModify?.findIndex(
+        (place) => place.id === toDeleteData[0].id
+      )
+      if (modifyIndex !== -1) dispatch(deleteToModify(toDeleteData[0]))
+    }
 
     // 새로운 coursePlaces 갱신하는 코드
-    const filteredData = courseData.filter((place) => place.order !== index)
+    const filteredData = placeList.filter((place) => place.order !== index)
     const newData = []
 
     // 마지막 값 pop
-    if (courseData.length !== 1)
+    if (filteredData.length > 1) {
       for (let i = 0; i < filteredData.length; i += 1) {
         if (filteredData[i].order > index) {
           const temp = { ...filteredData[i], order: filteredData[i].order - 1 }
@@ -132,13 +161,21 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
         }
         newData.push(filteredData[i])
       }
-    if (index !== courseData.length) newData.pop()
+    } // 하나남았으니 filtered 된 데이터 넣어줌
+    else if (filteredData.length === 1) {
+      if (filteredData[0].order > 1)
+        newData.push({ ...filteredData[0], order: filteredData[0].order - 1 })
+      else if (filteredData[0].order === 1) newData.push({ ...filteredData[0] })
+    }
+    /** toDelete에 넣었을때 하나 삭제되는데, 그경우 즉 빈배열일경우 어쩔껀지 ..ㅎ  */
 
     // 코스 플레이스 갱신
-    dispatch(updateCoursePlace(newData))
+    if (newData !== undefined) dispatch(updateCoursePlace(newData))
+    else if (newData === undefined) dispatch(updateCoursePlace([]))
   }
 
   const onClicKNextPage = (): void => {
+    setUpdateCourse()
     navigate(`/course/${id}/update`, { state: 3 })
   }
 
@@ -158,11 +195,8 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       return place.name
     })
 
-    // [김밥집, 국밥집] => [국밥집 김밥집]
     newPlaceNames.splice(source.index, 1)
-    // [국밥집]
     newPlaceNames.splice(destination.index, 0, draggableId)
-    // [국밥집, 김밥집]
 
     const newPlace: Array<CoursePlaceState> = []
     for (let i = 0; i < newPlaceNames.length; i += 1) {
@@ -196,9 +230,8 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
         </IconButton>
       </IconContainer>
       {/* 카카오톡 공유하기 */}
-      {/* //dragDropContext */}
-      <DragDropContext onDragEnd={onDragEnd}>
-        {placeList.length !== 0 && (
+      {placeList.length !== 0 && placeList[0] !== undefined && (
+        <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="placeData">
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
@@ -211,6 +244,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
                       item.order ===
                       (selectedNumber === "" ? -10 : Number(selectedNumber))
                     }
+                    editing
                     onRemove={onRemove}
                     maxLen={courseData.length}
                     mode={PlaceType.c}
@@ -221,8 +255,8 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
               </Box>
             )}
           </Droppable>
-        )}
-      </DragDropContext>
+        </DragDropContext>
+      )}
       <CourseNextStepButton
         content="다음단계"
         isValid={isValid}

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Box,
   Grid,
@@ -12,7 +12,7 @@ import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
 import { Draggable } from "react-beautiful-dnd"
 import { PlaceType } from "types/API/course-service"
-import PlaceDetailEditCard from "./PlaceDetailEditCard"
+import PlaceEditModal from "components/meeting/PlaceEditModal"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -203,6 +203,7 @@ interface ListDetailCardProps {
   isSelected: boolean
   onRemove: (index: number) => void
   maxLen: number
+  editing?: boolean
   mode: PlaceType
   // eslint-disable-next-line react/require-default-props
 }
@@ -212,10 +213,25 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
   onClick,
   isSelected,
   item,
+  editing,
   maxLen,
   onRemove,
 }) => {
-  const [isEditing, setIsEditing] = useState(false)
+  const [open, setOpen] = useState<boolean>(false)
+
+  useEffect(() => {
+    console.log(open)
+  }, [open])
+
+  const OpenModal = (): void => {
+    console.log("open")
+    setOpen(true)
+  }
+
+  const closeModal = (): void => {
+    console.log("close")
+    setOpen(false)
+  }
 
   const { order: index, name: placeName, category, apiId, address, id } = item
   let description = "null"
@@ -231,23 +247,28 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
     description = itemDescription
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const makeNewPlace = () => {
+    const newPlace = {
+      order: item.order,
+      name: item.name,
+      description,
+      lng: item.lng, // 경도 x
+      lat: item.lat, // 위도 y
+      apiId: item.apiId,
+      category: "ETC",
+      address: item.address,
+      id: item.id,
+    }
+
+    return newPlace
+  }
+
   const routeUrl = `https://map.kakao.com/link/to/${apiId}`
 
   const handleClickClose = (e: React.MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
     onRemove(index)
-  }
-
-  if (isEditing) {
-    return (
-      <PlaceDetailEditCard
-        item={item}
-        isSelected={isSelected}
-        mode={mode}
-        maxLen={maxLen}
-        setIsEditing={setIsEditing}
-      />
-    )
   }
 
   /* //draggable */
@@ -301,13 +322,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
                     <Typography component="span" sx={TITLE_CATEGORY}>
                       {category}
                     </Typography>
-                    <IconButton
-                      sx={ICON}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setIsEditing(true)
-                      }}
-                    >
+                    <IconButton sx={ICON} onClick={OpenModal}>
                       <Edit />
                     </IconButton>
                   </Box>
@@ -333,10 +348,21 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
               </Grid>
             </ThemeGrid>
           </Grid>
+          <PlaceEditModal
+            open={open}
+            onClose={closeModal}
+            newPlace={makeNewPlace()}
+            mode={editing === true ? PlaceType.e : mode}
+            id={id}
+          />
         </Grid>
       )}
     </Draggable>
   )
+}
+
+PlaceDetailDraggableCard.defaultProps = {
+  editing: false,
 }
 
 export default PlaceDetailDraggableCard

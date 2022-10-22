@@ -16,10 +16,7 @@ import { PlaceType } from "types/API/course-service"
 import { Category, Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
-import {
-  useUpdateCoursePlaceMutation,
-  editCoursePlaceDetail,
-} from "features/course/courseSlice"
+import { editCoursePlaceDetail } from "features/course/courseSlice"
 import { useParams } from "react-router-dom"
 import { useDispatch } from "react-redux"
 
@@ -256,7 +253,6 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   }
 
   const [updateMeetingPlaceMutation] = useUpdateMeetingPlaceMutation()
-  const [updateCoursePlace] = useUpdateCoursePlaceMutation()
 
   const { meetingId } = useParams()
   const dispatch = useDispatch()
