@@ -95,8 +95,6 @@ export const initialState: CoursePlaceState = {
   updatePlaces: { toSave: [], toModify: [], toDelete: [] },
 }
 
-// 전체에 적용될 order값 설정
-
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
     addCourse: builder.mutation<AddCourseRes, FormData>({
@@ -208,7 +206,7 @@ export const courseApi = api.injectEndpoints({
 })
 
 export const {
-  endpoints: { getCourseDetail },
+  endpoints: { getCourseDetail, getCoursePlaces },
 } = courseApi
 
 export const {
@@ -235,7 +233,9 @@ export const fetchByIdCourseDetail = createAsyncThunk<
 >(
   "coursePlace/fetchByIdCourseDetail",
   async (id, { dispatch }): Promise<CourseDetailResponse> => {
-    const data = await dispatch(getCourseDetail.initiate(id))
+    const data = await dispatch(
+      getCourseDetail.initiate(id, { forceRefetch: true })
+    )
     return data.data as CourseDetailResponse
   }
 )

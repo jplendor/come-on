@@ -71,6 +71,15 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     setIsValid(true)
   }, [description, image, title])
 
+  const convertURLtoFile = async (url: string): Promise<File> => {
+    const response = await fetch(url)
+    const data = await response.blob()
+    const ext = url.split(".").pop() // url 구조에 맞게 수정할 것
+    const filename = url.split("/").pop() // url 구조에 맞게 수정할 것
+    const metadata = { type: `image/${ext}` }
+    return new File([data], filename!, metadata)
+  }
+
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
 
@@ -108,14 +117,13 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
         setCourseDetail({ title, description, imgFile: String(imageFile) })
       )
     } else {
-      newDetail.append("imgFile", image)
-      dispatch(setCourseDetail({ title, description, imgFile: image }))
+      dispatch(setCourseDetail({ title, description, imgFile: String(image) }))
     }
     // 이미지가 바뀐 경우 base64로 바꿔서 전송
 
-    updateCourseDetail({ id, data: newDetail })
+    await updateCourseDetail({ id, data: newDetail })
     console.log(res)
-    navigate(`/course/${id}/update`, { state: 2 })
+    // navigate(`/course/${id}/update`, { state: 2 })
     setPage(2)
   }
 
