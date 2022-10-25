@@ -31,11 +31,10 @@ const MainContainer = styled(Box)(() => ({
 }))
 
 const ImgContainer = styled(Box)(() => ({
-  padding: "0px 20px 0px 20px",
-
   width: "100%",
-  height: "30%",
-  objectFit: "cover",
+  height: "200px",
+  overflow: "hidden",
+  position: "relative",
 }))
 
 const KakaoContainer = styled(Box)(() => ({
@@ -46,10 +45,9 @@ const KakaoContainer = styled(Box)(() => ({
 
 const FONT_TITLE = {
   fontSize: "22px",
-  lineHeight: "125%",
   fontWeight: "bold",
+  margin: "auto 0",
 }
-
 const FONT_SUBTITLE = {
   fontSize: "13px",
   lineHeight: "145%",
@@ -166,7 +164,18 @@ const CoursePage = (): JSX.Element => {
     content = (
       <>
         <ImgContainer>
-          <img src={imgSrc} width="100%" height="100%" alt="img" />
+          <img
+            src={imgSrc}
+            width="100%"
+            height="auto"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+            alt="img"
+          />
         </ImgContainer>
         <MainContainer style={{ margin: "auto 20px" }}>
           <TitleContainer>

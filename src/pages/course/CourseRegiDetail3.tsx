@@ -32,20 +32,21 @@ const TitleContainer = styled(Box)(() => ({
 
 const MainContainer = styled(Box)(() => ({
   display: "flex",
-  margin: "16px 0",
+  margin: "16px 20px",
   flexDirection: "column",
 }))
 
 const ImgContainer = styled(Box)(() => ({
   width: "100%",
-  height: "30%",
-  objectFit: "cover",
+  height: "200px",
+  overflow: "hidden",
+  position: "relative",
 }))
 
 const FONT_TITLE = {
   fontSize: "22px",
-  lineHeight: "125%",
   fontWeight: "bold",
+  margin: "auto 0",
 }
 
 const FONT_SUBTITLE = {
@@ -250,7 +251,13 @@ api연동부분
           <img
             src={courseDetail.imgFile}
             width="100%"
-            height="100%"
+            height="auto"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
             alt="img"
           />
         </ImgContainer>
@@ -309,9 +316,8 @@ api연동부분
                   (selectedNumber === "" ? -10 : Number(selectedNumber))
                 }
                 courseId={courseIdProps}
-                onRemove={() => {
-                  console.log("dd")
-                }}
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                onRemove={() => {}}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
               />

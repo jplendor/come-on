@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 
 import { Tab, Box } from "@mui/material"
@@ -53,7 +53,7 @@ interface PageState {
 }
 
 const CourseRegiLayout = (): JSX.Element => {
-  const [page, setPage] = React.useState(1)
+  const [page, setPage] = useState(1)
 
   const onClickPrev = (): void => {
     if (page !== 1) setPage(page - 1)
@@ -68,7 +68,8 @@ const CourseRegiLayout = (): JSX.Element => {
   const { state: pageState } = useLocation() as PageState
 
   useEffect(() => {
-    setPage(pageState)
+    if (pageState === null) setPage(1)
+    else setPage(pageState)
   }, [pageState])
 
   return (
@@ -118,7 +119,7 @@ const CourseRegiLayout = (): JSX.Element => {
         <TabPanel value="2">
           <CourseRegiDetail2 page={2} setPage={setPage} />
         </TabPanel>
-        <TabPanel value="3">
+        <TabPanel sx={{ padding: "0px", margin: "0px" }} value="3">
           <CourseRegiDetail3 page={3} setPage={setPage} />
         </TabPanel>
       </TabContext>
