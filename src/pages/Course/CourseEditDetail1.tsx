@@ -36,6 +36,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   const [description, setDescription] = useState<string>("")
   const [updateCourseDetail, { data: res }] = useUpdateCourseDetailMutation()
   const navigate = useNavigate()
+
   // rtkq에서 데이터 불러오기
   // store에 데이터 저장하기
 

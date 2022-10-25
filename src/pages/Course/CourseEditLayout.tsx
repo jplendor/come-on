@@ -5,6 +5,10 @@ import { Tab, Box } from "@mui/material"
 import { KeyboardArrowLeft, Close } from "@mui/icons-material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 
+import { useUpdateCoursePlaceToDBMutation } from "features/course/courseSlice"
+import { CourseUpdatePlaceProps } from "types/API/course-service"
+import { useSelector } from "react-redux"
+import { RootState } from "store"
 import CourseEditDetail1 from "./CourseEditDetail1"
 import CourseEditDetail2 from "./CourseEditDetail2"
 import CourseEditDetail3 from "./CourseEditDetail3"
@@ -56,7 +60,12 @@ const CourseEditLayout = (): JSX.Element => {
   const { id } = useParams<string>()
   const [page, setPage] = useState<number>(1)
   const navigate = useNavigate()
-
+  const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
+  const updatePlaces: CourseUpdatePlaceProps = useSelector(
+    (state: RootState) => {
+      return state.course.updatePlaces
+    }
+  )
   const handleChange = (
     event: React.SyntheticEvent,
     newValue: number
@@ -65,11 +74,23 @@ const CourseEditLayout = (): JSX.Element => {
   }
 
   const { state: pageState } = useLocation() as PageState
+  const setUpdateCourse = (): void => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const updateCourse = {
+      courseId: Number(id),
+      toSave: updatePlaces.toSave,
+      toModify: updatePlaces.toModify,
+      toDelete: updatePlaces.toDelete,
+    }
+    // 오류나면 updatePlaces로 바꿀것
+    updateCoursePlaceToDB(updateCourse)
+  }
 
   const onClickPrev = (): void => {
     if (pageState < 0) {
       navigate(`/course/${id}/update`, { state: 1 })
     }
+    setUpdateCourse()
     navigate(`/course/${id}/update`, { state: pageState - 1 })
   }
 

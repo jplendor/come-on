@@ -219,17 +219,14 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.log(open)
-  }, [open])
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  useEffect(() => {}, [open])
 
   const OpenModal = (): void => {
-    console.log("open")
     setOpen(true)
   }
 
   const closeModal = (): void => {
-    console.log("close")
     setOpen(false)
   }
 
@@ -274,7 +271,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
   /* //draggable */
 
   return (
-    <Draggable draggableId={item.name} index={item.order - 1}>
+    <Draggable draggableId={`${item.id}`} index={item.order - 1}>
       {(provided2) => (
         <Grid
           container

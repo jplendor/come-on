@@ -98,7 +98,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
 
   useEffect(() => {
     setIsValid(onValid())
-  }, [changeInput, isValid, imageSrc, previewImg])
+  }, [changeInput, isValid, imageSrc, previewImg, onValid])
 
   return (
     <Grid container spacing={3}>

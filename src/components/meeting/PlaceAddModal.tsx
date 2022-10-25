@@ -166,13 +166,13 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
       description: memo,
       category,
     }
+
     dispatch(addCoursePlace(myPlace))
     navigate("/course", { state: 2 })
   }
 
   // 업데이트 로직
   const onClickUpdateAddCoursePlace = (): void => {
-    console.log("adasd")
     const place = {
       ...newPlace,
       id: 0,
@@ -200,8 +200,6 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
       description: memo,
       category,
     }
-    console.log("s")
-    console.log(myPlace)
     dispatch(updateToSave({ toSave: myPlace }))
     navigate(`/course/${id}/update`, { state: 2 })
   }

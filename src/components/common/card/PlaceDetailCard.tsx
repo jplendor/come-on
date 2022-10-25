@@ -17,7 +17,7 @@ import PlaceDetailEditCard from "./PlaceDetailEditCard"
 // 1. 메모버튼 [V]
 // 2. 리스트 삭제 버튼 [V]
 
-const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
+const ThemeCardNumbering = styled(Typography)<TypographyProps>(() => ({
   borderRadius: "30px",
   width: "22px",
   height: "22px",
@@ -42,7 +42,7 @@ const SELECTED_CARD = {
   border: "1px solid #1951B2",
   padding: "0px",
 }
-const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
+const ThemeGrid = styled(Grid)<GridProps>(() => ({
   "&.MuiGrid-root": {
     borderRadius: "4px",
     color: "black",
@@ -330,6 +330,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
 }
 
 PlaceDetailCard.defaultProps = {
+  // eslint-disable-next-line no-console
   onRemove: () => console.warn("onRemove not defined"),
 }
 

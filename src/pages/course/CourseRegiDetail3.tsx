@@ -18,7 +18,7 @@ import {
 } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"
-import { AccountCircleOutlined, DateRange, Favorite } from "@mui/icons-material"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 import PlaceDetailCard from "components/common/card/PlaceDetailCard"
 import { CoursePlaceProps, PlaceType } from "types/API/course-service"
 import MapContainer from "components/common/course/MapContainer"
@@ -108,22 +108,20 @@ interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
 }
-
 // 코스등록 전 미리보기 페이지
 const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
   const [winReady, setWinReady] = useState(false)
   useEffect(() => {
     setWinReady(true)
-  })
+  }, [])
   /* **********************************************************************
 api연동부분
  2
 ************************************************************************** */
-  const navigate = useNavigate()
   interface MyDetailQueryProps extends QueryProps {
     data: MydetailRes
   }
-
+  const navigate = useNavigate()
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [addCourseDetail] = useAddCourseDetailMutation()
   const [addCoursePlace] = useAddCoursePlaceMutation()
@@ -198,6 +196,10 @@ api연동부분
     // toDelete: [{ coursePlaceId: courseId }],
   }
 
+  const onClickModify = (): void => {
+    setPage(1)
+  }
+
   // // 장소리스트 전송하는 함수
   const submitPlaceList = async (courseId: number): Promise<boolean> => {
     // map으로 toSave배열에 코스 추가하기
@@ -221,10 +223,10 @@ api연동부분
   }
 
   const onClickLike = (): void => {
-    console.log(isLike)
     setIsLike(!isLike)
   }
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     likeCount = changeLikeCount()
   }, [isLike])
   // 제출
@@ -236,9 +238,9 @@ api연동부분
     return Promise.resolve(true)
   }
 
-  // if (isSubmit) {
-  //   navigate("/")
-  // }
+  if (isSubmit) {
+    navigate("/")
+  }
 
   if (isLoadingUser) return <div>Loading...</div>
   return (
@@ -318,9 +320,8 @@ api연동부분
             <CourseNextStepButton
               content="수정하기"
               width="49%"
-              onClick={() => {
-                console.log("수정하기")
-              }}
+              isValid
+              onClick={onClickModify}
             />
             <CourseNextStepButton
               content="코스등록 완료"

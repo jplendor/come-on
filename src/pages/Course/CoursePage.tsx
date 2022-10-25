@@ -112,7 +112,7 @@ const CoursePage = (): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
-  console.log(id)
+
   const {
     data: resultCourseDetail,
     isSuccess,
@@ -160,8 +160,8 @@ const CoursePage = (): JSX.Element => {
   }, [isSuccess, imgUrl])
 
   let content
+  // eslint-disable-next-line no-empty
   if (isFetching) {
-    console.log("loading...")
   } else if (isSuccess) {
     content = (
       <>

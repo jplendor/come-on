@@ -20,6 +20,7 @@ import {
   deleteToSave,
   updateCoursePlace,
   updateToDelete,
+  updateToModify,
   useUpdateCoursePlaceToDBMutation,
 } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
@@ -77,7 +78,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       return state.course.updatePlaces
     }
   )
-  const [updateCoursePlaceToDB, { data }] = useUpdateCoursePlaceToDBMutation()
+  const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
   const [placeData] = useState<CoursePlaceState[]>(placeList)
   const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
@@ -103,7 +104,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
     }
   }
 
-  const setUpdateCourse = (): void => {
+  const setUpdateCourse = async (): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const updateCourse = {
       courseId: id,
@@ -111,8 +112,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       toModify: updatePlaces.toModify,
       toDelete: updatePlaces.toDelete,
     }
-    // 오류나면 updatePlaces로 바꿀것
-    updateCoursePlaceToDB(updateCourse)
+    await updateCoursePlaceToDB(updateCourse)
   }
 
   const dispatch = useDispatch()
@@ -179,7 +179,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
     navigate(`/course/${id}/update`, { state: 3 })
   }
 
-  const onDragEnd = (result: any): void => {
+  const onDragEnd = async (result: any): Promise<void> => {
     const { destination, source, draggableId } = result
     if (!destination) {
       return
@@ -192,16 +192,15 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
     }
 
     const newPlaceNames = placeList.map((place) => {
-      return place.name
+      return place.id
     })
 
     newPlaceNames.splice(source.index, 1)
     newPlaceNames.splice(destination.index, 0, draggableId)
-
     const newPlace: Array<CoursePlaceState> = []
     for (let i = 0; i < newPlaceNames.length; i += 1) {
       const temp: any = placeData.filter((place) => {
-        return place.name === newPlaceNames[i]
+        return String(place.id) === String(newPlaceNames[i])
       })
       const temp2 = { ...temp[0] }
       const newState = {
@@ -210,8 +209,15 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
       }
       newPlace.push(newState)
     }
+
     setCourseData(newPlace)
     dispatch(updateCoursePlace(newPlace))
+
+    await setUpdateCourse()
+    // 전부 toModify에 올려서 보내기
+    dispatch(updateToModify(newPlace))
+    // 데이터 저장 개념으로 한번 보내고
+    await setUpdateCourse()
   }
 
   return (
@@ -237,7 +243,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
               <Box ref={provided.innerRef} {...provided.droppableProps}>
                 {placeList.map((item) => (
                   <PlaceDetailDraggableCard
-                    item={{ ...item, id }}
+                    item={{ ...item, id: item.id }}
                     key={item.id}
                     onClick={onClickFocus}
                     isSelected={

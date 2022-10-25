@@ -248,6 +248,7 @@ export const coursePlaceSlice = createSlice({
       state.searchText = action.payload
     },
     addCoursePlace: (state, action: PayloadAction<CoursePlaceProps>) => {
+      if (state.coursePlaces[0].name === "newName") state.coursePlaces.pop()
       if (state.coursePlaces.length === 0) {
         state.coursePlaces[0] = { ...action.payload, order: 1 }
       } else {
@@ -271,7 +272,6 @@ export const coursePlaceSlice = createSlice({
         category: action.payload.category,
       }
 
-      console.log(targetIndex)
       // 해당 인덱스의 값 삭제후 다시 끼워넣으며 원하는 값으로 교체~
       if (targetIndex === -1) {
         state.updatePlaces.toModify?.push(modifyPlace)
@@ -282,7 +282,6 @@ export const coursePlaceSlice = createSlice({
     },
     // 드래그앤 드롭할때 사용
     updateCoursePlace: (state, action: PayloadAction<CoursePlaceProps[]>) => {
-      console.log(action.payload)
       state.coursePlaces = action.payload
     },
     editCoursePlaceDetail: (state, action: PayloadAction<CoursePlaceProps>) => {
@@ -297,14 +296,12 @@ export const coursePlaceSlice = createSlice({
     setCourseDetail: (state, action: PayloadAction<CourseDetailProps>): any => {
       state.courseDetails.title = action.payload.title
       state.courseDetails.description = action.payload.description
-      console.log(action.payload)
       state.courseDetails.imgFile = action.payload.imgFile
     },
     updateToSave: (
       state,
       action: PayloadAction<coursePlacesToSaveProps>
     ): any => {
-      console.log(action.payload)
       state.updatePlaces.toSave?.push(action.payload.toSave)
     },
     deleteToSave: (state, action: PayloadAction<CoursePlacePropsNoId>): any => {
@@ -346,8 +343,7 @@ export const coursePlaceSlice = createSlice({
       state,
       action: PayloadAction<coursePlaceToModify[]>
     ): any => {
-      // payload의 객체의 인덱스를 찾고
-      // 그 인덱스를 splice
+      state.updatePlaces.toModify = action.payload
     },
     updateToDelete: (
       state,
@@ -390,6 +386,7 @@ export const {
   deleteToModify,
   modifyToSave,
   updateToDelete,
+  updateToModify,
   deleteToSave,
   editCoursePlaceDetail,
 } = coursePlaceSlice.actions

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
-import { Tab, Box, IconButton } from "@mui/material"
+import { Tab, Box } from "@mui/material"
 import { KeyboardArrowLeft, Close } from "@mui/icons-material"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 
@@ -16,12 +16,6 @@ import CourseRegiDetail3 from "./CourseRegiDetail3"
        마지막 단계에서 api 요청과함께 서버로 데이터가 전송됩니다.
 작성자 : 강예정
 issue : 중간에 코스등록이 취소 될 시 데이터를 기억해서 다시 불러오는 기능을 추가할 수 있을지 고민 */
-
-const ICONBOXLEFT = {
-  zIndex: "10",
-  position: "absolute",
-  left: "20px",
-}
 
 const ICONBOXRIGHT = {
   zIndex: "10",
@@ -74,9 +68,7 @@ const CourseRegiLayout = (): JSX.Element => {
   const { state: pageState } = useLocation() as PageState
 
   useEffect(() => {
-    if (pageState === 2) {
-      setPage(2)
-    }
+    setPage(pageState)
   }, [pageState])
 
   return (

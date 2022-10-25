@@ -55,7 +55,6 @@ interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
 }
-
 const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [isValid, setIsValid] = useState(false)
@@ -70,7 +69,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
     else {
       setIsValid(false)
     }
-  }, [])
+  }, [placeList])
 
   // setPage(2)
 
