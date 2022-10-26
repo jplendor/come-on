@@ -4,7 +4,6 @@ import RequireAuth from "components/auth/RequireAuth"
 
 import CoursePlaceAdd from "pages/course/CoursePlaceAdd"
 import CourseRegiLayout from "./CourseRegiLayout"
-import CourseEditLayout from "./CourseEditLayout"
 import CoursePage from "./CoursePage"
 import CourseUpdate from "./CourseUpdate"
 

@@ -18,10 +18,8 @@ import {
   useUpdateCourseDetailMutation,
 } from "features/course/courseSlice"
 
-import { useDispatch, useSelector } from "react-redux"
-import { AppDispatch, RootState } from "store"
-
-import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { AppDispatch } from "store"
 
 interface pageProps {
   page: number
@@ -35,7 +33,6 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
   const [updateCourseDetail, { data: res }] = useUpdateCourseDetailMutation()
-  const navigate = useNavigate()
 
   // rtkq에서 데이터 불러오기
   // store에 데이터 저장하기
@@ -56,10 +53,6 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     if (page === 1) dis()
   }, [dis, page])
 
-  const c = useSelector((state: RootState) => {
-    return state.course.courseDetails
-  })
-
   // 문제 : api의 pending이나 reject가 오면 mount 될 때 바인딩 할 수가 없음
 
   const [isValid, setIsValid] = useState(false)
@@ -71,15 +64,6 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     if (image === "" || image === "undefined") return
     setIsValid(true)
   }, [description, image, title])
-
-  const convertURLtoFile = async (url: string): Promise<File> => {
-    const response = await fetch(url)
-    const data = await response.blob()
-    const ext = url.split(".").pop() // url 구조에 맞게 수정할 것
-    const filename = url.split("/").pop() // url 구조에 맞게 수정할 것
-    const metadata = { type: `image/${ext}` }
-    return new File([data], filename!, metadata)
-  }
 
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)

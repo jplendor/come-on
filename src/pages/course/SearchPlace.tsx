@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useRef, useCallback } from "react"
@@ -93,6 +94,9 @@ const SearchPlace = ({
   const [lastPage, setLastPage] = useState(1)
   const refPagenation = useRef<any>()
   const { geoState } = useGeolocation()
+  const [myLevel, setMyLevel] = useState(5)
+  const [myLatLng, setMyLatLng] = useState(["37.566826", "126.9786567"])
+  const [isSearch, setIsSearch] = useState(false)
 
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
@@ -104,6 +108,13 @@ const SearchPlace = ({
   // 선택한 페이지의 정보 출력
   const handlePagenation = (page: number): void => {
     setSelectedPage(page)
+  }
+
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const e = event?.currentTarget
+    if (e) {
+      setselectedNumber(e.id)
+    } else setselectedNumber("")
   }
 
   // 디바운싱 함수
@@ -133,21 +144,17 @@ const SearchPlace = ({
     setLastPage(page)
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const search = useCallback(
     debounceFunc((value: string) => onKeyPress(value), DELAY),
     [inputedKeyword]
   )
   const eventHandler = (e: React.KeyboardEvent): void => {
+    setIsSearch(true)
     search(e.key)
   }
 
   // 리스트 클릭했을 시 색 바뀌는 함수 + 목록에 추가되도록
-  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
-    const e = event?.currentTarget
-    if (e) {
-      setselectedNumber(e.id)
-    } else setselectedNumber("")
-  }
 
   // 마커를 맵에 표시
   const displayMarker = (map: any, infowindow: any, place: any): void => {
@@ -165,53 +172,64 @@ const SearchPlace = ({
       infowindow.setContent(renderedMarger)
       infowindow.open(map, marker)
     })
+    marker.setMap(map)
   }
+
+  // eslint-disable-next-line prefer-const
 
   useEffect(() => {
     const infowindow = new kakao.maps.InfoWindow({ zIndex: 1, width: "100px" })
     const container = mapContainer.current
 
     const options = {
-      center: new kakao.maps.LatLng(37.566826, 126.9786567),
-      level: 3,
+      center: new kakao.maps.LatLng(myLatLng[0], myLatLng[1]),
+      level: myLevel,
     }
 
     const map = new kakao.maps.Map(container, options)
-    const imageSrc =
-      "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
-    const imageSize = new kakao.maps.Size(64, 69)
-    const imageOption = { offset: new kakao.maps.Point(27, 69) }
+
+    const placesSearchCB = (data: any, status: any): any => {
+      // pagination.gotoPage(selectedPage)
+      // if (data !== "ERROR" && pagination.current === selectedPage) {
+      //   setSearchedData(data)
+      // }
+      // setPageCount(pagination.last)
+      if (status === kakao.maps.services.Status.OK) {
+        setSearchedData(data)
+        const bounds = new kakao.maps.LatLngBounds()
+        for (let i = 0; i < data.length; i += 1) {
+          displayMarker(map, infowindow, data[i])
+        }
+        // map.panTo(new kakao.maps.LatLng(data[0].y, data[0].x))
+      }
+    }
+
+    // 맵에 이동시 좌표이벤트 달기
+    kakao.maps.event.addListener(
+      map,
+      "dragend",
+      // eslint-disable-next-line func-names
+      async function (): Promise<void> {
+        const level = await map.getLevel()
+        const latlng = map.getCenter()
+        setMyLatLng([latlng.getLat(), latlng.getLng()])
+
+        setMyLevel(level)
+      }
+    )
 
     const ps = new kakao.maps.services.Places()
     const pageOptions = {
       size: 5, // 나중에 설정한 위치 기준으로 할 것
-      location: new kakao.maps.LatLng(37.566826, 126.9786567),
-      radius: 500, // 500미터 내외로 검색
+      location: new kakao.maps.LatLng(myLatLng[0], myLatLng[1]),
       SORT_BY: "DISTANCE",
+      useMapCenter: true,
+      useMapBounds: true,
     }
 
-    const placesSearchCB = (data: any, status: any, pagination: any): any => {
-      pagination.gotoPage(selectedPage)
-
-      if (data !== "ERROR" && pagination.current === selectedPage) {
-        setSearchedData(data)
-      }
-      setPageCount(pagination.last)
-
-      if (status === kakao.maps.services.Status.OK) {
-        const bounds = new kakao.maps.LatLngBounds()
-        for (let i = 0; i < data.length; i += 1) {
-          displayMarker(map, infowindow, data[i])
-          bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x))
-        }
-        map.setBounds(bounds)
-      }
-    }
-
-    if (searchKeyword !== "") {
-      ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
-    }
-  }, [selectedPage, searchKeyword])
+    ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
+    setIsSearch(false)
+  }, [selectedPage, searchKeyword, myLatLng, myLevel])
 
   return (
     <>
@@ -240,15 +258,6 @@ const SearchPlace = ({
 
       <ListContainer>
         {searchedData?.length !== 0 &&
-          // generateComponent(searchedData, (item, key) => (
-          //   <SearchCard
-          //     item={item}
-          //     key={key}
-          //     onClickFocus={onClickFocus}
-          //     selectedNumber={selectedNumber}
-          //     mode={mode}
-          //   />
-          // ))
           searchedData.map((item) => (
             <SearchCard
               item={item}

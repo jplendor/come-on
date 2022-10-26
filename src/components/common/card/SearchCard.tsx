@@ -107,7 +107,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   itemsLen,
 }) => {
   const [open, setOpen] = useState<boolean>(false)
-  console.log(itemsLen)
+
   const closeModal = (): void => {
     console.log("close")
     setOpen(false)
@@ -166,10 +166,6 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
       setOpen(true)
     }
   }
-
-  useEffect(() => {
-    console.log(open)
-  }, [open])
 
   return (
     <>
