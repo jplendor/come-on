@@ -65,7 +65,7 @@ const CalendarRangePicker = ({
   const DEFAULT = {
     height: "90%",
     width: "100%",
-    bgcolor: theme.grayscale[200],
+    bgcolor: theme.primary[50],
   }
 
   const START = {
