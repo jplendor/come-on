@@ -29,7 +29,9 @@ const MainContainer = styled(Box)(() => ({
   display: "flex",
   flexDirection: "column",
 }))
-
+const MAIN_CONTAINER = {
+  padding: "20px",
+}
 const ICON_STYLE = {
   margin: "5px 0",
 }
@@ -147,7 +149,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
   // order바꿔주기
 
   return (
-    <MainContainer>
+    <MainContainer sx={MAIN_CONTAINER}>
       <MapContainer
         selectedNumber={selectedNumber}
         placeLists={placeData}

@@ -21,6 +21,10 @@ interface pageProps {
   setPage: Dispatch<SetStateAction<number>>
 }
 
+const MAIN_CONTAINER = {
+  padding: "20px",
+}
+
 const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   const dispatch = useDispatch()
 
@@ -101,7 +105,7 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
   }, [changeInput, isValid, imageSrc, previewImg, onValid])
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} sx={MAIN_CONTAINER}>
       <Grid item xs={12}>
         <ImageInput
           title="이미지 등록"

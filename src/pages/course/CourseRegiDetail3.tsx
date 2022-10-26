@@ -107,10 +107,15 @@ const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
 }
 interface pageProps {
   page: number
+  setImage: Dispatch<SetStateAction<string>>
   setPage: Dispatch<SetStateAction<number>>
 }
 // 코스등록 전 미리보기 페이지
-const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
+const CourseRegiDetail3 = ({
+  setImage,
+  setPage,
+  page,
+}: pageProps): JSX.Element => {
   const [winReady, setWinReady] = useState(false)
   useEffect(() => {
     setWinReady(true)
@@ -239,6 +244,7 @@ api연동부분
     return Promise.resolve(true)
   }
 
+  setImage(courseDetail.imgFile)
   if (isSubmit) {
     navigate("/")
   }
