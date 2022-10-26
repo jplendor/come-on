@@ -1,18 +1,15 @@
 /* eslint-disable func-names */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useRef, useCallback } from "react"
 
 import ReactDOMServer from "react-dom/server"
 import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
 import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
-import { generateComponent } from "utils"
+
 import SearchCard from "components/common/card/SearchCard"
-import { CoursePlaceProps, SearchCardProp } from "types/API/course-service"
+import { SearchCardProp } from "types/API/course-service"
 import useGeolocation from "hooks/geolocation/useGeolocation"
-import LikeButton from "components/common/card/cardLayout/CardItemButton"
-import { useLocation } from "react-router-dom"
 
 const { kakao } = window
 const DELAY = 800
@@ -95,7 +92,10 @@ const SearchPlace = ({
   const refPagenation = useRef<any>()
   const { geoState } = useGeolocation()
   const [myLevel, setMyLevel] = useState(5)
-  const [myLatLng, setMyLatLng] = useState(["37.566826", "126.9786567"])
+  const [myLatLng, setMyLatLng] = useState([
+    geoState.info.lat,
+    geoState.info.lng,
+  ])
   const [isSearch, setIsSearch] = useState(false)
 
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
