@@ -34,15 +34,18 @@ const TitleContainer = styled(Box)(() => ({
 
 const MainContainer = styled(Box)(() => ({
   display: "flex",
-  margin: "16px 20px",
+  margin: "0px 20px 16px 20px",
   flexDirection: "column",
+  position: "relative",
+  top: "-40px",
 }))
 
 const ImgContainer = styled(Box)(() => ({
   width: "100%",
-  height: "200px",
+  height: "230px",
   overflow: "hidden",
   position: "relative",
+  top: "-60px",
 }))
 
 const FONT_TITLE = {
@@ -248,6 +251,7 @@ api연동부분
             height="auto"
             style={{
               position: "absolute",
+              zIndex: "-10",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",

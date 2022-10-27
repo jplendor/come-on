@@ -1,15 +1,9 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
-import { styled } from "@mui/material/styles"
-import { Tab, Box, Typography } from "@mui/material"
-import {
-  ArrowBackIosNewOutlined,
-  KeyboardArrowLeft,
-  Close,
-} from "@mui/icons-material"
+import { Box, Typography } from "@mui/material"
+import { ArrowBackIosNewOutlined, Close } from "@mui/icons-material"
 
-import { TabContext, TabList, TabPanel } from "@mui/lab"
 import LinearProgress from "@mui/material/LinearProgress"
 
 import CourseRegiDetail1 from "./CourseRegiDetail1"
@@ -29,6 +23,7 @@ const ICON_STYLE = {
   height: "100%",
   textAlign: "center",
   cursor: "pointer",
+  zIndex: "15",
 }
 
 const NAVBAR = {
@@ -42,8 +37,6 @@ const NAVBAR = {
 }
 
 const NAVBAR_STYLE2 = {
-  position: "fixed",
-  top: "20px",
   width: "380px",
   height: "42px",
   margin: "10px 30px",
@@ -52,15 +45,8 @@ const NAVBAR_STYLE2 = {
   alignItems: "center",
   color: "white",
   backgroundColor: "none",
-  zIndex: "100",
+  zIndex: "15",
 }
-
-const ImgContainer = styled(Box)(() => ({
-  width: "100%",
-  height: "200px",
-  overflow: "hidden",
-  position: "relative",
-}))
 
 const MIDTITLE = {
   margin: "0 auto",
@@ -75,24 +61,14 @@ interface PageState {
 
 const CourseRegiLayout = (): JSX.Element => {
   const [page, setPage] = useState(0)
-  const [label, setLabel] = useState("코스선택")
-  const [image, setImage] = useState("")
+
   const onClickPrev = (): void => {
     if (page !== 1) setPage(page - 1)
   }
 
-  const handleChange = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ): void => {
-    setPage(newValue)
-  }
   const { state: pageState } = useLocation() as PageState
-  const [progress, setProgress] = useState(0)
-  console.log(page)
-  console.log(pageState)
+
   useEffect(() => {
-    console.log("1")
     if (pageState === null) {
       setPage(1)
     } else {
@@ -104,7 +80,7 @@ const CourseRegiLayout = (): JSX.Element => {
     <Box sx={{ width: "100%", typography: "body1" }}>
       <Box sx={{ borderColor: "divider", width: "100%" }}>
         <Box sx={page !== 3 ? NAVBAR : NAVBAR_STYLE2}>
-          <Box sx={{ width: "24px", height: "24px" }}>
+          <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
             <ArrowBackIosNewOutlined sx={ICON_STYLE} onClick={onClickPrev} />
           </Box>
           <Box sx={MIDTITLE}>
@@ -113,25 +89,31 @@ const CourseRegiLayout = (): JSX.Element => {
                 lineHeight: "135%",
                 fontWeight: "bold",
                 fontSize: "18px",
+                zIndex: "15",
                 color: page !== 3 ? "black" : "white",
               }}
             >
               {page === 1 ? "코스등록" : page === 2 ? "장소선택" : "미리보기"}
             </Typography>
           </Box>
-          <Box sx={{ width: "24px", height: "24px" }}>
+          <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
             <Close fontSize="medium" sx={ICON_STYLE} />
           </Box>
-
-          <LinearProgress variant="determinate" value={33.3 * page} />
         </Box>
+        {page !== 3 && (
+          <LinearProgress
+            sx={{ zIndex: "16" }}
+            variant="determinate"
+            value={33.3 * page}
+          />
+        )}
       </Box>
       {page === 1 ? (
         <CourseRegiDetail1 page={1} setPage={setPage} />
       ) : page === 2 ? (
         <CourseRegiDetail2 page={2} setPage={setPage} />
       ) : (
-        <CourseRegiDetail3 page={3} setPage={setPage} setImage={setImage} />
+        <CourseRegiDetail3 page={3} setPage={setPage} />
       )}
     </Box>
   )

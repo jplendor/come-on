@@ -44,6 +44,9 @@ const ICON_STYLE = {
   margin: "5px 0",
 }
 
+const MAIN_CONTAINER = {
+  padding: "20px",
+}
 enum PlaceType {
   m = "meeting",
   c = "course",
@@ -67,7 +70,7 @@ interface pageProps {
   id: number
 }
 
-const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
+const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [isValid, setIsValid] = useState(false)
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
@@ -176,6 +179,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
 
   const onClicKNextPage = (): void => {
     setUpdateCourse()
+    setPage(3)
     navigate(`/course/${id}/update`, { state: 3 })
   }
 
@@ -221,7 +225,7 @@ const CourseEditDetail2 = ({ id }: pageProps): JSX.Element => {
   }
 
   return (
-    <MainContainer>
+    <MainContainer sx={MAIN_CONTAINER}>
       <MapContainer
         selectedNumber={selectedNumber}
         placeLists={placeData}

@@ -32,15 +32,18 @@ const TitleContainer = styled(Box)(() => ({
 
 const MainContainer = styled(Box)(() => ({
   display: "flex",
-  margin: "16px 20px",
+  margin: "0px 20px 16px 20px",
   flexDirection: "column",
+  position: "relative",
+  top: "-40px",
 }))
 
 const ImgContainer = styled(Box)(() => ({
   width: "100%",
-  height: "200px",
+  height: "230px",
   overflow: "hidden",
   position: "relative",
+  top: "-60px",
 }))
 
 const FONT_TITLE = {
@@ -107,15 +110,10 @@ const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
 }
 interface pageProps {
   page: number
-  setImage: Dispatch<SetStateAction<string>>
   setPage: Dispatch<SetStateAction<number>>
 }
 // 코스등록 전 미리보기 페이지
-const CourseRegiDetail3 = ({
-  setImage,
-  setPage,
-  page,
-}: pageProps): JSX.Element => {
+const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
   const [winReady, setWinReady] = useState(false)
   useEffect(() => {
     setWinReady(true)
@@ -244,7 +242,6 @@ api연동부분
     return Promise.resolve(true)
   }
 
-  setImage(courseDetail.imgFile)
   if (isSubmit) {
     navigate("/")
   }
@@ -260,6 +257,7 @@ api연동부분
             height="auto"
             style={{
               position: "absolute",
+              zIndex: "-10",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
