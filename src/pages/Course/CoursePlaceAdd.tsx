@@ -8,14 +8,7 @@ enum PlaceType {
 }
 
 const CoursePlaceAdd = (): JSX.Element => {
-  return (
-    <SearchPlace
-      mode={PlaceType.c}
-      editMode={false}
-      id={undefined}
-      itemsLen={0}
-    />
-  )
+  return <SearchPlace mode={PlaceType.c} editMode={false} id={undefined} />
 }
 
 export const CoursePlaceEditModeAdd = (): JSX.Element => {

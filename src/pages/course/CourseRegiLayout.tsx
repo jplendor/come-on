@@ -6,9 +6,11 @@ import { ArrowBackIosNewOutlined, Close } from "@mui/icons-material"
 
 import LinearProgress from "@mui/material/LinearProgress"
 
+import { PlaceType } from "types/API/course-service"
 import CourseRegiDetail1 from "./CourseRegiDetail1"
 import CourseRegiDetail2 from "./CourseRegiDetail2"
 import CourseRegiDetail3 from "./CourseRegiDetail3"
+import SearchPlace from "./SearchPlace"
 // MUI
 
 /* Course Layout 
@@ -78,43 +80,59 @@ const CourseRegiLayout = (): JSX.Element => {
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
-      <Box sx={{ borderColor: "divider", width: "100%" }}>
-        <Box sx={page !== 3 ? NAVBAR : NAVBAR_STYLE2}>
-          <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
-            <ArrowBackIosNewOutlined sx={ICON_STYLE} onClick={onClickPrev} />
+      <>
+        <Box sx={{ borderColor: "divider", width: "100%" }}>
+          <Box sx={page !== 4 ? NAVBAR : NAVBAR_STYLE2}>
+            <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
+              <ArrowBackIosNewOutlined sx={ICON_STYLE} onClick={onClickPrev} />
+            </Box>
+            <Box sx={MIDTITLE}>
+              <Typography
+                sx={{
+                  lineHeight: "135%",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  zIndex: "15",
+                  color: page !== 4 ? "black" : "white",
+                }}
+              >
+                {page === 1
+                  ? "코스등록"
+                  : page === 2
+                  ? "장소선택"
+                  : page === 3
+                  ? "장소등록"
+                  : "미리보기"}
+              </Typography>
+            </Box>
+            <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
+              <Close fontSize="medium" sx={ICON_STYLE} />
+            </Box>
           </Box>
-          <Box sx={MIDTITLE}>
-            <Typography
-              sx={{
-                lineHeight: "135%",
-                fontWeight: "bold",
-                fontSize: "18px",
-                zIndex: "15",
-                color: page !== 3 ? "black" : "white",
-              }}
-            >
-              {page === 1 ? "코스등록" : page === 2 ? "장소선택" : "미리보기"}
-            </Typography>
-          </Box>
-          <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
-            <Close fontSize="medium" sx={ICON_STYLE} />
-          </Box>
+          {page !== 4 && (
+            <LinearProgress
+              sx={{ zIndex: "16" }}
+              variant="determinate"
+              value={33.3 * page}
+            />
+          )}
         </Box>
-        {page !== 3 && (
-          <LinearProgress
-            sx={{ zIndex: "16" }}
-            variant="determinate"
-            value={33.3 * page}
+        {page === 1 ? (
+          <CourseRegiDetail1 page={1} setPage={setPage} />
+        ) : page === 2 ? (
+          <CourseRegiDetail2 page={2} setPage={setPage} />
+        ) : page === 3 ? (
+          <SearchPlace
+            mode={PlaceType.c}
+            editMode={false}
+            id={undefined}
+            page={3}
+            setPage={setPage}
           />
+        ) : (
+          <CourseRegiDetail3 page={4} setPage={setPage} />
         )}
-      </Box>
-      {page === 1 ? (
-        <CourseRegiDetail1 page={1} setPage={setPage} />
-      ) : page === 2 ? (
-        <CourseRegiDetail2 page={2} setPage={setPage} />
-      ) : (
-        <CourseRegiDetail3 page={3} setPage={setPage} />
-      )}
+      </>
     </Box>
   )
 }

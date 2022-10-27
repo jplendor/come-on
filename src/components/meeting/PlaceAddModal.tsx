@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { Dispatch, SetStateAction, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   Box,
@@ -27,6 +27,8 @@ interface PlaceAddModalProps {
   newPlace: Place
   mode: PlaceType
   id?: number
+  page?: number
+  setPage?: Dispatch<SetStateAction<number>>
 }
 
 const CATEGORY_BOX = {
@@ -103,7 +105,7 @@ const CATEGORY_LIST = [
 ]
 
 const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
-  const { open, onClose, newPlace, mode, id } = props
+  const { open, onClose, newPlace, mode, id, page, setPage } = props
   const [category, setCategory] = useState("")
   const [memo, setMemo] = useState("")
   const placeItems = useSelector((state: RootState) => {
@@ -168,6 +170,9 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
     }
 
     dispatch(addCoursePlace(myPlace))
+    if (setPage !== undefined) setPage(2)
+    console.log("Adsdas")
+    console.log(setPage)
     navigate("/course", { state: 2 })
   }
 
@@ -306,5 +311,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
 
 PlaceAddModal.defaultProps = {
   id: undefined,
+  page: undefined,
+  setPage: console.log("sorry error this"),
 }
 export default PlaceAddModal

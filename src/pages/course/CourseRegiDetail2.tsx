@@ -147,7 +147,9 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
     dispatch(updateCoursePlace(newPlace))
   }
   // order바꿔주기
-
+  const handleAddClick = (): void => {
+    setPage(3)
+  }
   return (
     <MainContainer sx={MAIN_CONTAINER}>
       <MapContainer
@@ -158,9 +160,14 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
       />
       <IconContainer>
         <IconButton type="button">
-          <Link to="/course/register">
-            <Add sx={ICON_STYLE} color="secondary" fontSize="large" />
-          </Link>
+          {/* <Link to="register"> */}
+          <Add
+            sx={ICON_STYLE}
+            color="secondary"
+            fontSize="large"
+            onClick={handleAddClick}
+          />
+          {/* </Link> */}
         </IconButton>
       </IconContainer>
       {/* 카카오톡 공유하기 */}

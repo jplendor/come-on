@@ -1,12 +1,26 @@
 /* eslint-disable func-names */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useRef, useCallback } from "react"
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react"
 
 import ReactDOMServer from "react-dom/server"
-import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
+import {
+  InputAdornment,
+  TextField,
+  Box,
+  Dialog,
+  Typography,
+  Button,
+} from "@mui/material"
 import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
-
+import Slide from "@mui/material/Slide"
 import SearchCard from "components/common/card/SearchCard"
 import { SearchCardProp } from "types/API/course-service"
 import useGeolocation from "hooks/geolocation/useGeolocation"
@@ -15,19 +29,9 @@ const { kakao } = window
 const DELAY = 800
 
 const SearchBar = styled(TextField)(() => ({
-  padding: "10px",
-  margin: "10px 0",
+  padding: "0px",
+  margin: "0px",
 }))
-
-const ListContainer = styled(Box)(() => ({
-  padding: "10px",
-}))
-
-const PaginationStyle = {
-  margin: "0, auto",
-  display: "flex",
-  justifyContent: "center",
-}
 
 interface ListDetailCardProp {
   index: number // 카드의 인덱스 넘버 - order
@@ -56,7 +60,9 @@ interface SearchPlaceProps {
   mode: PlaceType
   editMode?: boolean
   id?: number | undefined
-  itemsLen?: number
+
+  page?: number
+  setPage?: Dispatch<SetStateAction<number>>
 }
 
 const MyMarker = ({
@@ -81,15 +87,15 @@ const SearchPlace = ({
   mode,
   editMode,
   id,
-  itemsLen,
+  setPage,
+  page,
 }: SearchPlaceProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
-  const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
-  const [selectedPage, setSelectedPage] = useState(1)
-  const [lastPage, setLastPage] = useState(1)
-  const refPagenation = useRef<any>()
+  // const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
+  const [selectedData, setSelectedData] = useState<ListDetailCardProp>()
+  const [open, setOpen] = useState(false)
   const { geoState } = useGeolocation()
   const [myLevel, setMyLevel] = useState(5)
   const [myLatLng, setMyLatLng] = useState([
@@ -97,17 +103,12 @@ const SearchPlace = ({
     geoState.info.lng,
   ])
   const [isSearch, setIsSearch] = useState(false)
-
+  const containerRef = React.useRef(null)
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
   // 검색창을 이용해 키워드를 검색
   const handleSearchBar = (): void => {
     setSearchKeyword(inputedKeyword)
-  }
-
-  // 선택한 페이지의 정보 출력
-  const handlePagenation = (page: number): void => {
-    setSelectedPage(page)
   }
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
@@ -123,7 +124,6 @@ const SearchPlace = ({
   const onKeyPress = (keyValue: string): void => {
     if (keyValue === "Enter") {
       handleSearchBar()
-      setSelectedPage(1)
     }
   }
 
@@ -137,11 +137,6 @@ const SearchPlace = ({
       clearTimeout(timer)
       timer = setTimeout(() => callback(args[0]), delay)
     }
-  }
-
-  // 검색한 키워드의 페이지 네이션 개수 설정
-  const setPageCount = (page: number): void => {
-    setLastPage(page)
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,7 +163,9 @@ const SearchPlace = ({
       // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
       const myMarker = MyMarker(place)
       const renderedMarger = ReactDOMServer.renderToString(myMarker)
-
+      setSelectedData(place)
+      setOpen(true)
+      map.panTo(new kakao.maps.LatLng(place.y, place.x))
       infowindow.setContent(renderedMarger)
       infowindow.open(map, marker)
     })
@@ -195,12 +192,11 @@ const SearchPlace = ({
       // }
       // setPageCount(pagination.last)
       if (status === kakao.maps.services.Status.OK) {
-        setSearchedData(data)
-        const bounds = new kakao.maps.LatLngBounds()
         for (let i = 0; i < data.length; i += 1) {
           displayMarker(map, infowindow, data[i])
         }
-        // map.panTo(new kakao.maps.LatLng(data[0].y, data[0].x))
+        if (isSearch === true)
+          map.setCenter(new kakao.maps.LatLng(data[0].y, data[0].x))
       }
     }
 
@@ -213,7 +209,7 @@ const SearchPlace = ({
         const level = await map.getLevel()
         const latlng = map.getCenter()
         setMyLatLng([latlng.getLat(), latlng.getLng()])
-
+        setOpen(false)
         setMyLevel(level)
       }
     )
@@ -229,55 +225,77 @@ const SearchPlace = ({
 
     ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
     setIsSearch(false)
-  }, [selectedPage, searchKeyword, myLatLng, myLevel])
+  }, [searchKeyword, myLatLng, myLevel])
 
   return (
     <>
       <header>{/* 검색창 만들기 */}</header>
-      <SearchBar
-        sx={{ width: "100%" }}
-        id="tfSearch"
-        value={inputedKeyword}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search />
-            </InputAdornment>
-          ),
-        }}
-        onChange={(e) => setInputedKeyword(e.target.value)}
-        onKeyDown={(e) => {
-          eventHandler(e)
-        }}
-      />
+      <Box sx={{ padding: "20px" }} ref={containerRef}>
+        <Typography
+          sx={{
+            marginBottom: "12px",
+            fontSize: "16px",
+            lineHeight: "140%",
+            fontWeight: "bold",
+          }}
+        >
+          장소검색
+        </Typography>
+        <SearchBar
+          sx={{
+            width: "100%",
+            margin: "0px",
+            padding: "0px 0px",
+            border: "1px solid #EEEEEE",
+            backgroundColor: "#F5F5F5",
+          }}
+          size="small"
+          id="tfSearch"
+          value={inputedKeyword}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment
+                position="start"
+                sx={{
+                  margin: "0px",
+                  padding: "0px 0px",
+                }}
+              >
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(e) => setInputedKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            eventHandler(e)
+          }}
+        />
+      </Box>
       <div
         id="map"
         ref={mapContainer}
-        style={{ width: "100%", height: "20rem" }}
+        style={{ width: "100%", height: "360px", zIndex: "-10px" }}
       />
-
-      <ListContainer>
-        {searchedData?.length !== 0 &&
-          searchedData.map((item) => (
-            <SearchCard
-              item={item}
-              key={item.id}
-              onClickFocus={onClickFocus}
-              selectedNumber={selectedNumber}
-              mode={mode}
-              editing={editMode}
-              id={id}
-            />
-          ))}
-      </ListContainer>
-      <Pagination
-        count={lastPage}
-        sx={PaginationStyle}
-        onChange={(e, v) => {
-          handlePagenation(v)
-        }}
-        ref={refPagenation}
-      />
+      {/* <Box open={open} onClose={handleClose}> */}
+      <Slide direction="up" in={open} mountOnEnter unmountOnExit>
+        <Box>
+          <Box>
+            {selectedData !== undefined && (
+              <SearchCard
+                item={selectedData}
+                key={selectedData.id}
+                onClickFocus={onClickFocus}
+                selectedNumber={selectedNumber}
+                mode={mode}
+                editing={editMode}
+                id={id}
+                setPage={setPage}
+                page={page}
+              />
+            )}
+          </Box>
+        </Box>
+      </Slide>
     </>
   )
 }
@@ -285,6 +303,7 @@ const SearchPlace = ({
 SearchPlace.defaultProps = {
   editMode: false,
   id: undefined,
-  itemsLen: 0,
+  page: undefined,
+  setPage: console.log("sorry error this"),
 }
 export default SearchPlace

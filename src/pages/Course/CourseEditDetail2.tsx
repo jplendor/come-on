@@ -179,7 +179,7 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
 
   const onClicKNextPage = (): void => {
     setUpdateCourse()
-    setPage(3)
+    setPage(4)
     navigate(`/course/${id}/update`, { state: 3 })
   }
 
@@ -224,6 +224,9 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
     await setUpdateCourse()
   }
 
+  const handleAddClick = (): void => {
+    setPage(3)
+  }
   return (
     <MainContainer sx={MAIN_CONTAINER}>
       <MapContainer
@@ -234,9 +237,14 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
       />
       <IconContainer>
         <IconButton type="button">
-          <Link to="register">
-            <Add sx={ICON_STYLE} color="secondary" fontSize="large" />
-          </Link>
+          {/* <Link to="register"> */}
+          <Add
+            sx={ICON_STYLE}
+            color="secondary"
+            fontSize="large"
+            onClick={handleAddClick}
+          />
+          {/* </Link> */}
         </IconButton>
       </IconContainer>
       {/* 카카오톡 공유하기 */}

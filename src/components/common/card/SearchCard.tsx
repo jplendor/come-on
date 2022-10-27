@@ -1,10 +1,14 @@
 /* eslint-disable no-console */
 /* eslint-disable no-nested-ternary */
-import React, { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
-import { useNavigate } from "react-router-dom"
-import { Box, Grid, GridProps, IconButton, Typography } from "@mui/material"
-import { Add as AddIcon } from "@mui/icons-material"
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react"
+import {
+  Box,
+  Button,
+  Grid,
+  GridProps,
+  IconButton,
+  Typography,
+} from "@mui/material"
 
 import { styled } from "@mui/material/styles"
 import { addCoursePlace } from "features/course/courseSlice"
@@ -12,39 +16,36 @@ import PlaceAddModal from "components/meeting/PlaceAddModal"
 import { CoursePlaceProps, SearchCardProp } from "types/API/course-service"
 
 const SELECTED_CARD = {
-  border: "1px solid #1951B2",
   padding: "0px",
 }
 
 const DEFAULT_CARD = {
-  border: "1px solid #EEEEEE",
   padding: "0px",
 }
 const ThemeGrid = styled(Grid)<GridProps>(() => ({
-  "&.MuiGrid-root": {
-    borderRadius: "4px",
-    height: "80px",
-    margin: "12px 0",
-    color: "black",
-  },
-  border: `1px solid #1951B2`,
+  height: "60px",
+  color: "black",
+  position: "relative",
+  top: "-15px",
+  zIndex: "10",
+  backgroundColor: "white",
 }))
 
 const ADDRESS_FONT = {
-  fontSize: "12px",
+  fontSize: "14px",
+  lineHeight: "140%",
   padding: "0px",
-
   color: "#9E9E9E",
 }
 const ITEM_BOX = {
   color: "#EEEEEE",
-  padding: "8px 12px",
+  padding: "16px 20px 0px 20px",
 }
 
 const TITLE_FONT = {
   fontWeight: "bold",
-  lineHeight: "140%",
-  fontSize: "16px",
+  lineHeight: "135%",
+  fontSize: "18px",
   padding: "0px",
 }
 
@@ -54,6 +55,7 @@ const TITLE_BOX = {
   flexwrap: "nowrap",
   lineHeight: "140%",
   alignItems: "center",
+  margin: "0px",
   padding: "0px",
 }
 
@@ -82,6 +84,8 @@ interface ListDetailCardProps {
   editing?: boolean
   id?: number
   itemsLen?: number
+  page?: number
+  setPage?: Dispatch<SetStateAction<number>>
 }
 
 export interface Place {
@@ -105,7 +109,9 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   editing,
   id,
   itemsLen,
-}) => {
+  setPage,
+  page,
+}: ListDetailCardProps) => {
   const [open, setOpen] = useState<boolean>(false)
 
   const closeModal = (): void => {
@@ -169,7 +175,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
 
   return (
     <>
-      <Grid container sx={{ margin: "12px 0" }}>
+      <Grid container sx={{ margin: "0px", marginTop: "12px" }}>
         <ThemeGrid
           item
           id={String(obj.kakaoPlaceId)}
@@ -185,16 +191,6 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
             <Box sx={ITEM_BOX}>
               <Typography variant="h6" sx={TITLE_FONT}>
                 {obj.placeName}
-                <IconButton
-                  type="button"
-                  onClick={
-                    editing === true || mode === PlaceType.c
-                      ? onClickAddCourse
-                      : onClickAddMeeting
-                  }
-                >
-                  <AddIcon sx={URL_ICON} color="secondary" fontSize="large" />
-                </IconButton>
               </Typography>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 {obj.addressName}
@@ -202,13 +198,20 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              aria-label="close this"
-              color="secondary"
-              size="small"
-            />
-          </Grid>
+          <Box sx={{ padding: "20px" }}>
+            <Button
+              fullWidth
+              sx={{ height: "48px" }}
+              variant="contained"
+              onClick={
+                editing === true || mode === PlaceType.c
+                  ? onClickAddCourse
+                  : onClickAddMeeting
+              }
+            >
+              장소선택
+            </Button>
+          </Box>
         </ThemeGrid>
       </Grid>
       {console.log("open2", open)}
@@ -218,6 +221,8 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
         newPlace={makeNewPlace()}
         mode={editing === true ? PlaceType.e : mode}
         id={id}
+        setPage={setPage}
+        page={page}
       />
     </>
   )
@@ -227,5 +232,7 @@ SearchCard.defaultProps = {
   editing: false,
   id: undefined,
   itemsLen: 0,
+  page: undefined,
+  setPage: undefined,
 }
 export default SearchCard
