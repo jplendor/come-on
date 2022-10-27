@@ -19,6 +19,7 @@ import { updateCoursePlace } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 import { CoursePlaceProps } from "types/API/course-service"
+import AddCourseBox from "components/common/course/AddCourseBox"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -158,19 +159,6 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
         isSuccess={placeList !== undefined}
         isLoading={placeList === undefined}
       />
-      <IconContainer>
-        <IconButton type="button">
-          {/* <Link to="register"> */}
-          <Add
-            sx={ICON_STYLE}
-            color="secondary"
-            fontSize="large"
-            onClick={handleAddClick}
-          />
-          {/* </Link> */}
-        </IconButton>
-      </IconContainer>
-      {/* 카카오톡 공유하기 */}
       {/* //dragDropContext */}
       <DragDropContext onDragEnd={onDragEnd}>
         {placeList[0].order !== 0 && (
@@ -200,6 +188,7 @@ const CourseRegiDetail2 = ({ setPage, page }: pageProps): JSX.Element => {
           </Droppable>
         )}
       </DragDropContext>
+      <AddCourseBox onClick={handleAddClick} />
       <CourseNextStepButton
         content="다음단계"
         isValid={isValid}
