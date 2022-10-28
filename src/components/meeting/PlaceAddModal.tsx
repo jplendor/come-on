@@ -16,7 +16,11 @@ import TextInput from "components/common/input/TextInput"
 import { Place } from "components/common/card/SearchCard"
 import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { useDispatch, useSelector } from "react-redux"
-import { addCoursePlace, updateToSave } from "features/course/courseSlice"
+import {
+  addCoursePlace,
+  updateToSave,
+  useUpdateCoursePlaceToDBMutation,
+} from "features/course/courseSlice"
 import { PlaceType } from "types/API/course-service"
 import { RootState } from "store"
 import { PlaceOutlined } from "@mui/icons-material"
@@ -161,19 +165,24 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
   }
 
   const dispatch = useDispatch()
+  const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
 
   const onClickAddCoursePlace = (): void => {
+    const itemsLen = placeItems.length
+    const order = placeItems[0].id === 0 ? 1 : itemsLen + 1
+
     const myPlace = {
       ...newPlace,
+      order,
       description: memo,
       category,
     }
 
     dispatch(addCoursePlace(myPlace))
-    if (setPage !== undefined) setPage(2)
-    console.log("Adsdas")
-    console.log(setPage)
-    navigate("/course", { state: 2 })
+    dispatch(updateToSave({ toSave: myPlace }))
+    console.log("Ada")
+    updateCoursePlaceToDB({ courseId: id!, toSave: [myPlace] })
+    if (setPage !== undefined) setPage(3)
   }
 
   // 업데이트 로직

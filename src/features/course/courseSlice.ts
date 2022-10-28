@@ -14,6 +14,7 @@ import {
   CoursePlaceState,
   coursePlaceToDelete,
   coursePlaceToModify,
+  CoursePlacesResponse,
 } from "types/API/course-service"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -240,6 +241,24 @@ export const fetchByIdCourseDetail = createAsyncThunk<
   }
 )
 
+// data setUp에 필요한 thunk 만들기
+export const fetchByIdCoursePlaces = createAsyncThunk<
+  CoursePlacesRes,
+  number,
+  {
+    dispatch: AppDispatch
+  }
+>(
+  "coursePlace/fetchByIdCoursePlaces",
+  async (id, { dispatch }): Promise<CoursePlacesRes> => {
+    const data = await dispatch(
+      getCoursePlaces.initiate(id, { forceRefetch: true })
+    )
+    console.log(data)
+    return data.data as CoursePlacesRes
+  }
+)
+
 export const coursePlaceSlice = createSlice({
   name: "coursePlace",
   initialState,
@@ -371,6 +390,9 @@ export const coursePlaceSlice = createSlice({
     })
     builder.addCase(fetchByIdCourseDetail.rejected, (state) => {
       state.done = false
+    })
+    builder.addCase(fetchByIdCoursePlaces.fulfilled, (state, action) => {
+      state.coursePlaces = action.payload.data.contents
     })
   },
 })

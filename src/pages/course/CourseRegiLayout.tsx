@@ -63,7 +63,7 @@ interface PageState {
 
 const CourseRegiLayout = (): JSX.Element => {
   const [page, setPage] = useState(0)
-
+  const [courseId, setCourseId] = useState(0)
   const onClickPrev = (): void => {
     if (page !== 1) setPage(page - 1)
   }
@@ -118,19 +118,23 @@ const CourseRegiLayout = (): JSX.Element => {
           )}
         </Box>
         {page === 1 ? (
-          <CourseRegiDetail1 page={1} setPage={setPage} />
+          <CourseRegiDetail1
+            page={1}
+            setPage={setPage}
+            setCourseId={setCourseId}
+          />
         ) : page === 2 ? (
-          <CourseRegiDetail2 page={2} setPage={setPage} />
-        ) : page === 3 ? (
           <SearchPlace
             mode={PlaceType.c}
             editMode={false}
-            id={undefined}
-            page={3}
+            id={courseId}
+            page={2}
             setPage={setPage}
           />
+        ) : page === 3 ? (
+          <CourseRegiDetail2 page={3} setPage={setPage} id={courseId} />
         ) : (
-          <CourseRegiDetail3 page={4} setPage={setPage} />
+          <CourseRegiDetail3 page={4} setPage={setPage} id={courseId} />
         )}
       </>
     </Box>

@@ -108,7 +108,6 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     } else {
       dispatch(setCourseDetail({ title, description, imgFile: String(image) }))
     }
-    // 이미지가 바뀐 경우 base64로 바꿔서 전송
 
     await updateCourseDetail({ id, data: newDetail })
     console.log(res)

@@ -298,6 +298,8 @@ export interface ServerRes {
     | AddCourse
     | LikeCourse
     | CourseId
+    | CoursePlaceProps
+    | GetCoursePlacesRes
     | undefined
 }
 
@@ -350,6 +352,10 @@ export interface CourseDetailResponse extends ServerRes {
   data: CourseDetail
 }
 
+export interface CoursePlacesResponse extends ServerRes {
+  data: CoursePlaceProps
+}
+
 export interface CourseUpdateRes extends ServerRes {
   data: UpdateCourse
 }
@@ -359,7 +365,7 @@ export interface UpdateCourseDetailQProps {
   data: FormData
 }
 
-export interface CoursePlacesRes extends Server {
+export interface CoursePlacesRes extends ServerRes {
   id: number
   data: GetCoursePlacesRes
 }

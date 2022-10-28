@@ -11,7 +11,11 @@ import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import TextInput from "components/common/input/TextInput"
 import ImageInput from "components/common/input/ImageInput"
 
-import { setCourseDetail } from "features/course/courseSlice"
+import {
+  setCourseDetail,
+  useAddCourseDetailMutation,
+  useAddCoursePlaceMutation,
+} from "features/course/courseSlice"
 import { CourseData } from "types/API/course-service"
 
 import { useDispatch } from "react-redux"
@@ -19,90 +23,98 @@ import { useDispatch } from "react-redux"
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
+  setCourseId: Dispatch<SetStateAction<number>>
 }
 
 const MAIN_CONTAINER = {
   padding: "20px",
 }
 
-const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
+const CourseRegiDetail = ({
+  setCourseId,
+  setPage,
+  page,
+}: pageProps): JSX.Element => {
   const dispatch = useDispatch()
 
+  const [addCoursePlace] = useAddCoursePlaceMutation()
+  const [addCourseDetail] = useAddCourseDetailMutation()
   const [isValid, setIsValid] = useState(false)
-  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer>("")
-  const [previewImg, setPreviewImg] = useState<null | string>(null)
-  const [changeInput, setChangeInput] = useState<CourseData>({
-    title: "",
-    description: "",
-    imgFile: "",
-  })
+  const [image, setImage] = useState<string>("")
+  const [title, setTitle] = useState<string>("")
+  const [description, setDescription] = useState<string>("")
+  const [imageFile, setImageFile] = useState<Blob>()
 
-  const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
-    const reader = new FileReader()
-    reader.readAsDataURL(fileBlob)
-    return new Promise<void>((resolve) => {
-      reader.onload = () => {
-        if (!reader.result) {
-          throw new Error("No img result")
-        }
-        resolve(setImageSrc(reader.result))
-      }
-    })
-  }
+  // const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
+  //   const reader = new FileReader()
+  //   reader.readAsDataURL(fileBlob)
+  //   return new Promise<void>((resolve) => {
+  //     reader.onload = () => {
+  //       if (!reader.result) {
+  //         throw new Error("No img result")
+  //       }
+  //       resolve(setImageSrc(reader.result))
+  //     }
+  //   })
+  // }
 
-  const onValid = useCallback((): boolean => {
-    if (changeInput.title === "") return false
-    if (changeInput.description === "") return false
-    if (changeInput.imgFile === "" || changeInput.imgFile === "undefined")
-      return false
-    return true
-  }, [changeInput])
-
-  const changeFileToObjectUrl = (file: File): void => {
+  const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
-    setPreviewImg(fileUrl)
+
+    console.log(fileUrl)
+    return fileUrl
   }
 
-  const handleChangeImg = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
+  const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setTitle(e.target.value)
+  }
+
+  const handleChangeDes = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setDescription(e.target.value)
+  }
+
+  const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files) {
-      changeFileToObjectUrl(e.target.files[0])
-      await encodeFileToBase64(e.target.files[0])
-
-      const newState = {
-        ...changeInput,
-        [e.target.name]: e.target.value,
-      }
-
-      setChangeInput(newState)
+      console.log(e.target.files)
+      const a = changeFileToObjectUrl(e.target.files[0])
+      setImageFile(e.target.files[0])
+      console.log(a)
+      setImage(String(a))
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const onChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newState = {
-      ...changeInput,
-      [e.target.name]: e.target.value,
-    }
+  const onValid = useCallback((): void => {
+    if (title === "") return
+    if (description === "") return
+    if (image === "" || image === "undefined") return
+    setIsValid(true)
+  }, [description, image, title])
 
-    setChangeInput(newState)
-  }
+  const submitCourseDetail = async (): Promise<number> => {
+    const newDetail = new FormData()
 
-  const onClickNextPage = (): void => {
+    newDetail.append("title", title)
+    newDetail.append("description", description)
+    if (imageFile) newDetail.append("imgFile", imageFile)
     dispatch(
-      setCourseDetail({
-        title: changeInput.title,
-        description: changeInput.description,
-        imgFile: String(imageSrc),
-      })
+      setCourseDetail({ title, description, imgFile: String(imageFile) })
     )
+
+    const res = await addCourseDetail(newDetail).unwrap()
+
+    return Promise.resolve(res.data.courseId)
+  }
+
+  const onClickNextPage = async (): Promise<void> => {
+    const courseId = await submitCourseDetail()
+    setCourseId(courseId)
+
     setPage(page + 1)
   }
 
   useEffect(() => {
-    setIsValid(onValid())
-  }, [changeInput, isValid, imageSrc, previewImg, onValid])
+    onValid()
+  }, [image, title, description, onValid])
 
   return (
     <Grid container spacing={3} sx={MAIN_CONTAINER}>
@@ -111,17 +123,17 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
           title="이미지 등록"
           alt="이미지를 등록해 주세요"
           message="이미지를 등록해 주세요"
-          previewImg={previewImg}
-          handleChangeImg={handleChangeImg}
+          previewImg={image}
+          handleChangeImg={onChangeImage}
         />
       </Grid>
       <Grid item xs={12}>
         <TextInput
           title="코스이름"
           name="title"
-          value={changeInput.title}
+          value={title}
           placeholder="코스명을 입력해 주세요"
-          handleChange={onChangeInput}
+          handleChange={handleChangeTitle}
         />
       </Grid>
       <Grid item xs={12}>
@@ -131,8 +143,8 @@ const CourseRegiDetail = ({ setPage, page }: pageProps): JSX.Element => {
           placeholder="코스설명을 입력해주세요"
           rows={8}
           name="description"
-          value={changeInput.description}
-          handleChange={onChangeInput}
+          value={description}
+          handleChange={handleChangeDes}
         />
       </Grid>
       <Grid item xs={12}>

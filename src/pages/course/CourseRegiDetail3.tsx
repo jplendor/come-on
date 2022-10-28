@@ -111,9 +111,10 @@ const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
+  id: number
 }
 // 코스등록 전 미리보기 페이지
-const CourseRegiDetail3 = ({ setPage, page }: pageProps): JSX.Element => {
+const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
   const [winReady, setWinReady] = useState(false)
   useEffect(() => {
     setWinReady(true)
@@ -184,6 +185,10 @@ api연동부분
     return state.course.coursePlaces
   })
 
+  const onClickModify = (): void => {
+    setPage(1)
+  }
+
   const initialPlace = {
     order: 1,
     name: "newName",
@@ -196,12 +201,6 @@ api연동부분
 
   const postData = {
     toSave: [initialPlace],
-    // toModify: [{ ...initialPlace, coursePlaceId: courseId }],
-    // toDelete: [{ coursePlaceId: courseId }],
-  }
-
-  const onClickModify = (): void => {
-    setPage(1)
   }
 
   // // 장소리스트 전송하는 함수
