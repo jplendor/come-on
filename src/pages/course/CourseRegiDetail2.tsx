@@ -87,12 +87,6 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   const [placeData, setPlaceData] = useState<CoursePlaceState[]>(placeList)
   const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
-  async function fetchMyData(): Promise<any> {
-    const myCourseData = await dispatch(fetchByIdCoursePlaces(id))
-    const myData: any = myCourseData
-
-    return myData.payload.data.contents
-  }
   const setUpdateCourse = async (): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const updateCourse = {
@@ -107,15 +101,13 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     const myCourseData = await dispatch(fetchByIdCoursePlaces(id))
     const myData: any = myCourseData
     setPlaceData(myData.payload.data.contents)
-  }, [])
+  }, [id])
 
   useEffect(() => {
     dis()
-  }, [])
+  }, [dis])
 
   const onDragEnd = async (result: any): Promise<void> => {
-    // 로직시작하기 전에 코스에 데이터 등록
-
     const { destination, source, draggableId } = result
     if (!destination) {
       return
@@ -153,17 +145,14 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
 
     dispatch(updateCoursePlace(newPlace))
     await setUpdateCourse()
-
-    dispatch(updateToModify(newPlace))
-    await setUpdateCourse()
   }
 
   const onValid = useCallback((): void => {
-    if (placeList[0].order !== 0) setIsValid(true)
+    if (placeData.length !== 0) setIsValid(true)
     else {
       setIsValid(false)
     }
-  }, [placeList])
+  }, [placeData])
 
   useEffect(() => {
     onValid()
@@ -178,12 +167,12 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     }
   }
 
-  const onRemove = (index: number): void => {
-    const filteredData = courseData.filter((place) => place.order !== index)
-    setCourseData(filteredData)
+  const onRemove = async (index: number): Promise<void> => {
+    const filteredData = placeData.filter((place) => place.order !== index)
+
     /* eslint array-callback-return: "error" */
     // eslint-disable-next-line array-callback-return
-    const data = courseData.map((place: CoursePlaceState): any => {
+    const data = filteredData.map((place: CoursePlaceState): any => {
       const temp = place
       if (place.order > index) {
         temp.order -= 1
@@ -191,20 +180,34 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       }
       return temp
     })
-    setCourseData(data)
+    setPlaceData(data)
+
+    // 전역 상태인 course에서 삭제시키고
+    dispatch(updateCoursePlace(data))
+    console.log(data)
+    // 딜리트에 넣어서 db에서 삭제시키기
+    const deleteCourse = {
+      courseId: id,
+      toDelete: updatePlaces.toDelete,
+    }
+    await updateCoursePlaceToDB(deleteCourse)
+
+    // toSave에도 추가하면 안됨
   }
 
   const onClicKNextPage = (): void => {
-    //   setPage(page + 1)
+    setPage(page + 1)
   }
 
   // order바꿔주기
   const handleAddClick = (): void => {
-    setPage(3)
+    setPage(2)
   }
+
+  console.log(placeData)
   return (
     <MainContainer sx={MAIN_CONTAINER}>
-      {placeData && (
+      {placeData.length !== 0 && (
         <MapContainer
           selectedNumber={selectedNumber}
           placeLists={placeData}
@@ -214,7 +217,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       )}
       {/* //dragDropContext */}
       <DragDropContext onDragEnd={onDragEnd}>
-        {placeData && (
+        {placeData.length !== 0 && (
           // droppable
           <Droppable droppableId="placeData">
             {(provided) => (
@@ -234,7 +237,6 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
                     mode={PlaceType.c}
                   />
                 ))}
-
                 {provided.placeholder}
               </Box>
             )}

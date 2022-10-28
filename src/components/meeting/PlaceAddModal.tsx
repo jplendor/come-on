@@ -167,7 +167,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
   const dispatch = useDispatch()
   const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
 
-  const onClickAddCoursePlace = (): void => {
+  const onClickAddCoursePlace = async (): Promise<void> => {
     const itemsLen = placeItems.length
     const order = placeItems[0].id === 0 ? 1 : itemsLen + 1
 
@@ -180,8 +180,8 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
 
     dispatch(addCoursePlace(myPlace))
     dispatch(updateToSave({ toSave: myPlace }))
-    console.log("Ada")
-    updateCoursePlaceToDB({ courseId: id!, toSave: [myPlace] })
+    console.log(myPlace)
+    await updateCoursePlaceToDB({ courseId: id!, toSave: [myPlace] })
     if (setPage !== undefined) setPage(3)
   }
 

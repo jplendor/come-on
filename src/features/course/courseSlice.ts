@@ -392,7 +392,15 @@ export const coursePlaceSlice = createSlice({
       state.done = false
     })
     builder.addCase(fetchByIdCoursePlaces.fulfilled, (state, action) => {
-      state.coursePlaces = action.payload.data.contents
+      console.log(action.payload.data.contents)
+      if (action.payload.data) state.coursePlaces = action.payload.data.contents
+      else state.coursePlaces = initialState
+    })
+    builder.addCase(fetchByIdCoursePlaces.pending, (state) => {
+      state.done = false
+    })
+    builder.addCase(fetchByIdCoursePlaces.rejected, (state) => {
+      state.done = false
     })
   },
 })
