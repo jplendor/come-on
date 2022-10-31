@@ -164,8 +164,8 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     const data = filteredData.map((place: CoursePlaceState): any => {
       const temp = place
       if (place.order > index) {
-        temp.order -= 1
-        return temp
+        const temp2 = { ...temp, order: temp.order - 1 }
+        return temp2
       }
       return temp
     })
@@ -211,7 +211,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
               <Box ref={provided.innerRef} {...provided.droppableProps}>
                 {generateComponent(placeData, (item, key) => (
                   <PlaceDetailDraggableCard
-                    item={{ ...item }}
+                    item={{ ...item, id: item.id }}
                     key={key}
                     onClick={onClickFocus}
                     isSelected={
