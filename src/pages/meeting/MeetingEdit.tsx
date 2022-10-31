@@ -19,9 +19,8 @@ import {
   useGetMeetingQuery,
   useUpdateMeetingPlaceMutation,
 } from "features/meeting/meetingSlice"
-import PlaceDetailDraggableCard, {
-  PlaceType,
-} from "components/common/card/PlaceDetailDraggableCard "
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
@@ -31,7 +30,7 @@ import { Place as CoursePlace } from "components/common/card/SearchCard"
 import { useDispatch } from "react-redux"
 import { addCoursePlace } from "features/course/courseSlice"
 import { DragDropContext, Droppable } from "react-beautiful-dnd"
-import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { PlaceType } from "types/API/course-service"
 
 const CATEGORY_LIST = [
   { name: "SCHOOL", value: "학교" },

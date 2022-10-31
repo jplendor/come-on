@@ -80,17 +80,17 @@ const MapContainer = ({
   let mapData: MapProps[]
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const onClickTotalView = (): any => {
-  //   // eslint-disable-next-line no-param-reassign
+  const onClickTotalView = (): any => {
+    // eslint-disable-next-line no-param-reassign
 
-  //   const bounds = new kakao.maps.LatLngBounds()
-  //   if (placeLists !== undefined && selectedNumber === "") {
-  //     placeLists.map((place) =>
-  //       bounds.extend(new kakao.maps.LatLng(place.lat, place.lng))
-  //     )
-  //   }
-  //   return bounds
-  // }
+    const bounds = new kakao.maps.LatLngBounds()
+    if (placeLists !== undefined && selectedNumber === "") {
+      placeLists.map((place) =>
+        bounds.extend(new kakao.maps.LatLng(place.lat, place.lng))
+      )
+    }
+    return bounds
+  }
 
   useEffect(() => {
     mapData = makeData(placeLists)
@@ -105,6 +105,7 @@ const MapContainer = ({
         level: 3, // 지도의 확대 레벨
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       const map = new kakao.maps.Map(container, options)
       if (totalView) {
         const bounds = new kakao.maps.LatLngBounds()
@@ -137,7 +138,7 @@ const MapContainer = ({
         })
       })
     }
-  }, [selectedNumber, isSuccess, isLoading, totalView, placeLists])
+  }, [selectedNumber, isSuccess, totalView, placeLists])
 
   return (
     <>

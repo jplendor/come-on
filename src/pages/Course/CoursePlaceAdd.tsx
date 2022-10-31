@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react"
-import { JsxElement } from "typescript"
+import React from "react"
+import { useParams } from "react-router-dom"
 import SearchPlace from "./SearchPlace"
 
 enum PlaceType {
@@ -7,8 +7,14 @@ enum PlaceType {
   c = "course",
 }
 
-const CoursePlaceeAdd = (): JSX.Element => {
-  return <SearchPlace mode={PlaceType.c} />
+const CoursePlaceAdd = (): JSX.Element => {
+  return <SearchPlace mode={PlaceType.c} editMode={false} id={undefined} />
 }
 
-export default CoursePlaceeAdd
+export const CoursePlaceEditModeAdd = (): JSX.Element => {
+  const { id } = useParams()
+
+  return <SearchPlace mode={PlaceType.c} editMode id={Number(id)} />
+}
+
+export default CoursePlaceAdd

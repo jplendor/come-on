@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, {
   Dispatch,
   SetStateAction,
@@ -12,56 +13,77 @@ import TextInput from "components/common/input/TextInput"
 import ImageInput from "components/common/input/ImageInput"
 
 import {
+  fetchByIdCourseDetail,
   setCourseDetail,
-  useAddCourseDetailMutation,
-  useAddCoursePlaceMutation,
+  useUpdateCourseDetailMutation,
 } from "features/course/courseSlice"
 
 import { useDispatch } from "react-redux"
+import { AppDispatch } from "store"
 
 interface pageProps {
   page: number
+  id: number
   setPage: Dispatch<SetStateAction<number>>
-  setCourseId: Dispatch<SetStateAction<number>>
 }
 
 const MAIN_CONTAINER = {
   padding: "20px",
 }
 
-const CourseRegiDetail = ({
-  setCourseId,
-  setPage,
-  page,
-}: pageProps): JSX.Element => {
-  const dispatch = useDispatch()
-
-  const [addCoursePlace] = useAddCoursePlaceMutation()
-  const [addCourseDetail] = useAddCourseDetailMutation()
-  const [isValid, setIsValid] = useState(false)
+const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
+  const dispatch = useDispatch<AppDispatch>()
   const [image, setImage] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
+  const [updateCourseDetail, { data: res }] = useUpdateCourseDetailMutation()
+
+  // rtkq에서 데이터 불러오기
+  // store에 데이터 저장하기
+
+  // useEffect 써봤는데, 데이터를 못가져온다 => 여러번 호출하면, 기다려서 가져오거든요 ?
+  // useEffect를 쓰면 여러번호출이 안된다. 왜냐하면 마운트 될때만 실행되거나
+  // 값이 바뀔 때만 실행되기 때문에.
+  const dis = useCallback(async () => {
+    const detailData = await dispatch(fetchByIdCourseDetail(id))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const myData: any = detailData.payload
+    setDescription(myData.data.description)
+    setTitle(myData.data.title)
+    setImage(myData.data.imageUrl)
+  }, [dispatch, id])
+
+  useEffect(() => {
+    if (page === 1) dis()
+  }, [dis, page])
+
+  // 문제 : api의 pending이나 reject가 오면 mount 될 때 바인딩 할 수가 없음
+
+  const [isValid, setIsValid] = useState(false)
   const [imageFile, setImageFile] = useState<Blob>()
 
-  // const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
-  //   const reader = new FileReader()
-  //   reader.readAsDataURL(fileBlob)
-  //   return new Promise<void>((resolve) => {
-  //     reader.onload = () => {
-  //       if (!reader.result) {
-  //         throw new Error("No img result")
-  //       }
-  //       resolve(setImageSrc(reader.result))
-  //     }
-  //   })
-  // }
+  const onValid = useCallback((): void => {
+    if (title === "") return
+    if (description === "") return
+    if (image === "" || image === "undefined") return
+    setIsValid(true)
+  }, [description, image, title])
 
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
 
     console.log(fileUrl)
     return fileUrl
+  }
+
+  const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (e.target.files) {
+      console.log(e.target.files)
+      const a = changeFileToObjectUrl(e.target.files[0])
+      setImageFile(e.target.files[0])
+      console.log(a)
+      setImage(String(a))
+    }
   }
 
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -72,57 +94,30 @@ const CourseRegiDetail = ({
     setDescription(e.target.value)
   }
 
-  const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    if (e.target.files) {
-      console.log(e.target.files)
-      const a = changeFileToObjectUrl(e.target.files[0])
-      setImageFile(e.target.files[0])
-      console.log(a)
-      setImage(a)
-    }
-  }
-
-  const onValid = useCallback((): void => {
-    if (title === "") return
-    if (description === "") return
-    if (image === "" || image === "undefined") return
-    setIsValid(true)
-  }, [description, image, title])
-
-  const changeObjectUrlToFile = async (): Promise<Blob> => {
-    const file = await fetch(image || "").then((r) => r.blob())
-    return file
-  }
-
-  const submitCourseDetail = async (): Promise<number> => {
+  const onClickNextPage = async (): Promise<void> => {
     const newDetail = new FormData()
-
-    dispatch(setCourseDetail({ title, description, imgFile: image }))
 
     newDetail.append("title", title)
     newDetail.append("description", description)
-    if (image) {
-      const imgFile = await changeObjectUrlToFile()
-      newDetail.append("imgFile", imgFile)
+
+    if (imageFile) {
+      newDetail.append("imgFile", imageFile)
+      dispatch(
+        setCourseDetail({ title, description, imgFile: String(imageFile) })
+      )
+    } else {
+      dispatch(setCourseDetail({ title, description, imgFile: String(image) }))
     }
-    const res = await addCourseDetail(newDetail).unwrap()
 
+    await updateCourseDetail({ id, data: newDetail })
     console.log(res)
-
-    return Promise.resolve(res.data.courseId)
-  }
-
-  const onClickNextPage = async (): Promise<void> => {
-    const courseId = await submitCourseDetail()
-    setCourseId(courseId)
-
-    setPage(page + 1)
+    // navigate(`/course/${id}/update`, { state: 2 })
+    setPage(2)
   }
 
   useEffect(() => {
     onValid()
   }, [image, title, description, onValid])
-
   return (
     <Grid container spacing={3} sx={MAIN_CONTAINER}>
       <Grid item xs={12}>
@@ -130,7 +125,7 @@ const CourseRegiDetail = ({
           title="이미지 등록"
           alt="이미지를 등록해 주세요"
           message="이미지를 등록해 주세요"
-          previewImg={String(image)}
+          previewImg={image}
           handleChangeImg={onChangeImage}
         />
       </Grid>
@@ -158,11 +153,11 @@ const CourseRegiDetail = ({
         <CourseNextStepButton
           content="다음단계"
           isValid={isValid}
-          onClick={onClickNextPage}
+          onClick={() => onClickNextPage()}
         />
       </Grid>
     </Grid>
   )
 }
 
-export default CourseRegiDetail
+export default Test

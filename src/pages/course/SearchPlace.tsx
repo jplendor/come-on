@@ -1,32 +1,37 @@
-import React, { useEffect, useState, useRef, useCallback } from "react"
+/* eslint-disable func-names */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react"
 
 import ReactDOMServer from "react-dom/server"
-import { InputAdornment, TextField, Box, Pagination } from "@mui/material"
+import {
+  InputAdornment,
+  TextField,
+  Box,
+  Dialog,
+  Typography,
+  Button,
+} from "@mui/material"
 import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
-import { generateComponent } from "utils"
+import Slide from "@mui/material/Slide"
 import SearchCard from "components/common/card/SearchCard"
 import { SearchCardProp } from "types/API/course-service"
 import useGeolocation from "hooks/geolocation/useGeolocation"
-import LikeButton from "components/common/card/cardLayout/CardItemButton"
 
 const { kakao } = window
 const DELAY = 800
 
 const SearchBar = styled(TextField)(() => ({
-  padding: "10px",
-  margin: "10px 0",
+  padding: "0px",
+  margin: "0px",
 }))
-
-const ListContainer = styled(Box)(() => ({
-  padding: "10px",
-}))
-
-const PaginationStyle = {
-  margin: "0, auto",
-  display: "flex",
-  justifyContent: "center",
-}
 
 interface ListDetailCardProp {
   index: number // 카드의 인덱스 넘버 - order
@@ -49,9 +54,15 @@ export interface MapProps {
 enum PlaceType {
   m = "meeting",
   c = "course",
+  e = "editMode",
 }
 interface SearchPlaceProps {
   mode: PlaceType
+  editMode?: boolean
+  id?: number | undefined
+
+  page?: number
+  setPage?: Dispatch<SetStateAction<number>>
 }
 
 const MyMarker = ({
@@ -72,16 +83,27 @@ const MyMarker = ({
   )
 }
 
-const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
+const SearchPlace = ({
+  mode,
+  editMode,
+  id,
+  setPage,
+  page,
+}: SearchPlaceProps): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
-  const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
-  const [selectedPage, setSelectedPage] = useState(1)
-  const [lastPage, setLastPage] = useState(1)
-  const refPagenation = useRef<any>()
+  // const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
+  const [selectedData, setSelectedData] = useState<ListDetailCardProp>()
+  const [open, setOpen] = useState(false)
   const { geoState } = useGeolocation()
-
+  const [myLevel, setMyLevel] = useState(5)
+  const [myLatLng, setMyLatLng] = useState([
+    geoState.info.lat,
+    geoState.info.lng,
+  ])
+  const [isSearch, setIsSearch] = useState(false)
+  const containerRef = React.useRef(null)
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
   // 검색창을 이용해 키워드를 검색
@@ -89,9 +111,11 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     setSearchKeyword(inputedKeyword)
   }
 
-  // 선택한 페이지의 정보 출력
-  const handlePagenation = (page: number): void => {
-    setSelectedPage(page)
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
+    const e = event?.currentTarget
+    if (e) {
+      setselectedNumber(e.id)
+    } else setselectedNumber("")
   }
 
   // 디바운싱 함수
@@ -100,7 +124,6 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
   const onKeyPress = (keyValue: string): void => {
     if (keyValue === "Enter") {
       handleSearchBar()
-      setSelectedPage(1)
     }
   }
 
@@ -116,26 +139,17 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
     }
   }
 
-  // 검색한 키워드의 페이지 네이션 개수 설정
-  const setPageCount = (page: number): void => {
-    setLastPage(page)
-  }
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const search = useCallback(
     debounceFunc((value: string) => onKeyPress(value), DELAY),
     [inputedKeyword]
   )
   const eventHandler = (e: React.KeyboardEvent): void => {
+    setIsSearch(true)
     search(e.key)
   }
 
   // 리스트 클릭했을 시 색 바뀌는 함수 + 목록에 추가되도록
-  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
-    const e = event?.currentTarget
-    if (e) {
-      setselectedNumber(e.id)
-    } else setselectedNumber("")
-  }
 
   // 마커를 맵에 표시
   const displayMarker = (map: any, infowindow: any, place: any): void => {
@@ -149,105 +163,148 @@ const SearchPlace = ({ mode }: SearchPlaceProps): JSX.Element => {
       // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
       const myMarker = MyMarker(place)
       const renderedMarger = ReactDOMServer.renderToString(myMarker)
-
+      setSelectedData(place)
+      setOpen(true)
+      map.panTo(new kakao.maps.LatLng(place.y, place.x))
       infowindow.setContent(renderedMarger)
       infowindow.open(map, marker)
     })
+    marker.setMap(map)
   }
+
+  // eslint-disable-next-line prefer-const
 
   useEffect(() => {
     const infowindow = new kakao.maps.InfoWindow({ zIndex: 1, width: "100px" })
     const container = mapContainer.current
 
     const options = {
-      center: new kakao.maps.LatLng(37.566826, 126.9786567),
-      level: 3,
+      center: new kakao.maps.LatLng(myLatLng[0], myLatLng[1]),
+      level: myLevel,
     }
 
     const map = new kakao.maps.Map(container, options)
-    const imageSrc =
-      "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
-    const imageSize = new kakao.maps.Size(64, 69)
-    const imageOption = { offset: new kakao.maps.Point(27, 69) }
+
+    const placesSearchCB = (data: any, status: any): any => {
+      // pagination.gotoPage(selectedPage)
+      // if (data !== "ERROR" && pagination.current === selectedPage) {
+      //   setSearchedData(data)
+      // }
+      // setPageCount(pagination.last)
+      if (status === kakao.maps.services.Status.OK) {
+        for (let i = 0; i < data.length; i += 1) {
+          displayMarker(map, infowindow, data[i])
+        }
+        if (isSearch === true)
+          map.setCenter(new kakao.maps.LatLng(data[0].y, data[0].x))
+      }
+    }
+
+    // 맵에 이동시 좌표이벤트 달기
+    kakao.maps.event.addListener(
+      map,
+      "dragend",
+      // eslint-disable-next-line func-names
+      async function (): Promise<void> {
+        const level = await map.getLevel()
+        const latlng = map.getCenter()
+        setMyLatLng([latlng.getLat(), latlng.getLng()])
+        setOpen(false)
+        setMyLevel(level)
+      }
+    )
 
     const ps = new kakao.maps.services.Places()
     const pageOptions = {
       size: 5, // 나중에 설정한 위치 기준으로 할 것
-      location: new kakao.maps.LatLng(37.566826, 126.9786567),
-      radius: 500, // 500미터 내외로 검색
+      location: new kakao.maps.LatLng(myLatLng[0], myLatLng[1]),
       SORT_BY: "DISTANCE",
+      useMapCenter: true,
+      useMapBounds: true,
     }
 
-    const placesSearchCB = (data: any, status: any, pagination: any): any => {
-      pagination.gotoPage(selectedPage)
-
-      if (data !== "ERROR" && pagination.current === selectedPage) {
-        setSearchedData(data)
-      }
-      setPageCount(pagination.last)
-
-      if (status === kakao.maps.services.Status.OK) {
-        const bounds = new kakao.maps.LatLngBounds()
-        for (let i = 0; i < data.length; i += 1) {
-          displayMarker(map, infowindow, data[i])
-          bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x))
-        }
-        map.setBounds(bounds)
-      }
-    }
-
-    if (searchKeyword !== "") {
-      ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
-    }
-  }, [selectedPage, searchKeyword])
+    ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
+    setIsSearch(false)
+  }, [searchKeyword, myLatLng, myLevel])
 
   return (
     <>
       <header>{/* 검색창 만들기 */}</header>
-      <SearchBar
-        sx={{ width: "100%" }}
-        id="tfSearch"
-        value={inputedKeyword}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search />
-            </InputAdornment>
-          ),
-        }}
-        onChange={(e) => setInputedKeyword(e.target.value)}
-        onKeyDown={(e) => {
-          eventHandler(e)
-        }}
-      />
+      <Box sx={{ padding: "20px" }} ref={containerRef}>
+        <Typography
+          sx={{
+            marginBottom: "12px",
+            fontSize: "16px",
+            lineHeight: "140%",
+            fontWeight: "bold",
+          }}
+        >
+          장소검색
+        </Typography>
+        <SearchBar
+          sx={{
+            width: "100%",
+            margin: "0px",
+            padding: "0px 0px",
+            border: "1px solid #EEEEEE",
+            backgroundColor: "#F5F5F5",
+          }}
+          size="small"
+          id="tfSearch"
+          value={inputedKeyword}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment
+                position="start"
+                sx={{
+                  margin: "0px",
+                  padding: "0px 0px",
+                }}
+              >
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(e) => setInputedKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            eventHandler(e)
+          }}
+        />
+      </Box>
       <div
         id="map"
         ref={mapContainer}
-        style={{ width: "100%", height: "20rem" }}
+        style={{ width: "100%", height: "360px", zIndex: "-10px" }}
       />
-
-      <ListContainer>
-        {searchedData?.length !== 0 &&
-          generateComponent(searchedData, (item, key) => (
-            <SearchCard
-              item={item}
-              key={key}
-              onClickFocus={onClickFocus}
-              selectedNumber={selectedNumber}
-              mode={mode}
-            />
-          ))}
-      </ListContainer>
-      <Pagination
-        count={lastPage}
-        sx={PaginationStyle}
-        onChange={(e, v) => {
-          handlePagenation(v)
-        }}
-        ref={refPagenation}
-      />
+      {/* <Box open={open} onClose={handleClose}> */}
+      <Slide direction="up" in={open} mountOnEnter unmountOnExit>
+        <Box>
+          <Box>
+            {selectedData !== undefined && (
+              <SearchCard
+                item={selectedData}
+                key={selectedData.id}
+                onClickFocus={onClickFocus}
+                selectedNumber={selectedNumber}
+                mode={mode}
+                editing={editMode}
+                id={id}
+                setPage={setPage}
+                page={page}
+              />
+            )}
+          </Box>
+        </Box>
+      </Slide>
     </>
   )
 }
 
+SearchPlace.defaultProps = {
+  editMode: false,
+  id: undefined,
+  page: undefined,
+  // eslint-disable-next-line no-console
+  setPage: console.error("sorry error this", 3),
+}
 export default SearchPlace

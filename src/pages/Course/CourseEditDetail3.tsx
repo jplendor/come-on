@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState, SetStateAction, Dispatch, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
@@ -20,10 +21,11 @@ import {
 import { Buffer } from "buffer"
 import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 import PlaceDetailCard from "components/common/card/PlaceDetailCard"
-import { CoursePlaceProps, PlaceType } from "types/API/course-service"
+
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
+import { CoursePlaceProps, PlaceType } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -95,36 +97,44 @@ const DES_STYLE = {
 
 window.Buffer = Buffer
 
-// const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
-//   const arr = dataUrl.split(",")
-//   if (arr.length < 2) {
-//     return undefined
-//   }
-//   const mimeArr = arr[0].match(/:(.*?);/)
-//   if (!mimeArr || mimeArr.length < 2) {
-//     return undefined
-//   }
-//   const mime = mimeArr[1]
-//   const buff = Buffer.from(arr[1], "base64")
-//   return new File([buff], filename, { type: mime })
-// }
+const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
+  const arr = dataUrl.split(",")
+  if (arr.length < 2) {
+    return undefined
+  }
+  const mimeArr = arr[0].match(/:(.*?);/)
+  if (!mimeArr || mimeArr.length < 2) {
+    return undefined
+  }
+  const mime = mimeArr[1]
+  const buff = Buffer.from(arr[1], "base64")
+  return new File([buff], filename, { type: mime })
+}
 interface pageProps {
   page: number
-  setPage: Dispatch<SetStateAction<number>>
   id: number
+  setPage: Dispatch<SetStateAction<number>>
 }
+
 // 코스등록 전 미리보기 페이지
-const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
+const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
+  const [winReady, setWinReady] = useState(false)
+  useEffect(() => {
+    setWinReady(true)
+  }, [])
   /* **********************************************************************
 api연동부분
  2
 ************************************************************************** */
+  const navigate = useNavigate()
   interface MyDetailQueryProps extends QueryProps {
     data: MydetailRes
   }
-  const navigate = useNavigate()
+
   const [selectedNumber, setselectedNumber] = useState<string>("")
+  const [addCourseDetail] = useAddCourseDetailMutation()
   const [addCoursePlace] = useAddCoursePlaceMutation()
+  const [courseIdProps, setCourseIdProps] = useState<number>()
   const { data: userData, isLoading: isLoadingUser } =
     useMyDetailQuery() as MyDetailQueryProps
 
@@ -147,32 +157,37 @@ api연동부분
 
   // 제출용 폼데이터 만드는 함수
   // base64 => File => blob으로 만들었다.
-  // const makeFormData = async (): Promise<FormData> => {
-  //   const formData = new FormData()
-  //   formData.append("title", courseDetail.title)
-  //   formData.append("description", courseDetail.description)
-  //   const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
+  const makeFormData = async (): Promise<FormData> => {
+    const formData = new FormData()
+    formData.append("title", courseDetail.title)
+    formData.append("description", courseDetail.description)
+    const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
 
-  //   if (myfile !== undefined) {
-  //     await myfile?.arrayBuffer().then((arrayBuffer) => {
-  //       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //       const blob = new Blob([new Uint8Array(arrayBuffer)], {
-  //         type: myfile.type,
-  //       })
-  //     })
-  //     formData.append("imgFile", myfile)
-  //   }
+    if (myfile !== undefined) {
+      await myfile?.arrayBuffer().then((arrayBuffer) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const blob = new Blob([new Uint8Array(arrayBuffer)], {
+          type: myfile.type,
+        })
+      })
+      formData.append("imgFile", myfile)
+    }
 
-  //   return formData
-  // }
+    return formData
+  }
+
+  // async (): Promise<boolean>
+  // 코스 디테일 전송하는 함수
+  const submitCourseDetail = async (): Promise<number> => {
+    const submitData = await makeFormData()
+    const res = await addCourseDetail(submitData).unwrap()
+
+    return Promise.resolve(res.data.courseId)
+  }
 
   const courseList = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-
-  const onClickModify = (): void => {
-    setPage(1)
-  }
 
   const initialPlace = {
     order: 1,
@@ -182,10 +197,13 @@ api연동부분
     lat: 127.65930674808553, // 위도 y
     apiId: 12346,
     category: "ETC",
+    id: 0,
   }
 
   const postData = {
     toSave: [initialPlace],
+    // toModify: [{ ...initialPlace, coursePlaceId: courseId }],
+    // toDelete: [{ coursePlaceId: courseId }],
   }
 
   // // 장소리스트 전송하는 함수
@@ -218,19 +236,13 @@ api연동부분
     likeCount = changeLikeCount()
   }, [isLike])
   // 제출
-  const submit = async (): Promise<boolean> => {
-    await submitPlaceList(id)
-    setIsSubmit(true)
-    return Promise.resolve(true)
-  }
-
-  if (isSubmit) {
-    navigate("/")
+  const submit = (courseId: number): void => {
+    navigate(`/course/${courseId}`)
   }
 
   if (isLoadingUser) return <div>Loading...</div>
   return (
-    courseDetail && (
+    courseDetail && { winReady } && (
       <>
         <ImgContainer>
           <img
@@ -301,9 +313,7 @@ api연동부분
                   item.order ===
                   (selectedNumber === "" ? -10 : Number(selectedNumber))
                 }
-                courseId={id}
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                onRemove={() => {}}
+                courseId={courseIdProps}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
                 isEditable
@@ -311,16 +321,10 @@ api연동부분
             ))}
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <CourseNextStepButton
-              content="수정하기"
-              width="49%"
-              isValid
-              onClick={onClickModify}
-            />
-            <CourseNextStepButton
-              content="코스등록 완료"
-              width="49%"
+              content="수정완료"
+              width="100%"
               onClick={() => {
-                submit()
+                submit(id)
               }}
               isValid
             />
@@ -330,4 +334,4 @@ api연동부분
     )
   )
 }
-export default CourseRegiDetail3
+export default CourseEditDetail3

@@ -1,13 +1,16 @@
-import React, { useEffect } from "react"
+/* eslint-disable no-nested-ternary */
+import React, { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
+import { Box, Typography } from "@mui/material"
+import { ArrowBackIosNewOutlined, Close } from "@mui/icons-material"
 
-import { Tab, Box, IconButton } from "@mui/material"
-import { KeyboardArrowLeft, Close } from "@mui/icons-material"
-import { TabContext, TabList, TabPanel } from "@mui/lab"
+import LinearProgress from "@mui/material/LinearProgress"
 
+import { PlaceType } from "types/API/course-service"
 import CourseRegiDetail1 from "./CourseRegiDetail1"
 import CourseRegiDetail2 from "./CourseRegiDetail2"
 import CourseRegiDetail3 from "./CourseRegiDetail3"
+import SearchPlace from "./SearchPlace"
 // MUI
 
 /* Course Layout 
@@ -17,41 +20,41 @@ import CourseRegiDetail3 from "./CourseRegiDetail3"
 작성자 : 강예정
 issue : 중간에 코스등록이 취소 될 시 데이터를 기억해서 다시 불러오는 기능을 추가할 수 있을지 고민 */
 
-const ICONBOXLEFT = {
-  zIndex: "10",
-  position: "absolute",
-  left: "20px",
-}
-
-const ICONBOXRIGHT = {
-  zIndex: "10",
-  position: "absolute",
-  right: "20px",
-}
-
 const ICON_STYLE = {
+  width: "100%",
+  height: "100%",
   textAlign: "center",
-  fontWeight: "bold",
-  color: "black",
+  cursor: "pointer",
+  zIndex: "15",
 }
 
 const NAVBAR = {
+  position: "sticky",
   height: "42px",
+  margin: "10px 30px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: "100",
 }
 
-const TABARROW = {
-  width: "33.3%",
-  padding: "0",
-  margin: "0 auto",
+const NAVBAR_STYLE2 = {
+  width: "380px",
+  height: "42px",
+  margin: "10px 30px",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "white",
+  backgroundColor: "none",
+  zIndex: "15",
 }
 
 const MIDTITLE = {
-  color: "black",
-  width: "33.3%",
-  fontSize: "18px",
-  lineHeight: "135%",
   margin: "0 auto",
   padding: "0",
+  display: "flex",
+  alignItems: "center",
 }
 
 interface PageState {
@@ -59,77 +62,81 @@ interface PageState {
 }
 
 const CourseRegiLayout = (): JSX.Element => {
-  const [page, setPage] = React.useState(1)
-
+  const [page, setPage] = useState(0)
+  const [courseId, setCourseId] = useState(0)
   const onClickPrev = (): void => {
     if (page !== 1) setPage(page - 1)
   }
 
-  const handleChange = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ): void => {
-    setPage(newValue)
-  }
   const { state: pageState } = useLocation() as PageState
 
   useEffect(() => {
-    if (pageState === 2) {
-      setPage(2)
+    if (pageState === null) {
+      setPage(1)
+    } else {
+      setPage(pageState)
     }
   }, [pageState])
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
-      <TabContext value={String(page)}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <TabList
-            onChange={handleChange}
-            aria-label="tab Navigation"
-            sx={NAVBAR}
-          >
-            <Tab
-              label={
-                <Box>
-                  <KeyboardArrowLeft
-                    fontSize="small"
-                    sx={ICON_STYLE}
-                    onClick={onClickPrev}
-                  />
-                </Box>
-              }
-              value="1"
-              sx={TABARROW}
+      <>
+        <Box sx={{ borderColor: "divider", width: "100%" }}>
+          <Box sx={page !== 4 ? NAVBAR : NAVBAR_STYLE2}>
+            <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
+              <ArrowBackIosNewOutlined sx={ICON_STYLE} onClick={onClickPrev} />
+            </Box>
+            <Box sx={MIDTITLE}>
+              <Typography
+                sx={{
+                  lineHeight: "135%",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  zIndex: "15",
+                  color: page !== 4 ? "black" : "white",
+                }}
+              >
+                {page === 1
+                  ? "코스등록"
+                  : page === 2
+                  ? "장소선택"
+                  : page === 3
+                  ? "장소등록"
+                  : "미리보기"}
+              </Typography>
+            </Box>
+            <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
+              <Close fontSize="medium" sx={ICON_STYLE} />
+            </Box>
+          </Box>
+          {page !== 4 && (
+            <LinearProgress
+              sx={{ zIndex: "16" }}
+              variant="determinate"
+              value={33.3 * page}
             />
-            /
-            <Tab
-              label={`코스등록(${page}/3)`}
-              value="2"
-              sx={MIDTITLE}
-              disabled
-            />
-            <Tab
-              label={
-                <Box sx={ICONBOXRIGHT}>
-                  <Close fontSize="small" sx={ICON_STYLE} />
-                </Box>
-              }
-              value="3"
-              sx={{ width: "33.3%", padding: "0", margin: "0 auto" }}
-              disabled
-            />
-          </TabList>
+          )}
         </Box>
-        <TabPanel value="1">
-          <CourseRegiDetail1 page={1} setPage={setPage} />
-        </TabPanel>
-        <TabPanel value="2">
-          <CourseRegiDetail2 page={2} setPage={setPage} />
-        </TabPanel>
-        <TabPanel value="3">
-          <CourseRegiDetail3 page={3} setPage={setPage} />
-        </TabPanel>
-      </TabContext>
+        {page === 1 ? (
+          <CourseRegiDetail1
+            page={1}
+            setPage={setPage}
+            setCourseId={setCourseId}
+          />
+        ) : page === 2 ? (
+          <SearchPlace
+            mode={PlaceType.c}
+            editMode={false}
+            id={courseId}
+            page={2}
+            setPage={setPage}
+          />
+        ) : page === 3 ? (
+          <CourseRegiDetail2 page={3} setPage={setPage} id={courseId} />
+        ) : (
+          <CourseRegiDetail3 page={4} setPage={setPage} id={courseId} />
+        )}
+      </>
     </Box>
   )
 }

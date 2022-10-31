@@ -12,10 +12,13 @@ import {
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
+import { PlaceType } from "types/API/course-service"
 import { Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
+import { editCoursePlaceDetail } from "features/course/courseSlice"
 import { useParams } from "react-router-dom"
+import { useDispatch } from "react-redux"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -33,6 +36,7 @@ const CATEGORY_LIST = [
   { name: "ACCOMMODATION", value: "숙박" },
   { name: "CULTURE", value: "문화시설" },
   { name: "ACTIVITY", value: "액티비티" },
+  { name: "기타", value: "ETC" },
 ]
 
 const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
@@ -188,11 +192,6 @@ interface Place {
   address: string
 }
 
-export enum PlaceType {
-  m = "meeting",
-  c = "course",
-}
-
 interface CoursePlace extends Place {
   description: string
 }
@@ -205,6 +204,9 @@ interface PlaceDetailEditCard {
   isSelected: boolean
   maxLen: number
   mode: PlaceType
+  // course일 경우에만 courseId가 필요함, 따라서 type.c일경우 무조건 들어옴
+  // eslint-disable-next-line react/require-default-props
+  courseId?: number
   setIsEditing: Dispatch<SetStateAction<boolean>>
 }
 
@@ -214,6 +216,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   item,
   maxLen,
   setIsEditing,
+  courseId,
 }) => {
   const { order: index, name: placeName, address } = item
 
@@ -222,9 +225,9 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   const [description, setDescription] = useState<string>()
 
   useEffect(() => {
-    setCategory(
-      CATEGORY_LIST.filter((it) => it.value === item.category)[0].name
-    )
+    setCategory(CATEGORY_LIST.filter((it) => it.name === item.category)[0].name)
+
+    // 이미 category_list의 key랑 같을경우 오류가 남
 
     if (mode === PlaceType.m) {
       const { memo: itemMemo } = item as MeetingPlace
@@ -245,10 +248,14 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
     setMemo(e.target.value)
   }
 
+  const handleDesChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setDescription(e.target.value)
+  }
+
   const [updateMeetingPlaceMutation] = useUpdateMeetingPlaceMutation()
 
   const { meetingId } = useParams()
-
+  const dispatch = useDispatch()
   const handleClickClose = async (): Promise<void> => {
     if (mode === PlaceType.m) {
       try {
@@ -271,6 +278,14 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
         }
       }
     }
+    if (mode === PlaceType.c) {
+      const myItem = item as CoursePlace
+      const newItem = { ...myItem, description, category } as CoursePlace
+      // 수정한 값을 전역에 저장
+      console.log(category)
+      dispatch(editCoursePlaceDetail(newItem))
+    }
+    setIsEditing(false)
   }
 
   return (
@@ -314,7 +329,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
                     value={category}
                     onChange={handleCategoryChange}
                   >
-                    <MenuItem value="">카테고리</MenuItem>
+                    <MenuItem value={category}>카테고리</MenuItem>
                     {generateComponent(CATEGORY_LIST, (data, key) => (
                       <MenuItem value={data.name} key={key}>
                         {data.value}
@@ -331,7 +346,13 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
                     onChange={handleMemoChange}
                   />
                 )}
-                {description && <TextField size="small" value={description} />}
+                {description && (
+                  <TextField
+                    size="small"
+                    value={description}
+                    onChange={handleDesChange}
+                  />
+                )}
               </Box>
               <Typography variant="subtitle2" sx={ADDRESS_FONT}>
                 {address}
@@ -348,5 +369,4 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
     </Grid>
   )
 }
-
 export default PlaceDetailEditCard

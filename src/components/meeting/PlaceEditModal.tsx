@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react"
+import React, { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   Box,
@@ -13,27 +13,19 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
-import { Place } from "components/common/card/SearchCard"
+import Place from "components/common/card/PlaceDetailDraggableCard "
 import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { useDispatch, useSelector } from "react-redux"
 import {
   addCoursePlace,
+  addToModify,
+  modifyCoursePlaces,
+  modifyToSave,
   updateToSave,
-  useUpdateCoursePlaceToDBMutation,
 } from "features/course/courseSlice"
 import { PlaceType } from "types/API/course-service"
 import { RootState } from "store"
-import { PlaceOutlined } from "@mui/icons-material"
-
-interface PlaceAddModalProps {
-  open: boolean
-  onClose: () => void
-  newPlace: Place
-  mode: PlaceType
-  id?: number
-  page?: number
-  setPage?: Dispatch<SetStateAction<number>>
-}
+import { PlaceOutlined, SettingsPowerRounded } from "@mui/icons-material"
 
 const CATEGORY_BOX = {
   height: "80px",
@@ -108,13 +100,25 @@ const CATEGORY_LIST = [
   { name: "ACTIVITY", value: "액티비티" },
 ]
 
-const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
-  const { open, onClose, newPlace, mode, id, page, setPage } = props
+interface PlaceEditModalProps {
+  open: boolean
+  onClose: () => void
+  newPlace: any
+  mode: PlaceType
+  id?: number
+}
+
+const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
+  const { open, onClose, newPlace, mode, id } = props
   const [category, setCategory] = useState("")
-  const [memo, setMemo] = useState("")
+  const [memo, setMemo] = useState(newPlace.description)
   const placeItems = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
+  const updatePlaceItems = useSelector((state: RootState) => {
+    return state.course.updatePlaces
+  })
+
   const handleCategoryChange = (e: SelectChangeEvent): void => {
     setCategory(e.target.value)
   }
@@ -165,24 +169,15 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
   }
 
   const dispatch = useDispatch()
-  const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
 
-  const onClickAddCoursePlace = async (): Promise<void> => {
-    const itemsLen = placeItems.length
-    const order = placeItems[0].id === 0 ? 1 : itemsLen + 1
-
+  const onClickAddCoursePlace = (): void => {
     const myPlace = {
       ...newPlace,
-      order,
       description: memo,
       category,
     }
-
     dispatch(addCoursePlace(myPlace))
-    dispatch(updateToSave({ toSave: myPlace }))
-    console.log(myPlace)
-    await updateCoursePlaceToDB({ courseId: id!, toSave: [myPlace] })
-    if (setPage !== undefined) setPage(3)
+    navigate("/course", { state: 2 })
   }
 
   // 업데이트 로직
@@ -218,48 +213,35 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
     navigate(`/course/${id}/update`, { state: 2 })
   }
 
-  const makeContent = (): JSX.Element => {
-    return (
-      <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
-        <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
+  // 1. 전역 toSave에 des,cate 수정하기 [O] -modifyToSave
+  // 2. 전역 toModify에 추가하기 형식에 맞춰 [O] - toSave에 있으면 안됨 -addToModify
+  // 3. 전역 courseList의 해당 수정하기 [O] - modifyCoursePlaces
+  // 4. 수정했던 데이터를 다시 수정하고 싶을 경우 [O] - toModify배열에서 해당녀석만 뽑아내고 다시 집어넣어야함
+  // 추가 리스트의 경우 [O]
+  // 원본 코스의 경우 [O]
 
-        <Box sx={ADDRESS_STYLE}>
-          <PlaceOutlined sx={{ color: "#616161", fontSize: "20px" }} />
-          <Typography sx={{ color: "#616161" }}>{newPlace.address}</Typography>
-        </Box>
-        <Box sx={CATEGORY_BOX}>
-          <Typography sx={CATEGORY_FONTSTYLE}>카테고리 선택</Typography>
-          <Select
-            sx={SELECT_STYLE}
-            value={category}
-            onChange={handleCategoryChange}
-            fullWidth
-            displayEmpty
-          >
-            <MenuItem value="">카테고리</MenuItem>
-            {generateComponent(CATEGORY_LIST, (data, key) => (
-              <MenuItem value={data.name} key={key}>
-                {data.value}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
-        <Box sx={INPUTBOX_STYLE}>
-          <TextInput
-            title="모임메모"
-            name="memo"
-            value={memo}
-            placeholder="모임 장소에 대한 메모를 남겨보세요."
-            handleChange={handleMemoChange}
-            multiline
-            rows={2}
-          />
-        </Box>
-        <Button variant="contained" sx={BUTTON_STYLE} onClick={addPlace}>
-          추가하기
-        </Button>
-      </Dialog>
+  const onClickUpdateCourse = (): void => {
+    // 객체가 toSave에 있는경우 undefined, 반환 있으면 찾은 객체를 반환
+    //= > toSave의 데이터를 업데이트
+    const isInCourse = updatePlaceItems.toSave.find(
+      (place: { order: number }): any => place.order === newPlace.order
     )
+
+    const myPlace = {
+      ...newPlace,
+      description: memo,
+      category,
+    }
+    // 1. undefined 가 아닐시 toSave를 업데이트
+    if (isInCourse) {
+      dispatch(modifyToSave(myPlace))
+    } else if (isInCourse === undefined) {
+      // undefined일시 원래있던 데이터라는 뜻 => toModify에 들어감
+      dispatch(addToModify(myPlace))
+    }
+    // courseList업데이트
+    dispatch(modifyCoursePlaces(myPlace))
+    onClose()
   }
 
   const makeCourseContent = (): JSX.Element => {
@@ -293,7 +275,6 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
             title="코스메모"
             name="memo"
             value={memo}
-            placeholder="코스 장소에 대한 메모를 남겨보세요."
             handleChange={handleMemoChange}
             multiline
             rows={2}
@@ -302,25 +283,19 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
         <Button
           variant="contained"
           sx={BUTTON_STYLE}
-          onClick={
-            mode === PlaceType.c
-              ? onClickAddCoursePlace
-              : onClickUpdateAddCoursePlace
-          }
+          onClick={onClickUpdateCourse}
         >
-          추가하기
+          수정하기
         </Button>
       </Dialog>
     )
   }
-  const content = mode === PlaceType.m ? makeContent() : makeCourseContent()
+  const content = makeCourseContent()
 
   return content && <div>{content}</div>
 }
 
-PlaceAddModal.defaultProps = {
+PlaceEditModal.defaultProps = {
   id: undefined,
-  page: undefined,
-  setPage: console.log("sorry error this"),
 }
-export default PlaceAddModal
+export default PlaceEditModal

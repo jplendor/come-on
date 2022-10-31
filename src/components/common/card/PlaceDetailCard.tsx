@@ -10,13 +10,14 @@ import {
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
+import { PlaceType } from "types/API/course-service"
 import PlaceDetailEditCard from "./PlaceDetailEditCard"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
 // 2. 리스트 삭제 버튼 [V]
 
-const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
+const ThemeCardNumbering = styled(Typography)<TypographyProps>(() => ({
   borderRadius: "30px",
   width: "22px",
   height: "22px",
@@ -41,7 +42,7 @@ const SELECTED_CARD = {
   border: "1px solid #1951B2",
   padding: "0px",
 }
-const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
+const ThemeGrid = styled(Grid)<GridProps>(() => ({
   "&.MuiGrid-root": {
     borderRadius: "4px",
     color: "black",
@@ -188,11 +189,6 @@ interface Place {
   address: string
 }
 
-export enum PlaceType {
-  m = "meeting",
-  c = "course",
-}
-
 interface CoursePlace extends Place {
   description: string
 }
@@ -204,11 +200,12 @@ interface ListDetailCardProps {
   item: CoursePlace | MeetingPlace
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   isSelected: boolean
-  onRemove: (index: number) => void
+  onRemove?: (index: number) => void
   maxLen: number
   mode: PlaceType
   isEditable: boolean
   // eslint-disable-next-line react/require-default-props
+  courseId?: number
 }
 
 const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
@@ -218,6 +215,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   item,
   maxLen,
   onRemove,
+  courseId,
   isEditable,
 }) => {
   const [isEditing, setIsEditing] = useState(false)
@@ -244,7 +242,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
 
   const handleClickClose = (e: React.MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
-    onRemove(id)
+    if (onRemove) onRemove(id)
   }
 
   if (isEditing) {
@@ -255,6 +253,7 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
         mode={mode}
         maxLen={maxLen}
         setIsEditing={setIsEditing}
+        courseId={courseId}
       />
     )
   }
@@ -337,6 +336,11 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
       </Grid>
     </Grid>
   )
+}
+
+PlaceDetailCard.defaultProps = {
+  // eslint-disable-next-line no-console
+  onRemove: () => console.warn("onRemove not defined"),
 }
 
 export default PlaceDetailCard

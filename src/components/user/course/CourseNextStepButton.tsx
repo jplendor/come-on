@@ -10,16 +10,13 @@ const BUTTON_STYLE = [
     color: "white",
     fontWeight: "800",
     fontSize: "1rem",
-
-    "& + .nextButton": {
-      margin: "-7px 0px",
-    },
   },
 ]
 
 // ButtonComponent의 type 설정
 interface ButtonProps {
   content: string
+  width?: string
   isValid?: boolean
   onClick: () => void
 }
@@ -29,10 +26,11 @@ const CourseNextStepButton: React.FC<ButtonProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onClick = () => {},
   isValid,
+  width,
 }): JSX.Element => {
   return (
     <Button
-      sx={BUTTON_STYLE}
+      sx={{ ...BUTTON_STYLE[0], width }}
       className="nextButton"
       variant="contained"
       disabled={!isValid}
@@ -46,4 +44,5 @@ const CourseNextStepButton: React.FC<ButtonProps> = ({
 export default CourseNextStepButton
 CourseNextStepButton.defaultProps = {
   isValid: false,
+  width: "100%",
 }

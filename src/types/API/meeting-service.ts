@@ -141,6 +141,7 @@ export interface MeetingDateDetail extends MeetingDate {
 }
 
 interface NewPlace {
+  id: number
   apiId: number
   name: string
   lat: number

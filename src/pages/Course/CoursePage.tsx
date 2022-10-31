@@ -1,9 +1,12 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 import { Box, Typography } from "@mui/material"
 
-import { AccountCircleOutlined, Favorite, DateRange } from "@mui/icons-material"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 
 import { styled } from "@mui/material/styles"
 import MapContainer from "components/common/course/MapContainer"
@@ -11,8 +14,11 @@ import KakaoShare from "components/KakaoShare"
 import { generateComponent } from "utils"
 import KakaoIcon from "assets/nav/KakaoIcon"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
-import { useGetCourseDetailQuery } from "features/course/courseSlice"
-import PlaceDetailCard from "components/common/card/PlaceDetailDraggableCard "
+import {
+  useClickLikeCourseMutation,
+  useGetCourseDetailQuery,
+} from "features/course/courseSlice"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -25,11 +31,10 @@ const MainContainer = styled(Box)(() => ({
 }))
 
 const ImgContainer = styled(Box)(() => ({
-  padding: "0px 20px 0px 20px",
-
   width: "100%",
-  height: "30%",
-  objectFit: "cover",
+  height: "200px",
+  overflow: "hidden",
+  position: "relative",
 }))
 
 const KakaoContainer = styled(Box)(() => ({
@@ -40,10 +45,9 @@ const KakaoContainer = styled(Box)(() => ({
 
 const FONT_TITLE = {
   fontSize: "22px",
-  lineHeight: "125%",
   fontWeight: "bold",
+  margin: "auto 0",
 }
-
 const FONT_SUBTITLE = {
   fontSize: "13px",
   lineHeight: "145%",
@@ -79,12 +83,6 @@ const TITLE = {
   justifyContent: "space-between",
 }
 
-const FAVORITE_BOX = {
-  width: "24px",
-  height: "24px",
-  margin: "auto 10px",
-}
-
 const DES_STYLE = {
   height: "80px",
   fontSize: "14px",
@@ -113,6 +111,20 @@ const CoursePage = (): JSX.Element => {
   const [imgSrc, setImgSrc] = useState<string>("")
   const { id } = useParams<string>()
 
+  const {
+    data: resultCourseDetail,
+    isSuccess,
+    isLoading,
+    isFetching,
+  } = useGetCourseDetailQuery(id)
+  const [clickLikeCourse] = useClickLikeCourseMutation()
+  const loadData = resultCourseDetail?.data?.coursePlaces
+  const imgUrl = resultCourseDetail?.data?.imageUrl
+  const initialLike = resultCourseDetail?.data?.userLiked!
+  let likecount = resultCourseDetail?.data?.likeCount!
+  const [isLike, setIsLike] = useState<boolean>(initialLike)
+  let likeCount = likecount
+
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
 
@@ -122,101 +134,125 @@ const CoursePage = (): JSX.Element => {
       setselectedNumber("")
     }
   }
+  const changeLikeCount = (): number => {
+    if (isSuccess)
+      if (isLike) return likeCount! + 1
+      else if (isLike === false && likeCount! > 0) return likeCount! - 1
+    return likeCount
+  }
 
-  const {
-    data: resultCourseDetail,
-    isSuccess,
-    isLoading,
-  } = useGetCourseDetailQuery({
-    id,
-  })
   let courseData: CoursePlaceState[] = []
-
   const onRemove = (index: number): void => {
     courseData = courseData?.filter((place) => place.order !== index)
   }
 
-  // heart버튼 클릭시 이벤트
-  // const onClickHeart = (event: React.MouseEvent<HTMLDivElement> | null): any => {
-  //   const e: any = event?.currentTarget
-  // }
-  if (isSuccess) courseData = resultCourseDetail.data.coursePlaces
+  const onClickLike = async (courseId: number): Promise<void> => {
+    const a = await clickLikeCourse(courseId).unwrap()
+    setIsLike(a.data.userLiked)
+  }
+
   useEffect(() => {
     if (isSuccess) {
-      setImgSrc(resultCourseDetail.data.imageUrl)
+      setImgSrc(imgUrl!)
     }
-  }, [isSuccess, resultCourseDetail?.data.imageUrl])
+  }, [isSuccess, imgUrl])
 
-  return (
-    <>
-      {/* 타이틀만들기 */}
-      <ImgContainer>
-        <img src={imgSrc} width="100%" height="100%" alt="img" />
-      </ImgContainer>
-      <MainContainer style={{ margin: "auto 20px" }}>
-        <TitleContainer>
-          <Box className="Title" sx={TITLE}>
-            <Typography variant="h5" sx={FONT_TITLE}>
-              {resultCourseDetail?.data.title}
-            </Typography>
-            {/* <LikeButton isLike={false} courseId={Number(id)} /> */}
-          </Box>
-          <Box className="subTitle" sx={SUBTITLE}>
-            <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
-              <Box sx={ICON_BOX}>
-                <AccountCircleOutlined sx={ICON_STYLE} />
-                {resultCourseDetail?.data.writer.nickname}
-                <Typography
-                  variant="subtitle1"
-                  sx={FONT_SUBTITLE}
-                  style={{ margin: "auto 5px" }}
-                >
-                  |
-                </Typography>
-                <DateRange sx={ICON_STYLE} />
-                {resultCourseDetail?.data.updatedDate}
-              </Box>
-            </Typography>
-          </Box>
-        </TitleContainer>
-        <Box sx={DES_STYLE}>{resultCourseDetail?.data.description}</Box>
-        {courseData !== null && courseData !== undefined && (
-          <MapContainer
-            selectedNumber={String(selectedNumber)}
-            placeLists={courseData}
-            isSuccess={isSuccess}
-            isLoading={isLoading}
+  let content
+  // eslint-disable-next-line no-empty
+  if (isFetching) {
+  } else if (isSuccess) {
+    content = (
+      <>
+        <ImgContainer>
+          <img
+            src={imgSrc}
+            width="100%"
+            height="auto"
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+            alt="img"
           />
-        )}
-
-        <KakaoContainer p={1}>
-          <Typography mr={1} variant="subtitle1" sx={FONT_SUBTITLE}>
-            <KakaoShare />
-          </Typography>
-          <KakaoIcon width="30px" height="30px" />
-        </KakaoContainer>
-        {/* 카카오톡 공유하기 */}
-        {/* 버튼만들기 */}
-        {courseData !== null &&
-          courseData !== undefined &&
-          generateComponent(courseData, (item, key) => (
-            <PlaceDetailCard
-              item={item}
-              key={key}
-              onClick={onClickFocus}
-              isSelected={
-                item.order ===
-                (selectedNumber === "" ? -10 : Number(selectedNumber))
-              }
-              onRemove={onRemove}
-              maxLen={courseData.length}
-              mode={PlaceType.c}
+        </ImgContainer>
+        <MainContainer style={{ margin: "auto 20px" }}>
+          <TitleContainer>
+            <Box className="Title" sx={TITLE}>
+              <Typography variant="h5" sx={FONT_TITLE}>
+                {resultCourseDetail?.data?.title}
+              </Typography>
+              {resultCourseDetail && (
+                <LikeButton
+                  isLike={isLike!}
+                  courseId={Number(id)}
+                  onClickHandler={(courseId) => {
+                    onClickLike(Number(courseId))
+                  }}
+                  likeCount={changeLikeCount()}
+                />
+              )}
+            </Box>
+            <Box className="subTitle" sx={SUBTITLE}>
+              <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
+                <Box sx={ICON_BOX}>
+                  <AccountCircleOutlined sx={ICON_STYLE} />
+                  {resultCourseDetail?.data?.writer.nickname}
+                  <Typography
+                    variant="subtitle1"
+                    sx={FONT_SUBTITLE}
+                    style={{ margin: "auto 5px" }}
+                  >
+                    |
+                  </Typography>
+                  <DateRange sx={ICON_STYLE} />
+                  {resultCourseDetail?.data?.updatedDate}
+                </Box>
+              </Typography>
+            </Box>
+          </TitleContainer>
+          <Box sx={DES_STYLE}>{resultCourseDetail?.data?.description}</Box>
+          {loadData !== null && loadData !== undefined && (
+            <MapContainer
+              selectedNumber={String(selectedNumber)}
+              placeLists={loadData}
+              isSuccess={isSuccess}
+              isLoading={isLoading}
             />
-          ))}
-        {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}
-      </MainContainer>
-    </>
-  )
+          )}
+
+          <KakaoContainer p={1}>
+            <Typography mr={1} variant="subtitle1" sx={FONT_SUBTITLE}>
+              <KakaoShare />
+            </Typography>
+            <KakaoIcon width="30px" height="30px" />
+          </KakaoContainer>
+          {/* 카카오톡 공유하기 */}
+          {/* 버튼만들기 */}
+          {loadData !== null &&
+            loadData !== undefined &&
+            generateComponent(loadData, (item, key) => (
+              <PlaceDetailCard
+                item={item}
+                key={key}
+                onClick={onClickFocus}
+                isSelected={
+                  item.order ===
+                  (selectedNumber === "" ? -10 : Number(selectedNumber))
+                }
+                onRemove={onRemove}
+                maxLen={loadData.length}
+                mode={PlaceType.c}
+                isEditable={false}
+              />
+            ))}
+          {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}
+        </MainContainer>
+      </>
+    )
+  }
+  return <div>{content}</div>
 }
 
 export default CoursePage

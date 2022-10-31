@@ -11,6 +11,7 @@ import EmptyCard from "components/common/card/cardLayout/CardEmpty"
 import { CardItem, CardItem2 } from "components/common/card/cardLayout/CardItem"
 import { CardItemSkeletons } from "components/common/card/cardLayout/CardItemSkeleton"
 
+import { useClickLikeCourseMutation } from "features/course/courseSlice"
 import endpoint from "./endpoint"
 import useInfiniteScroll from "./useInfiniteScroll"
 
@@ -53,6 +54,7 @@ const Row = memo(({ index, style, data }: RowProps) => {
 
 const InfiniteLoader = memo(({ type }: InfiniteLoaderProps) => {
   const { getCourseList, height, itemSize } = endpoint[type]
+  const [click] = useClickLikeCourseMutation()
   const {
     refresh,
     isFetching,
@@ -97,9 +99,10 @@ const InfiniteLoader = memo(({ type }: InfiniteLoaderProps) => {
         copyData.splice(index, 1, newItem)
         return copyData
       })
+      click(courseId)
       setCombinedData(data)
     },
-    [combinedData, setCombinedData, type]
+    [combinedData, setCombinedData, type, click]
   )
 
   // 페이지 리로드
