@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
+
 import { Box, Typography } from "@mui/material"
 import { ArrowBackIosNewOutlined, Close } from "@mui/icons-material"
 
@@ -64,6 +65,9 @@ interface PageState {
 const CourseRegiLayout = (): JSX.Element => {
   const [page, setPage] = useState(0)
   const [courseId, setCourseId] = useState(0)
+
+  const navigate = useNavigate()
+
   const onClickPrev = (): void => {
     if (page !== 1) setPage(page - 1)
   }
@@ -77,6 +81,10 @@ const CourseRegiLayout = (): JSX.Element => {
       setPage(pageState)
     }
   }, [pageState])
+
+  const onClickClose = (): void => {
+    navigate("/")
+  }
 
   return (
     <Box sx={{ width: "100%", typography: "body1" }}>
@@ -106,7 +114,7 @@ const CourseRegiLayout = (): JSX.Element => {
               </Typography>
             </Box>
             <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
-              <Close fontSize="medium" sx={ICON_STYLE} />
+              <Close fontSize="medium" sx={ICON_STYLE} onClick={onClickClose} />
             </Box>
           </Box>
           {page !== 4 && (

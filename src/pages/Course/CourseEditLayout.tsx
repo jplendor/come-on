@@ -91,6 +91,9 @@ const CourseEditLayout = (): JSX.Element => {
     updateCoursePlaceToDB(updateCourse)
   }
 
+  const onClickClose = (): void => {
+    navigate("/")
+  }
   // const onClickPrev = (): void => {
   //   if (pageState < 0) {
   //     navigate(`/course/${id}/update`, { state: 1 })
@@ -131,7 +134,7 @@ const CourseEditLayout = (): JSX.Element => {
               </Typography>
             </Box>
             <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
-              <Close fontSize="medium" sx={ICON_STYLE} />
+              <Close fontSize="medium" sx={ICON_STYLE} onClick={onClickClose} />
             </Box>
           </Box>
           {page !== 4 && (
