@@ -157,6 +157,9 @@ export const courseApi = api.injectEndpoints({
         url: "/courses",
         method: "POST",
         body: data,
+        hearders: {
+          "Content-type": "multipart/form-data; charset=UTF-8",
+        },
       }),
     }),
     addCoursePlace: builder.mutation<CourseDetailResponse, any>({

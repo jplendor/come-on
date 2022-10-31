@@ -79,7 +79,7 @@ const CourseRegiDetail = ({
       const a = changeFileToObjectUrl(e.target.files[0])
       setImageFile(e.target.files[0])
       console.log(a)
-      setImage(String(a))
+      setImage(a)
     }
   }
 
@@ -90,17 +90,25 @@ const CourseRegiDetail = ({
     setIsValid(true)
   }, [description, image, title])
 
+  const changeObjectUrlToFile = async (): Promise<Blob> => {
+    const file = await fetch(image || "").then((r) => r.blob())
+    return file
+  }
+
   const submitCourseDetail = async (): Promise<number> => {
     const newDetail = new FormData()
 
+    dispatch(setCourseDetail({ title, description, imgFile: image }))
+
     newDetail.append("title", title)
     newDetail.append("description", description)
-    if (imageFile) newDetail.append("imgFile", imageFile)
-    dispatch(
-      setCourseDetail({ title, description, imgFile: String(imageFile) })
-    )
-
+    if (image) {
+      const imgFile = await changeObjectUrlToFile()
+      newDetail.append("imgFile", imgFile)
+    }
     const res = await addCourseDetail(newDetail).unwrap()
+
+    console.log(res)
 
     return Promise.resolve(res.data.courseId)
   }
@@ -123,7 +131,7 @@ const CourseRegiDetail = ({
           title="이미지 등록"
           alt="이미지를 등록해 주세요"
           message="이미지를 등록해 주세요"
-          previewImg={image}
+          previewImg={String(image)}
           handleChangeImg={onChangeImage}
         />
       </Grid>
