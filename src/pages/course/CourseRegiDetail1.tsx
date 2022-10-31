@@ -14,7 +14,6 @@ import ImageInput from "components/common/input/ImageInput"
 import {
   setCourseDetail,
   useAddCourseDetailMutation,
-  useAddCoursePlaceMutation,
 } from "features/course/courseSlice"
 
 import { useDispatch } from "react-redux"
@@ -36,13 +35,11 @@ const CourseRegiDetail = ({
 }: pageProps): JSX.Element => {
   const dispatch = useDispatch()
 
-  const [addCoursePlace] = useAddCoursePlaceMutation()
   const [addCourseDetail] = useAddCourseDetailMutation()
   const [isValid, setIsValid] = useState(false)
   const [image, setImage] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
-  const [imageFile, setImageFile] = useState<Blob>()
 
   // const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
   //   const reader = new FileReader()
@@ -52,7 +49,7 @@ const CourseRegiDetail = ({
   //       if (!reader.result) {
   //         throw new Error("No img result")
   //       }
-  //       resolve(setImageSrc(reader.result))
+  //       resolve(reader.result)
   //     }
   //   })
   // }
@@ -60,7 +57,6 @@ const CourseRegiDetail = ({
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
 
-    console.log(fileUrl)
     return fileUrl
   }
 
@@ -74,11 +70,8 @@ const CourseRegiDetail = ({
 
   const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files) {
-      console.log(e.target.files)
-      const a = changeFileToObjectUrl(e.target.files[0])
-      setImageFile(e.target.files[0])
-      console.log(a)
-      setImage(a)
+      const imgUrl = changeFileToObjectUrl(e.target.files[0])
+      setImage(imgUrl)
     }
   }
 
@@ -106,9 +99,6 @@ const CourseRegiDetail = ({
       newDetail.append("imgFile", imgFile)
     }
     const res = await addCourseDetail(newDetail).unwrap()
-
-    console.log(res)
-
     return Promise.resolve(res.data.courseId)
   }
 

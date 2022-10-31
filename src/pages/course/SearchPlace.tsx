@@ -10,14 +10,7 @@ import React, {
 } from "react"
 
 import ReactDOMServer from "react-dom/server"
-import {
-  InputAdornment,
-  TextField,
-  Box,
-  Dialog,
-  Typography,
-  Button,
-} from "@mui/material"
+import { InputAdornment, TextField, Box, Typography } from "@mui/material"
 import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import Slide from "@mui/material/Slide"

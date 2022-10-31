@@ -12,10 +12,7 @@ import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import { useSelector } from "react-redux"
 import { RootState } from "store"
-import {
-  useAddCoursePlaceMutation,
-  useAddCourseDetailMutation,
-} from "features/course/courseSlice"
+import { useAddCoursePlaceMutation } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"
 import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
@@ -114,6 +111,7 @@ interface pageProps {
   id: number
 }
 // 코스등록 전 미리보기 페이지
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
   /* **********************************************************************
 api연동부분

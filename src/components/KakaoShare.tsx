@@ -1,3 +1,5 @@
+import { Share } from "@mui/icons-material"
+import Button from "@mui/material/Button"
 import React, { useEffect, useState } from "react"
 
 declare global {
@@ -19,7 +21,20 @@ const initialKakao = (kakao: any): boolean => {
   return !!kakao
 }
 
-const KakaoShare = (): JSX.Element => {
+interface KakaoShaprProps {
+  name: string
+  title: string
+  content: string
+  imageUrl: string
+  courseId: number
+}
+const KakaoShare = ({
+  name,
+  title,
+  content,
+  imageUrl,
+  courseId,
+}: KakaoShaprProps): JSX.Element => {
   const [isInitial, setisInitial] = useState(false)
   const kakao = window.Kakao
 
@@ -30,17 +45,35 @@ const KakaoShare = (): JSX.Element => {
         container: "#kakao-link-btn",
         templateId: 82080,
         templateArgs: {
-          title: "제목 영역입니다.",
-          description: "설명 영역입니다.",
+          NAME: name,
+          TITLE: title,
+          CONTENT: content,
+          IMAGEURL: imageUrl,
+          LINK: courseId,
         },
       })
     }
   }, [isInitial, kakao])
 
   return (
-    <button type="button" id="kakao-link-btn">
+    <Button
+      variant="outlined"
+      id="kakao-link-btn"
+      sx={{
+        height: "48px",
+        width: "100%",
+        color: "black",
+        border: "1px solid #EEEEEE",
+        borderRadius: "4px",
+      }}
+    >
+      <Share />
       카카오톡으로 공유하기
-    </button>
+    </Button>
+
+    // <button type="button" id="kakao-link-btn">
+    //   카카오톡으로 공유하기
+    // </button>
   )
 }
 

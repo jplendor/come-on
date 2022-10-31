@@ -160,7 +160,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     const filteredData = placeData.filter((place) => place.order !== index)
 
     /* eslint array-callback-return: "error" */
-    // eslint-disable-next-line array-callback-return
+    // eslint-disable-next-line array-callback-return, @typescript-eslint/no-explicit-any
     const data = filteredData.map((place: CoursePlaceState): any => {
       const temp = place
       if (place.order > index) {

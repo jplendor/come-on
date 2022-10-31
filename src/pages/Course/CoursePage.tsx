@@ -4,9 +4,9 @@
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
-import { Box, Typography } from "@mui/material"
+import { Box, Button, Typography } from "@mui/material"
 
-import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
+import { AccountCircleOutlined, DateRange, Share } from "@mui/icons-material"
 
 import { styled } from "@mui/material/styles"
 import MapContainer from "components/common/course/MapContainer"
@@ -19,6 +19,7 @@ import {
   useGetCourseDetailQuery,
 } from "features/course/courseSlice"
 import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -222,13 +223,6 @@ const CoursePage = (): JSX.Element => {
             />
           )}
 
-          <KakaoContainer p={1}>
-            <Typography mr={1} variant="subtitle1" sx={FONT_SUBTITLE}>
-              <KakaoShare />
-            </Typography>
-            <KakaoIcon width="30px" height="30px" />
-          </KakaoContainer>
-          {/* 카카오톡 공유하기 */}
           {/* 버튼만들기 */}
           {loadData !== null &&
             loadData !== undefined &&
@@ -247,6 +241,19 @@ const CoursePage = (): JSX.Element => {
                 isEditable={false}
               />
             ))}
+          <KakaoShare
+            name={resultCourseDetail?.data?.writer.nickname}
+            title={resultCourseDetail?.data?.title}
+            content={resultCourseDetail?.data?.description}
+            imageUrl={imgSrc}
+            courseId={Number(id)}
+          />
+          <CourseNextStepButton
+            content="이 코스로 모임 생성하기"
+            isValid
+            onClick={() => console.log("모임생성")}
+          />
+
           {/* 공유하기 버튼 만들기 클릭시 post 요청으로 코스 등록 => 모임생성 페이지로 감 */}
         </MainContainer>
       </>
