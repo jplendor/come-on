@@ -13,7 +13,7 @@ import { styled } from "@mui/material/styles"
 import { Box, IconButton } from "@mui/material"
 import { Add } from "@mui/icons-material"
 import MapContainer from "components/common/course/MapContainer"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { RootState } from "store"
 import {
   deleteToModify,

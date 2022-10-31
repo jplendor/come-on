@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-nested-ternary */
-import React, { useEffect, useState, Dispatch, SetStateAction } from "react"
+import React, { useState, Dispatch, SetStateAction } from "react"
 import {
   Box,
   Button,
@@ -11,9 +11,8 @@ import {
 } from "@mui/material"
 
 import { styled } from "@mui/material/styles"
-import { addCoursePlace } from "features/course/courseSlice"
 import PlaceAddModal from "components/meeting/PlaceAddModal"
-import { CoursePlaceProps, SearchCardProp } from "types/API/course-service"
+import { SearchCardProp } from "types/API/course-service"
 
 const SELECTED_CARD = {
   padding: "0px",

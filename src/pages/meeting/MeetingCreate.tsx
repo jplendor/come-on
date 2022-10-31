@@ -10,6 +10,7 @@ import ImageInput from "components/common/input/ImageInput"
 import TextInput from "components/common/input/TextInput"
 import InputWrapper from "components/common/input/InputWrapper"
 import Header from "components/meeting/Header"
+import { getYyyymmddArray, toStringYyyymmdd } from "utils"
 
 export interface MeetingInfoType {
   [key: string]: string
@@ -20,16 +21,13 @@ export interface MeetingInfoType {
 
 const MeetingCreate = (): JSX.Element => {
   const [previewImg, setPreviewImg] = useState<null | string>(null)
-  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoType>({
-    title: "",
-    startDate: "",
-    endDate: "",
-  })
+  const [title, setTitle] = useState<string>("")
+  const [startDate, setStartDate] = useState<string>("")
+  const [endDate, setEndDate] = useState<string>("")
 
   const [createMeeting, { isLoading }] = useCreateMeetingMutation()
   const canSubmit =
-    [previewImg, meetingInfo.startDate, meetingInfo.endDate].every(Boolean) &&
-    !isLoading
+    [previewImg, startDate, endDate].every(Boolean) && !isLoading
 
   const theme = useTheme()
 
@@ -60,25 +58,19 @@ const MeetingCreate = (): JSX.Element => {
     let alertArr: string[] = []
 
     if (name === "startDate") {
-      isValid = !(
-        meetingInfo.endDate.length !== 0 && value > meetingInfo.endDate
-      )
-      alertArr = ["종료일", "endDate", "이후"]
+      isValid = !(endDate.length !== 0 && value > endDate)
+      alertArr = ["종료일", endDate, "이후"]
     }
     if (name === "endDate") {
-      isValid = !(
-        meetingInfo.startDate.length !== 0 && value < meetingInfo.startDate
-      )
-      alertArr = ["시작일", "startDate", "이전"]
+      isValid = !(startDate.length !== 0 && value < startDate)
+      alertArr = ["시작일", startDate, "이전"]
     }
 
     return [
       isValid,
       isValid
         ? ""
-        : `${alertArr[0]}(${meetingInfo[alertArr[1]]}) ${
-            alertArr[2]
-          } 날짜는 선택할 수 없습니다.`,
+        : `${alertArr[0]}(${alertArr[1]}) ${alertArr[2]} 날짜는 선택할 수 없습니다.`,
     ]
   }
 
@@ -92,8 +84,17 @@ const MeetingCreate = (): JSX.Element => {
       }
     }
 
-    const newMeetingInfo = { ...meetingInfo, [name]: value }
-    setMeetingInfo(newMeetingInfo)
+    if (name === "title") {
+      setTitle(value)
+    }
+
+    if (name === "startDate") {
+      setStartDate(value)
+    }
+
+    if (name === "endDate") {
+      setEndDate(value)
+    }
   }
 
   const changeObjectUrlToFile = async (): Promise<Blob> => {
@@ -107,8 +108,8 @@ const MeetingCreate = (): JSX.Element => {
     e.preventDefault()
 
     const data = new FormData(e.currentTarget)
-    data.append("startDate", meetingInfo.startDate)
-    data.append("endDate", meetingInfo.endDate)
+    data.append("startDate", startDate)
+    data.append("endDate", endDate)
     const imageFile = await changeObjectUrlToFile()
     data.append("image", imageFile)
 
@@ -130,12 +131,16 @@ const MeetingCreate = (): JSX.Element => {
       if (!previewImg) {
         alertMessage = "모임 대표 사진을 추가해보세요."
       }
-      if (!meetingInfo.startDate || !meetingInfo.endDate) {
+      if (!startDate || !endDate) {
         alertMessage = "모임 시작 날짜와 종료 날짜를 모두 선택해주세요."
       }
       alert(alertMessage)
     }
   }
+
+  const today = new Date()
+  const [y, m, d] = getYyyymmddArray(today)
+  const afterOneYear = new Date(y + 1, m - 1, d - 1)
 
   const content = (
     <>
@@ -159,7 +164,7 @@ const MeetingCreate = (): JSX.Element => {
             <TextInput
               title="모임이름"
               name="title"
-              value={meetingInfo.title}
+              value={title}
               placeholder="모임이름을 입력해주세요!"
               handleChange={handleChange}
             />
@@ -168,19 +173,23 @@ const MeetingCreate = (): JSX.Element => {
             <InputWrapper
               title="모임기간"
               subTitle={
-                meetingInfo.startDate && meetingInfo.endDate ? (
-                  <div>{`${meetingInfo.startDate.replaceAll(
+                startDate && endDate ? (
+                  <div>{`${startDate.replaceAll("-", ".")}~${endDate.replaceAll(
                     "-",
                     "."
-                  )}~${meetingInfo.endDate.replaceAll("-", ".")}`}</div>
+                  )}`}</div>
                 ) : (
                   <div>기간 선택</div>
                 )
               }
               inputItem={
                 <CalendarRangePicker
-                  meetingInfo={meetingInfo}
-                  setMeetingInfo={setMeetingInfo}
+                  startDate={startDate}
+                  endDate={endDate}
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                  minDate={toStringYyyymmdd(today)}
+                  maxDate={toStringYyyymmdd(afterOneYear)}
                 />
               }
             />

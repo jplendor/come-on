@@ -13,7 +13,7 @@ import {
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { PlaceType } from "types/API/course-service"
-import { Category, Close } from "@mui/icons-material"
+import { Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { editCoursePlaceDetail } from "features/course/courseSlice"

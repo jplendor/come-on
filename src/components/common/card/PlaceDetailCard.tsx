@@ -164,7 +164,7 @@ const ICON = {
   color: "#BDBDBD",
 }
 
-const BUTTON_GROUP = {
+let ButtonGroup = {
   display: "flex",
   flexDirection: "column",
   alignItems: "end",
@@ -203,6 +203,7 @@ interface ListDetailCardProps {
   onRemove?: (index: number) => void
   maxLen: number
   mode: PlaceType
+  isEditable: boolean
   // eslint-disable-next-line react/require-default-props
   courseId?: number
 }
@@ -215,12 +216,18 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
   maxLen,
   onRemove,
   courseId,
+  isEditable,
 }) => {
   const [isEditing, setIsEditing] = useState(false)
 
+  if (!isEditable) {
+    ButtonGroup = { ...ButtonGroup, justifyContent: "end" }
+  }
+
   const { order: index, name: placeName, category, apiId, address, id } = item
-  let description = "null"
-  let memo = "null"
+  let description = null
+  let memo = null
+
   if (mode === PlaceType.m) {
     const { memo: itemMemo } = item as MeetingPlace
     memo = itemMemo
@@ -250,8 +257,6 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
       />
     )
   }
-
-  /* //draggable */
 
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
@@ -293,15 +298,17 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
                 <Typography component="span" sx={TITLE_CATEGORY}>
                   {category}
                 </Typography>
-                <IconButton
-                  sx={ICON}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setIsEditing(true)
-                  }}
-                >
-                  <Edit />
-                </IconButton>
+                {isEditable && (
+                  <IconButton
+                    sx={ICON}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsEditing(true)
+                    }}
+                  >
+                    <Edit />
+                  </IconButton>
+                )}
               </Box>
               <Box sx={DES_BOX}>
                 <Typography variant="subtitle2" sx={TITLE_DES}>
@@ -313,10 +320,12 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
               </Typography>
             </Box>
           </Grid>
-          <Grid item xs={2} sx={BUTTON_GROUP}>
-            <IconButton sx={ICON} onClick={handleClickClose}>
-              <Close />
-            </IconButton>
+          <Grid item xs={2} sx={ButtonGroup}>
+            {isEditable && (
+              <IconButton sx={ICON} onClick={handleClickClose}>
+                <Close />
+              </IconButton>
+            )}
             <a href={routeUrl} target="_blank" rel="noreferrer">
               <IconButton sx={ICON}>
                 <KeyboardArrowRight />

@@ -179,7 +179,7 @@ export interface ListDetailCardProp {
   titleBody: string
   titleBottom: string
 }
-interface Place {
+export interface Place {
   id: number
   order: number
   name: string
@@ -231,8 +231,8 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
   }
 
   const { order: index, name: placeName, category, apiId, address, id } = item
-  let description = "null"
-  let memo = "null"
+  let description: string | null = null
+  let memo: string | null = null
 
   if (mode === PlaceType.m) {
     const { memo: itemMemo } = item as MeetingPlace
@@ -245,20 +245,16 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
   }
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const makeNewPlace = () => {
-    const newPlace = {
-      order: item.order,
-      name: item.name,
-      description,
-      lng: item.lng, // 경도 x
-      lat: item.lat, // 위도 y
-      apiId: item.apiId,
-      category: "ETC",
-      address: item.address,
-      id: item.id,
-    }
 
-    return newPlace
+  const newPlace: Place = {
+    order: item.order,
+    name: item.name,
+    lng: item.lng, // 경도 x
+    lat: item.lat, // 위도 y
+    apiId: item.apiId,
+    category: "ETC",
+    address: item.address,
+    id: item.id,
   }
 
   const routeUrl = `https://map.kakao.com/link/to/${apiId}`
@@ -348,7 +344,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
           <PlaceEditModal
             open={open}
             onClose={closeModal}
-            newPlace={makeNewPlace()}
+            newPlace={newPlace}
             mode={editing === true ? PlaceType.e : mode}
             id={id}
           />

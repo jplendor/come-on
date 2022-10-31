@@ -13,7 +13,7 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
-import { Place } from "components/common/card/SearchCard"
+import Place from "components/common/card/PlaceDetailDraggableCard "
 import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -26,14 +26,6 @@ import {
 import { PlaceType } from "types/API/course-service"
 import { RootState } from "store"
 import { PlaceOutlined, SettingsPowerRounded } from "@mui/icons-material"
-
-interface PlaceEditModal {
-  open: boolean
-  onClose: () => void
-  newPlace: Place
-  mode: PlaceType
-  id?: number
-}
 
 const CATEGORY_BOX = {
   height: "80px",
@@ -111,7 +103,7 @@ const CATEGORY_LIST = [
 interface PlaceEditModalProps {
   open: boolean
   onClose: () => void
-  newPlace: Place
+  newPlace: any
   mode: PlaceType
   id?: number
 }

@@ -304,6 +304,7 @@ SearchPlace.defaultProps = {
   editMode: false,
   id: undefined,
   page: undefined,
-  setPage: console.log("sorry error this"),
+  // eslint-disable-next-line no-console
+  setPage: console.error("sorry error this", 3),
 }
 export default SearchPlace

@@ -9,33 +9,22 @@ import React, {
 import { useDispatch, useSelector } from "react-redux"
 import { DragDropContext, Droppable } from "react-beautiful-dnd"
 import { styled } from "@mui/material/styles"
-import { Box, IconButton } from "@mui/material"
-import { Add } from "@mui/icons-material"
+import { Box } from "@mui/material"
 import { generateComponent } from "utils"
 import MapContainer from "components/common/course/MapContainer"
-import { Link } from "react-router-dom"
 import { AppDispatch, RootState } from "store"
 import {
-  fetchByIdCourseDetail,
-  useGetCoursePlacesQuery,
   updateCoursePlace,
   useUpdateCoursePlaceToDBMutation,
   fetchByIdCoursePlaces,
-  updateToModify,
 } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 import {
   CoursePlaceProps,
-  CoursePlacesRes,
   CourseUpdatePlaceProps,
 } from "types/API/course-service"
 import AddCourseBox from "components/common/course/AddCourseBox"
-
-const IconContainer = styled(Box)(() => ({
-  display: "flex",
-  justifyContent: "right",
-}))
 
 const MainContainer = styled(Box)(() => ({
   display: "flex",
@@ -43,9 +32,6 @@ const MainContainer = styled(Box)(() => ({
 }))
 const MAIN_CONTAINER = {
   padding: "20px",
-}
-const ICON_STYLE = {
-  margin: "5px 0",
 }
 
 enum PlaceType {
@@ -85,7 +71,6 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [placeData, setPlaceData] = useState<CoursePlaceState[]>(placeList)
-  const [courseData, setCourseData] = useState<CoursePlaceState[]>(placeList)
 
   const setUpdateCourse = async (): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -99,14 +84,16 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   }
   const dis = useCallback(async () => {
     const myCourseData = await dispatch(fetchByIdCoursePlaces(id))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = myCourseData
     setPlaceData(myData.payload.data.contents)
-  }, [id])
+  }, [dispatch, id])
 
   useEffect(() => {
     dis()
   }, [dis])
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onDragEnd = async (result: any): Promise<void> => {
     const { destination, source, draggableId } = result
     if (!destination) {
@@ -119,7 +106,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       return
     }
 
-    const newPlaceNames = placeData.map((place: { id: any }) => {
+    const newPlaceNames = placeData.map((place: { id: number }) => {
       return place.id
     })
 
@@ -128,9 +115,11 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
 
     const newPlace: Array<CoursePlaceState> = []
     for (let i = 0; i < newPlaceNames.length; i += 1) {
-      const temp: any = placeData.filter((place: { id: any }) => {
-        return String(place.id) === String(newPlaceNames[i])
-      })
+      const temp: CoursePlaceState[] = placeData.filter(
+        (place: { id: number }) => {
+          return String(place.id) === String(newPlaceNames[i])
+        }
+      )
       const temp2 = { ...temp[0] }
 
       const newState = {
@@ -158,7 +147,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     onValid()
   }, [isValid, onValid])
 
-  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): any => {
+  const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
     if (e) {
       setselectedNumber(e.id)
@@ -184,7 +173,6 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
 
     // 전역 상태인 course에서 삭제시키고
     dispatch(updateCoursePlace(data))
-    console.log(data)
     // 딜리트에 넣어서 db에서 삭제시키기
     const deleteCourse = {
       courseId: id,
@@ -204,15 +192,14 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     setPage(2)
   }
 
-  console.log(placeData)
   return (
     <MainContainer sx={MAIN_CONTAINER}>
       {placeData.length !== 0 && (
         <MapContainer
           selectedNumber={selectedNumber}
           placeLists={placeData}
-          isSuccess={courseData !== undefined}
-          isLoading={courseData === undefined}
+          isSuccess={placeData !== undefined}
+          isLoading={placeData === undefined}
         />
       )}
       {/* //dragDropContext */}

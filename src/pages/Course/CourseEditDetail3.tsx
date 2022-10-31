@@ -316,6 +316,7 @@ api연동부분
                 courseId={courseIdProps}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
+                isEditable
               />
             ))}
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>

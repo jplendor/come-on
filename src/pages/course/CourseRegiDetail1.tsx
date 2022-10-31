@@ -16,7 +16,6 @@ import {
   useAddCourseDetailMutation,
   useAddCoursePlaceMutation,
 } from "features/course/courseSlice"
-import { CourseData } from "types/API/course-service"
 
 import { useDispatch } from "react-redux"
 
