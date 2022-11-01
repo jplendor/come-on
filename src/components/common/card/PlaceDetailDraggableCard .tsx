@@ -344,6 +344,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
           <PlaceEditModal
             open={open}
             onClose={closeModal}
+            item={item}
             newPlace={newPlace}
             mode={editing === true ? PlaceType.e : mode}
             id={id}

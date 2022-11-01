@@ -30,6 +30,7 @@ import {
   CourseUpdatePlaceProps,
 } from "types/API/course-service"
 import AddCourseBox from "components/common/course/AddCourseBox"
+import { generateComponent } from "utils"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -243,10 +244,10 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
           <Droppable droppableId="placeData">
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
-                {placeList.map((item) => (
+                {generateComponent(placeList, (item, key) => (
                   <PlaceDetailDraggableCard
                     item={{ ...item, id: item.id }}
-                    key={item.id}
+                    key={key}
                     onClick={onClickFocus}
                     isSelected={
                       item.order ===

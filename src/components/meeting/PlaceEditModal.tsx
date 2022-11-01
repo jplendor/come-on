@@ -106,12 +106,13 @@ interface PlaceEditModalProps {
   newPlace: any
   mode: PlaceType
   id?: number
+  item: any
 }
 
 const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
-  const { open, onClose, newPlace, mode, id } = props
+  const { open, onClose, newPlace, mode, id, item } = props
   const [category, setCategory] = useState("")
-  const [memo, setMemo] = useState(newPlace.description)
+  const [memo, setMemo] = useState(item.description)
   const placeItems = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
@@ -245,6 +246,7 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
   }
 
   const makeCourseContent = (): JSX.Element => {
+    console.log("hee")
     return (
       <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
         <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
