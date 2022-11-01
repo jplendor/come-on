@@ -363,6 +363,7 @@ export const coursePlaceSlice = createSlice({
       state,
       action: PayloadAction<coursePlaceToModify[]>
     ): any => {
+      console.log(action.payload)
       state.updatePlaces.toModify = action.payload
     },
     updateToDelete: (
