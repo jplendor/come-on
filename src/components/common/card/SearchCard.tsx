@@ -96,6 +96,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   mode,
   editing,
   id,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   itemsLen,
   setPage,
   page,
@@ -103,7 +104,6 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
   const [open, setOpen] = useState<boolean>(false)
 
   const closeModal = (): void => {
-    console.log("close")
     setOpen(false)
   }
 
@@ -202,7 +202,6 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
           </Box>
         </ThemeGrid>
       </Grid>
-      {console.log("open2", open)}
       <PlaceAddModal
         open={open}
         onClose={closeModal}

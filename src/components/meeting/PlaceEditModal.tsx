@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   Dialog,
-  DialogContent,
   DialogTitle,
   MenuItem,
   Select,
@@ -13,7 +12,6 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
-import Place from "components/common/card/PlaceDetailDraggableCard "
 import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { useDispatch, useSelector } from "react-redux"
 import {
@@ -112,7 +110,9 @@ interface PlaceEditModalProps {
 const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
   const { open, onClose, newPlace, mode, id, item } = props
   const [category, setCategory] = useState("")
-  const [memo, setMemo] = useState(item.description)
+  const [memo, setMemo] = useState(
+    mode === PlaceType.m ? item.memo : item.description
+  )
   const placeItems = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
@@ -246,7 +246,6 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
   }
 
   const makeCourseContent = (): JSX.Element => {
-    console.log("hee")
     return (
       <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
         <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
