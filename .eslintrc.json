@@ -12,6 +12,7 @@
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
+  "ignorePatterns": ["**/*.html"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -21,8 +22,15 @@
   },
   "plugins": ["react", "@typescript-eslint", "react-hooks"],
   "rules": {
-    "react/function-component-definition": [2, { "namedComponents": "arrow-function",
-    "unnamedComponents":"arrow-function" }],
+    "import/no-unresolved": "off",
+    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }],
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
     "react/jsx-filename-extension": ["warn", { "extensions": [".tsx"] }],
     "import/extensions": [
       "error",
@@ -32,10 +40,10 @@
         "tsx": "never"
       }
     ],
-    "prettier/prettier" : [
+    "prettier/prettier": [
       "error",
       {
-          "endOfLine": "auto"
+        "endOfLine": "auto"
       }
     ],
     "@typescript-eslint/explicit-function-return-type": [
@@ -44,13 +52,17 @@
         "allowExpressions": true
       }
     ],
-    "max-len": ["warn", { "code": 80 }],
+    "max-len": ["warn", { "code": 100 }],
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {}
+      "node": {
+        "extensions": [".js", ".jsx", ".tsx", ".ts", ".html"]
+      }
     }
   }
 }
