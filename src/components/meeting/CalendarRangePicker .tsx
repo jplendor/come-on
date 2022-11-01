@@ -272,7 +272,7 @@ const CalendarRangePicker = ({
     const YmArr = []
     for (
       let i = new Date(minDate);
-      i <= new Date(ey, em + 1, ed);
+      i <= new Date(ey, em, ed);
       i.setMonth(i.getMonth() + 1)
     ) {
       const [iY, iM] = getYyyymmddArray(i)
