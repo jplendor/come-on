@@ -6,12 +6,13 @@ import { Box, LinearProgress, Typography } from "@mui/material"
 import { Close, ArrowBackIosNewOutlined } from "@mui/icons-material"
 
 import { useUpdateCoursePlaceToDBMutation } from "features/course/courseSlice"
-import { CourseUpdatePlaceProps } from "types/API/course-service"
+import { CourseUpdatePlaceProps, PlaceType } from "types/API/course-service"
 import { useSelector } from "react-redux"
 import { RootState } from "store"
 import CourseEditDetail1 from "./CourseEditDetail1"
 import CourseEditDetail2 from "./CourseEditDetail2"
 import CourseEditDetail3 from "./CourseEditDetail3"
+import SearchPlace from "./SearchPlace"
 // MUI
 
 /* Course Layout 
@@ -90,6 +91,9 @@ const CourseEditLayout = (): JSX.Element => {
     updateCoursePlaceToDB(updateCourse)
   }
 
+  const onClickClose = (): void => {
+    navigate("/")
+  }
   // const onClickPrev = (): void => {
   //   if (pageState < 0) {
   //     navigate(`/course/${id}/update`, { state: 1 })
@@ -106,7 +110,7 @@ const CourseEditLayout = (): JSX.Element => {
     { id } && (
       <Box sx={{ width: "100%", typography: "body1" }}>
         <Box sx={{ borderColor: "divider", width: "100%" }}>
-          <Box sx={page !== 3 ? NAVBAR : NAVBAR_STYLE2}>
+          <Box sx={page !== 4 ? NAVBAR : NAVBAR_STYLE2}>
             <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
               <ArrowBackIosNewOutlined sx={ICON_STYLE} onClick={onClickPrev} />
             </Box>
@@ -117,17 +121,23 @@ const CourseEditLayout = (): JSX.Element => {
                   fontWeight: "bold",
                   fontSize: "18px",
                   zIndex: "15",
-                  color: page !== 3 ? "black" : "white",
+                  color: page !== 4 ? "black" : "white",
                 }}
               >
-                {page === 1 ? "코스등록" : page === 2 ? "장소선택" : "미리보기"}
+                {page === 1
+                  ? "코스등록"
+                  : page === 2
+                  ? "장소선택"
+                  : page === 3
+                  ? "장소등록"
+                  : "미리보기"}
               </Typography>
             </Box>
             <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
-              <Close fontSize="medium" sx={ICON_STYLE} />
+              <Close fontSize="medium" sx={ICON_STYLE} onClick={onClickClose} />
             </Box>
           </Box>
-          {page !== 3 && (
+          {page !== 4 && (
             <LinearProgress
               sx={{ zIndex: "16" }}
               variant="determinate"
@@ -138,9 +148,17 @@ const CourseEditLayout = (): JSX.Element => {
         {page === 1 ? (
           <CourseEditDetail1 page={1} setPage={setPage} id={Number(id)} />
         ) : page === 2 ? (
-          <CourseEditDetail2 page={2} setPage={setPage} id={Number(id)} />
+          <SearchPlace
+            mode={PlaceType.c}
+            editMode={false}
+            id={Number(id)}
+            page={2}
+            setPage={setPage}
+          />
+        ) : page === 3 ? (
+          <CourseEditDetail2 page={3} setPage={setPage} id={Number(id)} />
         ) : (
-          <CourseEditDetail3 page={3} setPage={setPage} id={Number(id)} />
+          <CourseEditDetail3 page={4} setPage={setPage} id={Number(id)} />
         )}
       </Box>
     )

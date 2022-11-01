@@ -17,11 +17,13 @@ import {
   updateCoursePlace,
   useUpdateCoursePlaceToDBMutation,
   fetchByIdCoursePlaces,
+  updateToModify,
 } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 import {
   CoursePlaceProps,
+  coursePlaceToModify,
   CourseUpdatePlaceProps,
 } from "types/API/course-service"
 import AddCourseBox from "components/common/course/AddCourseBox"
@@ -72,13 +74,13 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [placeData, setPlaceData] = useState<CoursePlaceState[]>(placeList)
 
-  const setUpdateCourse = async (): Promise<void> => {
+  const setUpdateCourseForDnD = async (
+    newModify: coursePlaceToModify[]
+  ): Promise<void> => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const updateCourse = {
       courseId: id,
-      toSave: updatePlaces.toSave,
-      toModify: updatePlaces.toModify,
-      toDelete: updatePlaces.toDelete,
+      toModify: newModify,
     }
     await updateCoursePlaceToDB(updateCourse)
   }
@@ -86,12 +88,13 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     const myCourseData = await dispatch(fetchByIdCoursePlaces(id))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = myCourseData
+    dispatch(updateCoursePlace(myData.payload.data.contents))
     setPlaceData(myData.payload.data.contents)
   }, [dispatch, id])
 
   useEffect(() => {
     dis()
-  }, [dis])
+  }, [])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onDragEnd = async (result: any): Promise<void> => {
@@ -128,12 +131,29 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       }
       newPlace.push(newState)
     }
+
     setPlaceData(newPlace)
 
+    dispatch(updateCoursePlace(newPlace))
     // 로직 끝난후에 코스에 데이터 등록
 
-    dispatch(updateCoursePlace(newPlace))
-    await setUpdateCourse()
+    const newModify: coursePlaceToModify[] = []
+    // eslint-disable-next-line array-callback-return
+    newPlace.map((place) => {
+      const modifyPlace = {
+        id: place.id,
+        description: place.description,
+        order: place.order,
+        category: place.category,
+      }
+      newModify.push(modifyPlace)
+    })
+
+    console.log(newModify)
+
+    dispatch(updateToModify(newPlace))
+
+    await setUpdateCourseForDnD(newModify)
   }
 
   const onValid = useCallback((): void => {
@@ -160,12 +180,12 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     const filteredData = placeData.filter((place) => place.order !== index)
 
     /* eslint array-callback-return: "error" */
-    // eslint-disable-next-line array-callback-return
+    // eslint-disable-next-line array-callback-return, @typescript-eslint/no-explicit-any
     const data = filteredData.map((place: CoursePlaceState): any => {
       const temp = place
       if (place.order > index) {
-        temp.order -= 1
-        return temp
+        const temp2 = { ...temp, order: temp.order - 1 }
+        return temp2
       }
       return temp
     })
@@ -193,50 +213,52 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   }
 
   return (
-    <MainContainer sx={MAIN_CONTAINER}>
-      {placeData.length !== 0 && (
-        <MapContainer
-          selectedNumber={selectedNumber}
-          placeLists={placeData}
-          isSuccess={placeData !== undefined}
-          isLoading={placeData === undefined}
-        />
-      )}
-      {/* //dragDropContext */}
-      <DragDropContext onDragEnd={onDragEnd}>
+    placeData && (
+      <MainContainer sx={MAIN_CONTAINER}>
         {placeData.length !== 0 && (
-          // droppable
-          <Droppable droppableId="placeData">
-            {(provided) => (
-              <Box ref={provided.innerRef} {...provided.droppableProps}>
-                {generateComponent(placeData, (item, key) => (
-                  <PlaceDetailDraggableCard
-                    item={{ ...item }}
-                    key={key}
-                    onClick={onClickFocus}
-                    isSelected={
-                      item.order ===
-                      (selectedNumber === "" ? -10 : Number(selectedNumber))
-                    }
-                    editing={false}
-                    onRemove={onRemove}
-                    maxLen={placeData.length}
-                    mode={PlaceType.c}
-                  />
-                ))}
-                {provided.placeholder}
-              </Box>
-            )}
-          </Droppable>
+          <MapContainer
+            selectedNumber={selectedNumber}
+            placeLists={placeData}
+            isSuccess={placeData !== undefined}
+            isLoading={placeData === undefined}
+          />
         )}
-      </DragDropContext>
-      <AddCourseBox onClick={handleAddClick} />
-      <CourseNextStepButton
-        content="다음단계"
-        isValid={isValid}
-        onClick={onClicKNextPage}
-      />
-    </MainContainer>
+        {/* //dragDropContext */}
+        <DragDropContext onDragEnd={onDragEnd}>
+          {placeList.length !== 0 && (
+            // droppable
+            <Droppable droppableId="placeData">
+              {(provided) => (
+                <Box ref={provided.innerRef} {...provided.droppableProps}>
+                  {placeList.map((item) => (
+                    <PlaceDetailDraggableCard
+                      item={{ ...item, id: item.id }}
+                      key={item.id}
+                      onClick={onClickFocus}
+                      isSelected={
+                        item.order ===
+                        (selectedNumber === "" ? -10 : Number(selectedNumber))
+                      }
+                      editing={false}
+                      onRemove={onRemove}
+                      maxLen={placeList.length}
+                      mode={PlaceType.c}
+                    />
+                  ))}
+                  {provided.placeholder}
+                </Box>
+              )}
+            </Droppable>
+          )}
+        </DragDropContext>
+        <AddCourseBox onClick={handleAddClick} />
+        <CourseNextStepButton
+          content="다음단계"
+          isValid={isValid}
+          onClick={onClicKNextPage}
+        />
+      </MainContainer>
+    )
   )
 }
 

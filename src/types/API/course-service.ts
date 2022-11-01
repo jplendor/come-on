@@ -104,20 +104,7 @@ export interface CourseUpdatePlaceProps {
       category: string
     }
   ]
-  toModify?: [
-    {
-      id: number
-      description: string
-      order: number
-      category: string
-    },
-    {
-      id: number
-      description: string
-      order: number
-      category: string
-    }
-  ]
+  toModify?: coursePlaceToModify[]
   toDelete?: coursePlaceToDelete[]
 }
 

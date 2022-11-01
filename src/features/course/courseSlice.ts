@@ -14,7 +14,6 @@ import {
   CoursePlaceState,
   coursePlaceToDelete,
   coursePlaceToModify,
-  CoursePlacesResponse,
 } from "types/API/course-service"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -28,7 +27,6 @@ import type {
   LikeCourseRes,
 } from "types/API/course-service"
 import { AppDispatch } from "store"
-import { idText } from "typescript"
 
 export interface coursePlacesToSaveProps {
   toSave: {
@@ -365,6 +363,7 @@ export const coursePlaceSlice = createSlice({
       state,
       action: PayloadAction<coursePlaceToModify[]>
     ): any => {
+      console.log(action.payload)
       state.updatePlaces.toModify = action.payload
     },
     updateToDelete: (

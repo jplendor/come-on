@@ -29,6 +29,8 @@ import {
   CoursePlaceProps,
   CourseUpdatePlaceProps,
 } from "types/API/course-service"
+import AddCourseBox from "components/common/course/AddCourseBox"
+import { generateComponent } from "utils"
 
 const IconContainer = styled(Box)(() => ({
   display: "flex",
@@ -225,7 +227,7 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
   }
 
   const handleAddClick = (): void => {
-    setPage(3)
+    setPage(2)
   }
   return (
     <MainContainer sx={MAIN_CONTAINER}>
@@ -235,28 +237,17 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
         isSuccess={placeList !== undefined}
         isLoading={placeList === undefined}
       />
-      <IconContainer>
-        <IconButton type="button">
-          {/* <Link to="register"> */}
-          <Add
-            sx={ICON_STYLE}
-            color="secondary"
-            fontSize="large"
-            onClick={handleAddClick}
-          />
-          {/* </Link> */}
-        </IconButton>
-      </IconContainer>
+      <IconContainer />
       {/* 카카오톡 공유하기 */}
       {placeList.length !== 0 && placeList[0] !== undefined && (
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="placeData">
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
-                {placeList.map((item) => (
+                {generateComponent(placeList, (item, key) => (
                   <PlaceDetailDraggableCard
                     item={{ ...item, id: item.id }}
-                    key={item.id}
+                    key={key}
                     onClick={onClickFocus}
                     isSelected={
                       item.order ===
@@ -275,6 +266,7 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
           </Droppable>
         </DragDropContext>
       )}
+      <AddCourseBox onClick={handleAddClick} />
       <CourseNextStepButton
         content="다음단계"
         isValid={isValid}

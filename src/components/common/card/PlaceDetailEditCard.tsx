@@ -39,7 +39,7 @@ const CATEGORY_LIST = [
   { name: "기타", value: "ETC" },
 ]
 
-const ThemeCardNumbering = styled(Typography)<TypographyProps>(({ theme }) => ({
+const ThemeCardNumbering = styled(Typography)<TypographyProps>(() => ({
   borderRadius: "30px",
   width: "22px",
   height: "22px",
@@ -64,7 +64,7 @@ const SELECTED_CARD = {
   border: "1px solid #1951B2",
   padding: "0px",
 }
-const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
+const ThemeGrid = styled(Grid)<GridProps>(() => ({
   "&.MuiGrid-root": {
     borderRadius: "4px",
     color: "black",
@@ -216,6 +216,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   item,
   maxLen,
   setIsEditing,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   courseId,
 }) => {
   const { order: index, name: placeName, address } = item
@@ -282,7 +283,6 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
       const myItem = item as CoursePlace
       const newItem = { ...myItem, description, category } as CoursePlace
       // 수정한 값을 전역에 저장
-      console.log(category)
       dispatch(editCoursePlaceDetail(newItem))
     }
     setIsEditing(false)

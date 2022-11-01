@@ -321,6 +321,6 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
 PlaceAddModal.defaultProps = {
   id: undefined,
   page: undefined,
-  setPage: console.log("sorry error this"),
+  setPage: undefined,
 }
 export default PlaceAddModal

@@ -58,17 +58,6 @@ const TITLE_BOX = {
   padding: "0px",
 }
 
-const URL_ICON = {
-  width: "14px",
-  height: "14px",
-  display: "relative",
-  fontSize: "14px",
-  margin: "0px",
-  padding: "0px",
-  left: "50px",
-  color: "#BDBDBD",
-}
-
 enum PlaceType {
   m = "meeting",
   c = "course",

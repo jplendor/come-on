@@ -10,14 +10,7 @@ import React, {
 } from "react"
 
 import ReactDOMServer from "react-dom/server"
-import {
-  InputAdornment,
-  TextField,
-  Box,
-  Dialog,
-  Typography,
-  Button,
-} from "@mui/material"
+import { InputAdornment, TextField, Box, Typography } from "@mui/material"
 import { Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import Slide from "@mui/material/Slide"
@@ -56,14 +49,6 @@ enum PlaceType {
   c = "course",
   e = "editMode",
 }
-interface SearchPlaceProps {
-  mode: PlaceType
-  editMode?: boolean
-  id?: number | undefined
-
-  page?: number
-  setPage?: Dispatch<SetStateAction<number>>
-}
 
 const MyMarker = ({
   place_name: placeName,
@@ -81,6 +66,14 @@ const MyMarker = ({
       </a>
     </div>
   )
+}
+
+interface SearchPlaceProps {
+  mode: PlaceType
+  editMode?: boolean
+  id?: number | undefined
+  page?: number
+  setPage?: Dispatch<SetStateAction<number>>
 }
 
 const SearchPlace = ({
@@ -305,6 +298,6 @@ SearchPlace.defaultProps = {
   id: undefined,
   page: undefined,
   // eslint-disable-next-line no-console
-  setPage: console.error("sorry error this", 3),
+  setPage: undefined,
 }
 export default SearchPlace
