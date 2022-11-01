@@ -15,6 +15,32 @@ interface Grayscale {
   "50": "#FAFAFA"
 }
 
+interface Color {
+  "900": string
+  "800": string
+  "700": string
+  "600": string
+  "500": string
+  "400": string
+  "300": string
+  "200": string
+  "100": string
+  "50": string
+}
+
+const PRIMARY: Color = {
+  "900": "#062975",
+  "800": "#0C3691",
+  "700": "#1951B2",
+  "600": "#2267D6",
+  "500": "#337FFE",
+  "400": "#5495FE",
+  "300": "#82B5FE",
+  "200": "#A8CDFE",
+  "100": "#D5E8FE",
+  "50": "#EFF6FE",
+}
+
 type Typography =
   | "title1"
   | "title2"
@@ -143,6 +169,7 @@ const GRAYSCALES: Grayscale = {
 declare module "@mui/material/styles" {
   interface Theme {
     grayscale: Grayscale
+    primary: Color
     textStyles: {
       [Key in Typography]: {
         regular: regular
@@ -153,6 +180,7 @@ declare module "@mui/material/styles" {
   // allow configuration using `createTheme`
   interface ThemeOptions {
     grayscale: Grayscale
+    primary: Color
     textStyles: {
       [Key in Typography]: {
         regular: regular
@@ -176,6 +204,7 @@ const theme = createTheme({
     },
   },
   grayscale: GRAYSCALES,
+  primary: PRIMARY,
   textStyles: TYPOGRAPHYS,
   typography: {
     fontFamily: [

@@ -34,3 +34,16 @@ export const isTimeExpired = (url?: string): boolean => {
   // 토큰이 만료됐는지
   return Boolean(now >= expiryTime)
 }
+
+/**
+ * Date 객체 2개를 인자로 받아서, 같은 날짜인지 리턴
+ * createAt: 2022-10-20
+ * author: lee jeongmin
+ */
+export const isSameDate = (date1: Date, date2: Date): boolean => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  )
+}

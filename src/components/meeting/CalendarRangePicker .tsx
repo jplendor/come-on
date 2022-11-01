@@ -8,7 +8,12 @@ import React, {
 import { Box, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 
-import { generateComponent, getYyyymmddArray, toStringYyyymmdd } from "utils"
+import {
+  generateComponent,
+  getYyyymmddArray,
+  isSameDate,
+  toStringYyyymmdd,
+} from "utils"
 
 interface YmInfo {
   y: number
@@ -31,7 +36,6 @@ interface DateInfo {
 
 interface SelectedDateStyle {
   borderRadius: string
-  bgcolor: string
 }
 
 interface CalendarRangePickerProps {
@@ -58,24 +62,27 @@ const CalendarRangePicker = ({
 
   const theme = useTheme()
 
+  const DEFAULT = {
+    height: "90%",
+    width: "100%",
+    bgcolor: theme.primary[50],
+  }
+
   const START = {
     borderRadius: "50% 0 0 50%",
-    bgcolor: theme.palette.secondary.main,
   }
 
   const END = {
     borderRadius: "0 50% 50% 0",
-    bgcolor: theme.palette.secondary.main,
   }
 
   const BETWEEN = {
     borderRadius: "0",
-    bgcolor: theme.palette.secondary.main,
   }
 
   const NO = {
     borderRadius: "0",
-    bgcolor: "",
+    bgcolor: "inherit",
   }
 
   const CALENDAR = {
@@ -120,8 +127,20 @@ const CalendarRangePicker = ({
     lineHeight: "60px",
     textAlign: "center",
     cursor: "pointer",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontWeight: "bold",
   }
 
+  const getSunStyle = (dayOfWeek: string): { color: string } => {
+    if (dayOfWeek === "SUN") {
+      return { color: "red" }
+    }
+    return { color: "inherit" }
+  }
+
+  // 날짜 클릭 시, startDate, EndDate값 update
   const handleClcik = (e: React.MouseEvent<HTMLDivElement>): void => {
     if (!(e.target instanceof HTMLDivElement)) {
       return
@@ -147,29 +166,98 @@ const CalendarRangePicker = ({
     }
   }
 
+  // 선택 기간 표시 스타일
+  const getStyle = (dateInfo: DateInfo): SelectedDateStyle => {
+    const { selected } = dateInfo
+
+    if (selected === selectedType.s) {
+      return START
+    }
+    if (selected === selectedType.e) {
+      return END
+    }
+    if (selected === selectedType.b) {
+      return BETWEEN
+    }
+    return NO
+  }
+
+  interface DateStyle {
+    color: string
+    bgcolor: string
+    borderRadius: string
+  }
+
+  // startDate, EndDate 표시 스타일
+  const getStyle2 = (dateInfo: DateInfo): DateStyle => {
+    const { y, m, d } = dateInfo
+
+    if (
+      isSameDate(new Date(startDate), new Date(y, m, d)) ||
+      isSameDate(new Date(endDate), new Date(y, m, d))
+    ) {
+      return {
+        color: "white",
+        bgcolor: theme.palette.primary.main,
+        borderRadius: "50%",
+      }
+    }
+    return { color: "inherit", bgcolor: "inherit", borderRadius: "inherit" }
+  }
+
+  const dateInfoByMonth = (y: number, m: number): DateInfo[] => {
+    let currentMonthDateInfo = rangeDate?.filter(
+      (item) => item.y === y && item.m === m
+    )
+
+    if (currentMonthDateInfo) {
+      const startDay = currentMonthDateInfo[0]
+      const startIndex = new Date(startDay.y, startDay.m, startDay.d).getDay()
+
+      currentMonthDateInfo = [
+        ...new Array(startIndex).fill({
+          y: 10000,
+          m: 0,
+          d: 0,
+          selected: selectedType.n,
+        }),
+        ...currentMonthDateInfo,
+      ]
+    }
+
+    return currentMonthDateInfo || []
+  }
+
   const getSelectedType = useCallback(
     (y: number, m: number, d: number): selectedType => {
-      const itemDate = toStringYyyymmdd(new Date(y, m, d))
+      const target = new Date(y, m, d)
+      const targetDate = toStringYyyymmdd(target)
+      const isStart =
+        isSameDate(target, new Date(y, m, 1)) || target.getDay() === 0
+      const isEnd =
+        isSameDate(target, new Date(y, m + 1, 0)) || target.getDay() === 6
 
-      if (startDate.length === 0 && endDate.length === 0) {
+      // 1) startDate, endDate가 모두 있지는 않은 경우
+      if (endDate.length === 0) {
         return selectedType.n
       }
 
-      if (startDate.length !== 0 && endDate.length === 0) {
-        if (startDate === itemDate) {
-          return selectedType.s
-        }
-        return selectedType.n
-      }
+      // 2) startDate, endDate가 모두 있는 경우
       if (startDate.length !== 0 && endDate.length !== 0) {
-        if (startDate === itemDate) {
+        if (startDate === targetDate) {
           return selectedType.s
         }
-        if (startDate < itemDate && itemDate < endDate) {
-          return selectedType.b
-        }
-        if (itemDate === endDate) {
+        if (targetDate === endDate) {
           return selectedType.e
+        }
+        if (startDate < targetDate && targetDate < endDate) {
+          if (isStart) {
+            return selectedType.s
+          }
+          if (isEnd) {
+            return selectedType.e
+          }
+          return selectedType.b
         }
       }
       return selectedType.n
@@ -177,6 +265,7 @@ const CalendarRangePicker = ({
     [startDate, endDate]
   )
 
+  // 기간에 해당하는 날짜 정보 생성
   const makeRangeDate = useCallback((): void => {
     const [ey, em, ed] = getYyyymmddArray(new Date(maxDate))
 
@@ -209,49 +298,6 @@ const CalendarRangePicker = ({
     setRangeDate(dateArr)
   }, [minDate, maxDate, getSelectedType])
 
-  const getStyle = (selected: string): SelectedDateStyle => {
-    if (selected === selectedType.s) {
-      return START
-    }
-    if (selected === selectedType.e) {
-      return END
-    }
-    if (selected === selectedType.b) {
-      return BETWEEN
-    }
-    return NO
-  }
-
-  const dateInfoByMonth = (y: number, m: number): DateInfo[] => {
-    let currentMonthDateInfo = rangeDate?.filter(
-      (item) => item.y === y && item.m === m
-    )
-
-    if (currentMonthDateInfo) {
-      const startDay = currentMonthDateInfo[0]
-      const startIndex = new Date(startDay.y, startDay.m, startDay.d).getDay()
-
-      currentMonthDateInfo = [
-        ...new Array(startIndex).fill({
-          y: 10000,
-          m: 0,
-          d: 0,
-          selected: selectedType.n,
-        }),
-        ...currentMonthDateInfo,
-      ]
-    }
-
-    return currentMonthDateInfo || []
-  }
-
-  const getSunStyle = (dayOfWeek: string): { color: string } => {
-    if (dayOfWeek === "SUN") {
-      return { color: "red" }
-    }
-    return { color: "inherit" }
-  }
-
   useEffect((): void => {
     makeRangeDate()
   }, [makeRangeDate])
@@ -276,15 +322,18 @@ const CalendarRangePicker = ({
                 generateComponent(
                   dateInfoByMonth(data1.y, data1.m),
                   (data2, key2) => (
-                    <Box
-                      sx={{ ...DATE, ...getStyle(data2.selected) }}
-                      key={key2}
-                      data-ymd={toStringYyyymmdd(
-                        new Date(data2.y, data2.m, data2.d)
-                      )}
-                      onClick={handleClcik}
-                    >
-                      {data2.d !== 0 ? data2.d : ""}
+                    <Box sx={DATE} key={key2}>
+                      <Box sx={{ ...DEFAULT, ...getStyle(data2) }}>
+                        <Box
+                          onClick={handleClcik}
+                          data-ymd={toStringYyyymmdd(
+                            new Date(data2.y, data2.m, data2.d)
+                          )}
+                          sx={{ height: "100%", ...getStyle2(data2) }}
+                        >
+                          {data2.d !== 0 ? data2.d : ""}
+                        </Box>
+                      </Box>
                     </Box>
                   )
                 )}
