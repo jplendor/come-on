@@ -140,7 +140,7 @@ const MeetingCreate = (): JSX.Element => {
 
   const today = new Date()
   const [y, m, d] = getYyyymmddArray(today)
-  const afterOneYear = new Date(y + 1, m - 1, d - 1)
+  const afterOneYear = new Date(y + 1, m, d - 1)
 
   const content = (
     <>
