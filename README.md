@@ -18,6 +18,7 @@
 
 라이브러리 및 기술 스택
 ------------------------
+[포트폴리오 리드미정리.pdf](https://github.com/jplendor/come-on/files/9920759/default.pdf)
 
 
 
