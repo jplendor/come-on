@@ -1,31 +1,12 @@
+
 # Come-on 캘린더 (부제:모두의 캘린더)
 
 기획의도
 ------
-![image](https://user-images.githubusercontent.com/28006318/199532470-fe946ae9-df61-48ef-a8c4-978f7da93488.png)
-![image](https://user-images.githubusercontent.com/28006318/199532643-27f4bbf7-a8fc-4f97-83f9-c0e5381c54df.png)
-![image](https://user-images.githubusercontent.com/28006318/199532770-8b1ca7b6-7f96-4400-9fe3-baf378c3c6fa.png)
-![image](https://user-images.githubusercontent.com/28006318/199532816-fc77f124-ba73-4c02-a2b6-88418e297b4d.png)
-![image](https://user-images.githubusercontent.com/28006318/199532900-164de4be-fc03-4416-8c0c-9c13838c44b4.png)
-![image](https://user-images.githubusercontent.com/28006318/199533125-05510604-a184-4616-8363-6e1cb9df1d73.png)
-![image](https://user-images.githubusercontent.com/28006318/199533219-b1b10adb-9901-44b3-80a1-754233cace77.png)
-![image](https://user-images.githubusercontent.com/28006318/199533314-08c12140-fc1a-4380-9a92-fafff76af3e1.png)
-![image](https://user-images.githubusercontent.com/28006318/199533364-27a3e3f2-158b-4198-a27b-2b4a92ce74e7.png)
-![image](https://user-images.githubusercontent.com/28006318/199533480-2413dffc-6e66-4865-b850-6d14cce8bbb1.png)
-![image](https://user-images.githubusercontent.com/28006318/199533583-d1023c73-37a2-4f2b-b3c2-4de3fb95428e.png)
-자세히 보기 클릭시 해당 코스로 이동함
+<center><img src="https://user-images.githubusercontent.com/28006318/199532470-fe946ae9-df61-48ef-a8c4-978f7da93488.png" width="400" height="500"></center>
 
-![image](https://user-images.githubusercontent.com/28006318/199533720-1476f847-d3d2-428b-8700-a13d15dfc9df.png)
-![image](https://user-images.githubusercontent.com/28006318/199533857-e09e30e0-ccf3-43c7-b2d6-30efb58f5197.png)
-모임 선택 기간 설정 및 사진 등록
-![image](https://user-images.githubusercontent.com/28006318/199534176-30029bc7-f62b-444e-a178-3c86bee5704b.png)
-모임 날짜 선택 및 약속 장소 등록
-
-
-
-
-
-
+<br>
+<br>
 
 
 
