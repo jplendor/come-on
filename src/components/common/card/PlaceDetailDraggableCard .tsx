@@ -280,8 +280,10 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
   }
 
   const filterCategory = (): string => {
-    const korCategory = CATEGORY_LIST.filter((it) => it.name === category)[0]
+    const newCategory = category === "" || undefined ? "ETC" : category
+    const korCategory = CATEGORY_LIST.filter((it) => it.name === newCategory)[0]
       .value
+
     return korCategory
   }
   /* //draggable */

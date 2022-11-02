@@ -216,7 +216,8 @@ const SearchPlace = ({
       useMapBounds: true,
     }
 
-    ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
+    if (searchKeyword !== "")
+      ps.keywordSearch(searchKeyword, placesSearchCB, pageOptions)
     setIsSearch(false)
   }, [searchKeyword, myLatLng, myLevel])
 

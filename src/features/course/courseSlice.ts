@@ -77,19 +77,7 @@ export const initialState: CoursePlaceState = {
     description: "",
     imgFile: "",
   },
-  coursePlaces: [
-    {
-      id: 0,
-      order: 0,
-      name: "newName",
-      description: "값을 입력해 주세요",
-      lng: 38.05248142233915, // 경도 x
-      lat: 127.65930674808553, // 위도 y
-      apiId: 12346,
-      category: "ETC",
-      address: "",
-    },
-  ],
+  coursePlaces: [],
   searchText: undefined,
   updatePlaces: { toSave: [], toModify: [], toDelete: [] },
 }
@@ -268,10 +256,10 @@ export const coursePlaceSlice = createSlice({
       state.searchText = action.payload
     },
     addCoursePlace: (state, action: PayloadAction<CoursePlaceProps>) => {
-      if (state.coursePlaces[0].name === "newName") state.coursePlaces.pop()
       if (state.coursePlaces.length === 0) {
         state.coursePlaces[0] = { ...action.payload, order: 1 }
       } else {
+        if (state.coursePlaces[0].name === "newName") state.coursePlaces.pop()
         state.coursePlaces.push({
           ...action.payload,
           order: state.coursePlaces.length + 1,

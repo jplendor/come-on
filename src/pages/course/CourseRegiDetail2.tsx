@@ -151,7 +151,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
 
     console.log(newModify)
 
-    dispatch(updateToModify(newPlace))
+    dispatch(updateToModify(newModify))
 
     await setUpdateCourseForDnD(newModify)
   }
@@ -193,6 +193,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
 
     // 전역 상태인 course에서 삭제시키고
     dispatch(updateCoursePlace(data))
+
     // 딜리트에 넣어서 db에서 삭제시키기
     const deleteCourse = {
       courseId: id,
@@ -230,10 +231,10 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
             <Droppable droppableId="placeData">
               {(provided) => (
                 <Box ref={provided.innerRef} {...provided.droppableProps}>
-                  {placeList.map((item) => (
+                  {generateComponent(placeList, (item, key) => (
                     <PlaceDetailDraggableCard
                       item={{ ...item, id: item.id }}
-                      key={item.id}
+                      key={key}
                       onClick={onClickFocus}
                       isSelected={
                         item.order ===
