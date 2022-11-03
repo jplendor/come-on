@@ -2,7 +2,7 @@ import { Box, Button, Grid, TextField, Typography } from "@mui/material"
 import LoginLogo from "assets/nav/LoginLogo"
 import AlertComponent from "components/common/alert/Alert"
 import { useInviteMeetingUserMutation } from "features/meeting/meetingSlice"
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import theme from "theme"
 import { generateComponent } from "utils"
@@ -22,7 +22,6 @@ const CODE = {
 
 const MeetingEnter = (): JSX.Element => {
   // TODO
-  // 4) 한칸 입력하면 다음칸으로 자동으로 넘어가기
   // 7) 첫번째 칸에 붙여넣기하면, 6칸에 각 자리 코드 입력되게
 
   const [code, setCode] = useState(["", "", "", "", "", ""])
@@ -32,6 +31,9 @@ const MeetingEnter = (): JSX.Element => {
   const [inviteMeetingUserMutation] = useInviteMeetingUserMutation()
 
   const navigate = useNavigate()
+
+  const inputRefs = useRef<HTMLInputElement[]>([])
+  const [focusIdx, setFocusIdx] = useState(0)
 
   interface CustomError {
     status: number
@@ -92,6 +94,11 @@ const MeetingEnter = (): JSX.Element => {
     newCode[idx] = value
     setCode(newCode)
 
+    if (value.length === 1) {
+      const nextIdx = idx + 1
+      setFocusIdx(nextIdx)
+    }
+
     // 한글인 경우 알림창 띄우기
     if (isHangul) {
       setOpen(true)
@@ -136,6 +143,10 @@ const MeetingEnter = (): JSX.Element => {
                 inputProps={{ maxLength: 1, style: { textAlign: "center" } }}
                 onChange={(e) => {
                   handleChangeCode(e, idx)
+                }}
+                inputRef={(ref): void => {
+                  inputRefs.current[idx] = ref
+                  if (ref && focusIdx === idx) ref.focus()
                 }}
               />
             ))}
