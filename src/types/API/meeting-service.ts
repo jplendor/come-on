@@ -174,3 +174,12 @@ export interface MeetingUserForUpdate {
   userId: number
   updatedMember: Member
 }
+
+export interface MeetingUserForCreate {
+  inviteCode: string
+}
+
+export interface MeetingUserForCreateSuccess {
+  meetingId: number
+  meetingUserId: number
+}

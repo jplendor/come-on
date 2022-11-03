@@ -1,7 +1,9 @@
 import { Box, Button, Grid, TextField, Typography } from "@mui/material"
 import LoginLogo from "assets/nav/LoginLogo"
 import AlertComponent from "components/common/alert/Alert"
+import { useInviteMeetingUserMutation } from "features/meeting/meetingSlice"
 import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import theme from "theme"
 import { generateComponent } from "utils"
 
@@ -21,16 +23,60 @@ const CODE = {
 const MeetingEnter = (): JSX.Element => {
   // TODO
   // 4) 한칸 입력하면 다음칸으로 자동으로 넘어가기
-  // 6) 입장하기 클릭 => 성공하면 모임 리스트 화면으로 이동
-  //                 => 실패하면 코드 다 리셋하고, 없는 모임코드 입니다. 알림창 띄우기
   // 7) 첫번째 칸에 붙여넣기하면, 6칸에 각 자리 코드 입력되게
 
   const [code, setCode] = useState(["", "", "", "", "", ""])
   const [open, setOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState("")
 
-  const handleClickEnter = (): void => {
+  const [inviteMeetingUserMutation] = useInviteMeetingUserMutation()
+
+  const navigate = useNavigate()
+
+  interface CustomError {
+    status: number
+    data: {
+      code: string
+      data: {
+        code: number
+        message: {
+          inviteCode: string[]
+        }
+      }
+    }
+  }
+
+  const handleClickEnter = async (): Promise<void> => {
     const stringCode = code.join("")
-    // 유저 생성 api 연결
+    try {
+      const res = await inviteMeetingUserMutation({
+        inviteCode: stringCode,
+      }).unwrap()
+
+      const { meetingId } = res.data
+      navigate(`../${meetingId}`)
+    } catch (error) {
+      const err = error as CustomError
+      const errorCode = err.data.data.code
+      switch (errorCode) {
+        case 103:
+          setAlertMessage("초대코드의 형식이 올바르지 않습니다.")
+          break
+        case 107:
+          setAlertMessage("존재하지 않는 초대코드입니다.")
+          break
+        case 108:
+          setAlertMessage("초대코드의 유효기간이 종료되었습니다.")
+          break
+        case 109:
+          setAlertMessage("이미 참여중인 모임입니다.")
+          break
+        default:
+          setAlertMessage("예측할 수 없는 오류입니다. 관리자에게 문의바랍니다.")
+      }
+      setOpen(true)
+      setCode(["", "", "", "", "", ""])
+    }
   }
 
   const handleChangeCode = (
@@ -47,7 +93,10 @@ const MeetingEnter = (): JSX.Element => {
     setCode(newCode)
 
     // 한글인 경우 알림창 띄우기
-    if (isHangul) setOpen(true)
+    if (isHangul) {
+      setOpen(true)
+      setAlertMessage("영문 대문자와 숫자만 입력 가능합니다.")
+    }
   }
 
   interface InputStyle {
@@ -62,16 +111,14 @@ const MeetingEnter = (): JSX.Element => {
   return (
     <Box
       sx={{
+        position: "relative",
+        width: "100%",
         height: "100%",
         padding: "35px",
         ...CONTAINER,
       }}
     >
-      <AlertComponent
-        open={open}
-        setOpen={setOpen}
-        message="영어 대문자와 숫자만 입력 가능합니다."
-      />
+      <AlertComponent open={open} setOpen={setOpen} message={alertMessage} />
       <Grid container spacing={10}>
         <Grid item xs={12} sx={CONTAINER}>
           <LoginLogo />
