@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from "react"
 import { styled } from "@mui/material/styles"
-import EditIcon from "@mui/icons-material/Edit"
+import { Edit, MeetingRoom } from "@mui/icons-material"
 import type { SpeedDialProps } from "@mui/material"
 import {
   Box,
@@ -28,11 +28,12 @@ const ThemeSpeedDial = styled((props: SpeedDialProps) => (
 
 // 우리동네코스
 const actions1 = [
-  { icon: <EditIcon />, name: "코스생성", url: Url.meetingRegister },
+  { icon: <Edit />, name: "코스생성", url: Url.meetingRegister },
 ]
 // 모임관리
 const actions2 = [
-  { icon: <EditIcon />, name: "모임생성", url: Url.meetingRegister },
+  { icon: <Edit />, name: "모임등록", url: Url.meetingRegister },
+  { icon: <MeetingRoom />, name: "모임입장", url: Url.meetingEnter },
 ]
 
 interface ActionType {
