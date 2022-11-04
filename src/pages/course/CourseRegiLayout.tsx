@@ -128,6 +128,7 @@ const CourseRegiLayout = (): JSX.Element => {
         {page === 1 ? (
           <CourseRegiDetail1
             page={1}
+            id={courseId}
             setPage={setPage}
             setCourseId={setCourseId}
           />
