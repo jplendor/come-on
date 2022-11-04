@@ -21,9 +21,6 @@ const CODE = {
 }
 
 const MeetingEnter = (): JSX.Element => {
-  // TODO
-  // 7) 첫번째 칸에 붙여넣기하면, 6칸에 각 자리 코드 입력되게
-
   const [code, setCode] = useState(["", "", "", "", "", ""])
   const [open, setOpen] = useState(false)
   const [alertMessage, setAlertMessage] = useState("")
@@ -86,18 +83,25 @@ const MeetingEnter = (): JSX.Element => {
     idx: number
   ): void => {
     let { value } = e.target
-    const isHangul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(value)
+    const newCode = [...code]
 
+    const isHangul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(value)
     value = isHangul ? "" : value.toUpperCase()
 
-    const newCode = [...code]
-    newCode[idx] = value
-    setCode(newCode)
+    let nextIdx = idx
 
-    if (value.length === 1) {
-      const nextIdx = idx + 1
-      setFocusIdx(nextIdx)
+    if (value.length > 0) {
+      const arr = value.split("")
+      for (let i = 0; i < arr.length; i += 1) {
+        if (idx + i < 6) newCode[idx + i] = arr[i]
+      }
+      nextIdx = idx + arr.length
+    } else {
+      newCode[idx] = value
     }
+
+    setCode(newCode)
+    setFocusIdx(nextIdx)
 
     // 한글인 경우 알림창 띄우기
     if (isHangul) {
@@ -140,7 +144,7 @@ const MeetingEnter = (): JSX.Element => {
                 key={key}
                 sx={{ ...CODE, ...getStyle(idx) }}
                 value={code[idx]}
-                inputProps={{ maxLength: 1, style: { textAlign: "center" } }}
+                inputProps={{ style: { textAlign: "center" } }}
                 onChange={(e) => {
                   handleChangeCode(e, idx)
                 }}
