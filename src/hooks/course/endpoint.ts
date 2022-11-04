@@ -6,7 +6,7 @@ import {
 import { useGetMeetingListQuery } from "features/meeting/meetingSlice"
 
 const endpoint = {
-  Metting: {
+  Meeting: {
     getCourseList: useGetMeetingListQuery,
     height: 605,
     itemSize: 277,
