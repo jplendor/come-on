@@ -153,8 +153,7 @@ api연동부분
 
   //   if (myfile !== undefined) {
   //     await myfile?.arrayBuffer().then((arrayBuffer) => {
-  //       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //       const blob = new Blob([new Uint8Array(arrayBuffer)], {
+  //         const blob = new Blob([new Uint8Array(arrayBuffer)], {
   //         type: myfile.type,
   //       })
   //     })

@@ -72,7 +72,6 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
 
-    console.log(fileUrl)
     return fileUrl
   }
 

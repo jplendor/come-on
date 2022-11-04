@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 import { Box, Button, Typography } from "@mui/material"
 
@@ -107,6 +107,18 @@ enum PlaceType {
   c = "course",
 }
 
+interface errorType {
+  data: {
+    code: string
+    data: {
+      code: number
+      message: string
+      responseTime: string
+    }
+  }
+  status: number
+}
+
 const CoursePage = (): JSX.Element => {
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [imgSrc, setImgSrc] = useState<string>("")
@@ -117,6 +129,8 @@ const CoursePage = (): JSX.Element => {
     isSuccess,
     isLoading,
     isFetching,
+    error: err,
+    // eslint-disable-next-line react-hooks/rules-of-hooks
   } = useGetCourseDetailQuery(id)
   const [clickLikeCourse] = useClickLikeCourseMutation()
   const loadData = resultCourseDetail?.data?.coursePlaces
@@ -125,6 +139,39 @@ const CoursePage = (): JSX.Element => {
   let likecount = resultCourseDetail?.data?.likeCount!
   const [isLike, setIsLike] = useState<boolean>(initialLike)
   let likeCount = likecount
+  const navigate = useNavigate()
+
+  if (err && "data" in err) {
+    // eslint-disable-next-line no-empty
+
+    const error = err as errorType
+    const { code } = error.data.data
+    switch (code) {
+      case 904:
+        navigate("/not-found", {
+          state: { content: "죄송합니다. 저장되지 않은 코스입니다." },
+        })
+        break
+      case 905:
+        navigate("/not-found", {
+          state: { content: "요청을 수행할 권한이 없습니다." },
+        })
+        break
+      case 906:
+        navigate("/not-found", {
+          state: { content: "해당 리소스에 접근할 수 없는 상태입니다." },
+        })
+        break
+      case 907:
+        navigate("/not-found", {
+          state: { content: "인증된 사용자만 이용 가능합니다." },
+        })
+        break
+
+      default:
+        break
+    }
+  }
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
