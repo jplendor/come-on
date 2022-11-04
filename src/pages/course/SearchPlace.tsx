@@ -11,12 +11,13 @@ import React, {
 
 import ReactDOMServer from "react-dom/server"
 import { InputAdornment, TextField, Box, Typography } from "@mui/material"
-import { Search } from "@mui/icons-material"
+import { ContentCopyRounded, Search } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import Slide from "@mui/material/Slide"
 import SearchCard from "components/common/card/SearchCard"
 import { SearchCardProp } from "types/API/course-service"
 import useGeolocation from "hooks/geolocation/useGeolocation"
+import "./Customoverlay.css"
 
 const { kakao } = window
 const DELAY = 800
@@ -55,14 +56,47 @@ const MyMarker = ({
   place_url: placeUrl,
 }: SearchCardProp): JSX.Element => {
   return (
-    <div style={{ padding: "5px", fontSize: "12px" }}>
+    <div
+      style={{
+        padding: "5px",
+        fontSize: "12px",
+        border: "1px solid #337FFE",
+        borderRadius: "4px",
+      }}
+    >
       <a
         href={placeUrl}
         target="_blank"
         rel="noreferrer"
-        style={{ textDecoration: "none" }}
+        style={{
+          textDecoration: "none",
+        }}
       >
         {placeName}
+      </a>
+    </div>
+  )
+}
+
+interface OverayProps {
+  content: string
+  apiId: number
+}
+const myOverlay = ({ content, apiId }: OverayProps): JSX.Element => {
+  return (
+    <div className="markerBox">
+      <a
+        href={`https://map.kakao.com/link/map/${apiId}`}
+        target="_blank"
+        rel="noreferrer"
+        style={{
+          textDecoration: "none",
+          textAlign: "center",
+          display: "block",
+          fontSize: "12px",
+        }}
+      >
+        {content}
       </a>
     </div>
   )
@@ -145,30 +179,45 @@ const SearchPlace = ({
   // 리스트 클릭했을 시 색 바뀌는 함수 + 목록에 추가되도록
 
   // 마커를 맵에 표시
-  const displayMarker = (map: any, infowindow: any, place: any): void => {
+  const displayMarker = (map: any, place: any): void => {
     const marker = new kakao.maps.Marker({
       map,
       position: new kakao.maps.LatLng(place.y, place.x),
     })
 
+    const overlay = myOverlay({ content: place.place_name, apiId: place.id })
+    const content = ReactDOMServer.renderToString(overlay)
+
+    const customoverlay = new kakao.maps.CustomOverlay({
+      content,
+      position: marker.getPosition(),
+      yAnchor: 2,
+    })
+
     // 마커에 클릭이벤트를 등록합니다
     kakao.maps.event.addListener(marker, "click", function () {
+      customoverlay.setMap(null)
       // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
       const myMarker = MyMarker(place)
       const renderedMarger = ReactDOMServer.renderToString(myMarker)
+
+      customoverlay.setMap(map)
       setSelectedData(place)
       setOpen(true)
+
       map.panTo(new kakao.maps.LatLng(place.y, place.x))
-      infowindow.setContent(renderedMarger)
-      infowindow.open(map, marker)
+
+      // infowindow.setContent(renderedMarger)
+      // infowindow.open(map, marker)
     })
+
     marker.setMap(map)
   }
 
   // eslint-disable-next-line prefer-const
 
   useEffect(() => {
-    const infowindow = new kakao.maps.InfoWindow({ zIndex: 1, width: "100px" })
+    // const infowindow = new kakao.maps.InfoWindow({ zIndex: 1 })
     const container = mapContainer.current
 
     const options = {
@@ -186,7 +235,9 @@ const SearchPlace = ({
       // setPageCount(pagination.last)
       if (status === kakao.maps.services.Status.OK) {
         for (let i = 0; i < data.length; i += 1) {
-          displayMarker(map, infowindow, data[i])
+          // displayMarker(map, infowindow, data[i])
+
+          displayMarker(map, data[i])
         }
         if (isSearch === true)
           map.setCenter(new kakao.maps.LatLng(data[0].y, data[0].x))
@@ -206,6 +257,8 @@ const SearchPlace = ({
         setMyLevel(level)
       }
     )
+
+    // 커스텀 오버레이 설정
 
     const ps = new kakao.maps.services.Places()
     const pageOptions = {
