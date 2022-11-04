@@ -14,12 +14,16 @@ import ImageInput from "components/common/input/ImageInput"
 import {
   setCourseDetail,
   useAddCourseDetailMutation,
+  useGetCourseDetailQuery,
+  useUpdateCourseDetailMutation,
 } from "features/course/courseSlice"
 
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "store"
 
 interface pageProps {
   page: number
+  id: number
   setPage: Dispatch<SetStateAction<number>>
   setCourseId: Dispatch<SetStateAction<number>>
 }
@@ -31,6 +35,7 @@ const MAIN_CONTAINER = {
 const CourseRegiDetail = ({
   setCourseId,
   setPage,
+  id,
   page,
 }: pageProps): JSX.Element => {
   const dispatch = useDispatch()
@@ -40,20 +45,9 @@ const CourseRegiDetail = ({
   const [image, setImage] = useState<string>("")
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
-
-  // const encodeFileToBase64 = (fileBlob: Blob): Promise<void> => {
-  //   const reader = new FileReader()
-  //   reader.readAsDataURL(fileBlob)
-  //   return new Promise<void>((resolve) => {
-  //     reader.onload = () => {
-  //       if (!reader.result) {
-  //         throw new Error("No img result")
-  //       }
-  //       resolve(reader.result)
-  //     }
-  //   })
-  // }
-
+  const courseDetail = useSelector((state: RootState) => {
+    return state.course.courseDetails
+  })
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
 
@@ -75,6 +69,20 @@ const CourseRegiDetail = ({
     }
   }
 
+  const getData = useCallback(async (): Promise<void> => {
+    if (id !== 0) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      console.log(id)
+      console.log(courseDetail)
+      setTitle(courseDetail.title)
+      setDescription(courseDetail.description)
+      setImage(courseDetail.imgFile)
+    }
+    console.log("gg")
+  }, [id])
+  useEffect(() => {
+    if ((id !== 0 && title === "") || description === "") getData()
+  })
   const onValid = useCallback((): void => {
     if (title === "") return
     if (description === "") return
@@ -102,9 +110,25 @@ const CourseRegiDetail = ({
     return Promise.resolve(res.data.courseId)
   }
 
+  const [updateCourseDetail, { data: res }] = useUpdateCourseDetailMutation()
+
   const onClickNextPage = async (): Promise<void> => {
-    const courseId = await submitCourseDetail()
-    setCourseId(courseId)
+    if (id === 0) {
+      const courseId = await submitCourseDetail()
+      setCourseId(courseId)
+    } else if (id !== 0) {
+      const newDetail = new FormData()
+
+      dispatch(setCourseDetail({ title, description, imgFile: image }))
+
+      newDetail.append("title", title)
+      newDetail.append("description", description)
+      if (image) {
+        const imgFile = await changeObjectUrlToFile()
+        newDetail.append("imgFile", imgFile)
+      }
+      await updateCourseDetail({ id, data: newDetail })
+    }
 
     setPage(page + 1)
   }
