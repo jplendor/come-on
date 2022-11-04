@@ -245,6 +245,54 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
     onClose()
   }
 
+  const makeMeetingContent = (): JSX.Element => {
+    return (
+      <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
+        <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
+
+        <Box sx={ADDRESS_STYLE}>
+          <PlaceOutlined sx={{ color: "#616161", fontSize: "20px" }} />
+          <Typography sx={{ color: "#616161" }}>{newPlace.address}</Typography>
+        </Box>
+        <Box sx={CATEGORY_BOX}>
+          <Typography sx={CATEGORY_FONTSTYLE}>카테고리 선택</Typography>
+          <Select
+            sx={SELECT_STYLE}
+            value={category}
+            onChange={handleCategoryChange}
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value="">카테고리</MenuItem>
+            {generateComponent(CATEGORY_LIST, (data, key) => (
+              <MenuItem value={data.name} key={key}>
+                {data.value}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+        <Box sx={INPUTBOX_STYLE}>
+          <TextInput
+            title="미팅메모"
+            name="memo"
+            value={memo}
+            handleChange={handleMemoChange}
+            multiline
+            rows={2}
+          />
+        </Box>
+        {/* 이부분 api 정민님께 부탁드리기 */}
+        <Button
+          variant="contained"
+          sx={BUTTON_STYLE}
+          onClick={onClickUpdateCourse}
+        >
+          수정하기
+        </Button>
+      </Dialog>
+    )
+  }
+
   const makeCourseContent = (): JSX.Element => {
     return (
       <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
@@ -291,7 +339,8 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
       </Dialog>
     )
   }
-  const content = makeCourseContent()
+  const content =
+    mode === PlaceType.c ? makeCourseContent() : makeMeetingContent()
 
   return content && <div>{content}</div>
 }

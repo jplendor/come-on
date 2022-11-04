@@ -226,7 +226,9 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   const [description, setDescription] = useState<string>()
 
   useEffect(() => {
-    setCategory(CATEGORY_LIST.filter((it) => it.name === item.category)[0].name)
+    setCategory(
+      CATEGORY_LIST.filter((it) => it.name === item.category)[0].value
+    )
 
     // 이미 category_list의 key랑 같을경우 오류가 남
 

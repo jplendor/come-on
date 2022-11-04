@@ -18,6 +18,21 @@ import PlaceEditModal from "components/meeting/PlaceEditModal"
 // 1. 메모버튼 [V]
 // 2. 리스트 삭제 버튼 [V]
 
+const CATEGORY_LIST = [
+  { name: "SCHOOL", value: "학교" },
+  { name: "CAFE", value: "카페" },
+  { name: "BAR", value: "술집" },
+  { name: "SPORT", value: "스포츠" },
+  { name: "SHOPPING", value: "쇼핑" },
+  { name: "ETC", value: "기타" },
+  { name: "ATTRACTION", value: "관광명소" },
+  { name: "RESTAURANT", value: "음식점" },
+  { name: "ACCOMMODATION", value: "숙박" },
+  { name: "CULTURE", value: "문화시설" },
+  { name: "ACTIVITY", value: "액티비티" },
+  { name: "기타", value: "ETC" },
+]
+
 const ThemeCardNumbering = styled(Typography)<TypographyProps>(() => ({
   borderRadius: "30px",
   width: "22px",
@@ -264,6 +279,13 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
     onRemove(index)
   }
 
+  const filterCategory = (): string => {
+    const newCategory = category === "" || undefined ? "ETC" : category
+    const korCategory = CATEGORY_LIST.filter((it) => it.name === newCategory)[0]
+      .value
+
+    return korCategory
+  }
   /* //draggable */
 
   return (
@@ -313,7 +335,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
                   <Box sx={TITLE_BOX}>
                     <Typography sx={TITLE_FONT}>{placeName}</Typography>
                     <Typography component="span" sx={TITLE_CATEGORY}>
-                      {category}
+                      {filterCategory()}
                     </Typography>
                     <IconButton sx={ICON} onClick={OpenModal}>
                       <Edit />
