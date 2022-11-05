@@ -13,6 +13,7 @@ export enum Url {
   myMeetings = "/meeting",
   meetingRegister = "/meeting/register",
   meetingEnter = "/meeting/enter",
+  courseRegister = "/course",
 }
 
 export enum ParamName {

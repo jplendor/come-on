@@ -147,6 +147,7 @@ export const CardItem2 = memo(
       meetingCodeId,
       hostNickname,
       meetingStatus,
+      myMeetingRole,
     } = useMemo(() => info, [info]) as MeetingList
 
     const [start, end] = conversionToString([startDate, endDate])
@@ -159,6 +160,7 @@ export const CardItem2 = memo(
             userCount={userCount}
             meetingStatus={meetingStatus}
             meetingCodeId={meetingCodeId}
+            myMeetingRole={myMeetingRole}
           />
           <img src={imgT} alt={title} />
           <CardTexts
