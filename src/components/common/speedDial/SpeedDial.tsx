@@ -27,9 +27,7 @@ const ThemeSpeedDial = styled((props: SpeedDialProps) => (
 }))
 
 // 우리동네코스
-const actions1 = [
-  { icon: <Edit />, name: "코스생성", url: Url.meetingRegister },
-]
+const actions1 = [{ icon: <Edit />, name: "코스생성", url: Url.courseRegister }]
 // 모임관리
 const actions2 = [
   { icon: <Edit />, name: "모임등록", url: Url.meetingRegister },
