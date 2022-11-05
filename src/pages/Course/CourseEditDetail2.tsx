@@ -130,7 +130,7 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
   // 원본데이터를 삭제할 경우, toDelete에 올리고 courseList에서 삭제하고, modify에 있다면 삭제
   // 추가데이터를 삭제할 경우, courseList에서 삭제하고 toSave에서 삭제함
 
-  const onRemove = (index: number): void => {
+  const onRemove = async (index: number): Promise<void> => {
     const toDeleteData = placeList.filter((place) => place.order === index)
 
     // 삭제할 데이터가 ToSave에 있는지 확인 ToSave에 없다면 delete에 올림
@@ -175,12 +175,18 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
     /** toDelete에 넣었을때 하나 삭제되는데, 그경우 즉 빈배열일경우 어쩔껀지 ..ㅎ  */
 
     // 코스 플레이스 갱신
-    if (newData !== undefined) dispatch(updateCoursePlace(newData))
-    else if (newData === undefined) dispatch(updateCoursePlace([]))
+    if (newData !== undefined) {
+      dispatch(updateCoursePlace(newData))
+
+      await updateCoursePlaceToDB({
+        courseId: id,
+        toDelete: toDeleteData,
+      })
+    } else if (newData === undefined) dispatch(updateCoursePlace([]))
   }
 
-  const onClicKNextPage = (): void => {
-    setUpdateCourse()
+  const onClicKNextPage = async (): Promise<void> => {
+    await setUpdateCourse()
     setPage(4)
     navigate(`/course/${id}/update`, { state: 3 })
   }

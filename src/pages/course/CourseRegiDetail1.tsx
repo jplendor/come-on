@@ -78,7 +78,6 @@ const CourseRegiDetail = ({
       setDescription(courseDetail.description)
       setImage(courseDetail.imgFile)
     }
-    console.log("gg")
   }, [id])
   useEffect(() => {
     if ((id !== 0 && title === "") || description === "") getData()
