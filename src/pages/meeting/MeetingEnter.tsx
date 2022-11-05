@@ -37,7 +37,7 @@ const MeetingEnter = (): JSX.Element => {
     data: {
       code: string
       data: {
-        code: number
+        errorCode: number
         message: {
           inviteCode: string[]
         }
@@ -56,7 +56,7 @@ const MeetingEnter = (): JSX.Element => {
       navigate(`../${meetingId}`)
     } catch (error) {
       const err = error as CustomError
-      const errorCode = err.data.data.code
+      const { errorCode } = err.data.data
       switch (errorCode) {
         case 103:
           setAlertMessage("초대코드의 형식이 올바르지 않습니다.")
