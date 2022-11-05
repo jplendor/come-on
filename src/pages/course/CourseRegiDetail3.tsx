@@ -288,7 +288,7 @@ api연동부분
             />
           )}
 
-          {placeList[0].order !== 0 &&
+          {placeList !== undefined &&
             generateComponent(placeList, (item, key) => (
               <PlaceDetailCard
                 item={item}

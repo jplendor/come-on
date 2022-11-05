@@ -19,6 +19,7 @@ const App = (): JSX.Element => {
       <Route path="user/*" element={<User />} />
       <Route path="course/*" element={<Course />} />
       <Route path="meeting/*" element={<Meeting />} />
+      <Route path="not-found" element={<Error404 />} />
       <Route path="*" element={<Error404 />} />
     </Routes>
   )

@@ -109,7 +109,7 @@ interface PlaceEditModalProps {
 
 const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
   const { open, onClose, newPlace, mode, id, item } = props
-  const [category, setCategory] = useState("")
+  const [category, setCategory] = useState(item.category)
   const [memo, setMemo] = useState(
     mode === PlaceType.m ? item.memo : item.description
   )
@@ -129,8 +129,6 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
   }
 
   const handleClose = (): void => {
-    setCategory("")
-    setMemo("")
     onClose()
   }
 

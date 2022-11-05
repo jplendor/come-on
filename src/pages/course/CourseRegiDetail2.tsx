@@ -178,7 +178,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
 
   const onRemove = async (index: number): Promise<void> => {
     const filteredData = placeData.filter((place) => place.order !== index)
-
+    const deleteData = placeData.filter((place) => place.order === index)
     /* eslint array-callback-return: "error" */
     // eslint-disable-next-line array-callback-return, @typescript-eslint/no-explicit-any
     const data = filteredData.map((place: CoursePlaceState): any => {
@@ -192,14 +192,17 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     setPlaceData(data)
 
     // 전역 상태인 course에서 삭제시키고
+
     dispatch(updateCoursePlace(data))
 
     // 딜리트에 넣어서 db에서 삭제시키기
     const deleteCourse = {
       courseId: id,
-      toDelete: updatePlaces.toDelete,
+      toDelete: deleteData,
     }
-    await updateCoursePlaceToDB(deleteCourse)
+    console.log(deleteData)
+    const res = await updateCoursePlaceToDB(deleteCourse)
+    console.log(res)
 
     // toSave에도 추가하면 안됨
   }
