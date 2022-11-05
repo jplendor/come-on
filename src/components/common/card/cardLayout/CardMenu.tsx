@@ -51,11 +51,6 @@ const CardMenu = memo(({ meetingId, meetingCodeId }: CardMenuProps) => {
   const handleClose = () => setAnchorEl(null)
   const handleOpenDialog = () => setDialog(true)
   const [deleteMeeting, { isLoading }] = useDeleteMeetingMutation()
-  const { goUrl } = useNavigateUrl()
-  const handleEditMeeting = () => {
-    const url = `/meeting/${meetingId}` as Url
-    goUrl({ url })
-  }
 
   return (
     <div>
@@ -101,9 +96,6 @@ const CardMenu = memo(({ meetingId, meetingCodeId }: CardMenuProps) => {
         />
         <MenuItem onClick={handleOpenDialog}>
           <MenuItemText>초대코드 관리하기</MenuItemText>
-        </MenuItem>
-        <MenuItem onClick={handleEditMeeting}>
-          <MenuItemText>모임 수정하기</MenuItemText>
         </MenuItem>
         <MenuItem onClick={() => deleteMeeting({ meetingId })}>
           <MenuItemText>
