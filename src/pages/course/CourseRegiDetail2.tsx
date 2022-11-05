@@ -215,7 +215,6 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   const handleAddClick = (): void => {
     setPage(2)
   }
-
   return (
     placeData && (
       <MainContainer sx={MAIN_CONTAINER}>

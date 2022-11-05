@@ -125,14 +125,15 @@ const CourseRegiLayout = (): JSX.Element => {
             />
           )}
         </Box>
-        {page === 1 ? (
+        {page === 1 && (
           <CourseRegiDetail1
             page={1}
             id={courseId}
             setPage={setPage}
             setCourseId={setCourseId}
           />
-        ) : page === 2 ? (
+        )}
+        {page === 2 && (
           <SearchPlace
             mode={PlaceType.c}
             editMode={false}
@@ -140,9 +141,11 @@ const CourseRegiLayout = (): JSX.Element => {
             page={2}
             setPage={setPage}
           />
-        ) : page === 3 ? (
+        )}
+        {page === 3 && (
           <CourseRegiDetail2 page={3} setPage={setPage} id={courseId} />
-        ) : (
+        )}
+        {page === 4 && (
           <CourseRegiDetail3 page={4} setPage={setPage} id={courseId} />
         )}
       </>

@@ -225,6 +225,7 @@ api연동부분
     navigate("/")
   }
 
+  console.log("sads")
   if (isLoadingUser) return <div>Loading...</div>
   return (
     courseDetail && (
