@@ -111,7 +111,7 @@ interface errorType {
   data: {
     code: string
     data: {
-      code: number
+      errorCode: number
       message: string
       responseTime: string
     }
@@ -145,8 +145,8 @@ const CoursePage = (): JSX.Element => {
     // eslint-disable-next-line no-empty
 
     const error = err as errorType
-    const { code } = error.data.data
-    switch (code) {
+    const { errorCode } = error.data.data
+    switch (errorCode) {
       case 904:
         navigate("/not-found", {
           state: { content: "죄송합니다. 저장되지 않은 코스입니다." },
