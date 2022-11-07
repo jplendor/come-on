@@ -183,3 +183,14 @@ export interface MeetingUserForCreateSuccess {
   meetingId: number
   meetingUserId: number
 }
+
+export interface MeetingError {
+  status: number
+  data: {
+    code: string
+    data: {
+      errorCode: number
+      message: string
+    }
+  }
+}
