@@ -32,7 +32,6 @@ const TextInput = ({
     const newValue = e.target.value
     const ml = maxLength || 30
     if (newValue.length > ml) {
-      // TODO: 글자수 초과 막기
       const v = newValue.slice(0, ml - 1)
 
       setInputValue(v)

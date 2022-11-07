@@ -150,17 +150,6 @@ const TITLE_FONT = {
   maxWidth: "60%",
 }
 
-const TITLE_CATEGORY = {
-  fontSize: "10px",
-  padding: "1px 3px",
-  backgroundColor: "#EEEEEE",
-  textAlign: "center",
-  color: "#9E9E9E",
-  m: "0 10px",
-  height: "20px",
-  borderRadius: "2px",
-}
-
 const DES_BOX = {
   width: "100%",
   display: "flex",
@@ -188,6 +177,23 @@ const ButtonGroup = {
   p: "10px",
 }
 
+const TITLE_CATEGORY = {
+  display: "block",
+  fontSize: "10px",
+
+  color: "#9E9E9E",
+}
+
+const CATEGORY_BOX = {
+  display: "flex",
+  m: "0 10px",
+  padding: "1px 3px",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "19px",
+  borderRadius: "2px",
+  backgroundColor: "#EEEEEE",
+}
 export interface ListDetailCardProp {
   index: number
   titleTop: string
@@ -334,9 +340,12 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
                 <Box sx={ITEM_BOX}>
                   <Box sx={TITLE_BOX}>
                     <Typography sx={TITLE_FONT}>{placeName}</Typography>
-                    <Typography component="span" sx={TITLE_CATEGORY}>
-                      {filterCategory()}
-                    </Typography>
+
+                    <Box sx={CATEGORY_BOX}>
+                      <Typography component="span" sx={TITLE_CATEGORY}>
+                        {filterCategory()}
+                      </Typography>
+                    </Box>
                     <IconButton sx={ICON} onClick={OpenModal}>
                       <Edit />
                     </IconButton>
