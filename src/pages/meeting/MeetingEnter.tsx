@@ -5,6 +5,7 @@ import { useInviteMeetingUserMutation } from "features/meeting/meetingSlice"
 import React, { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import theme from "theme"
+import { MeetingError } from "types/API/meeting-service"
 import { generateComponent } from "utils"
 
 const CONTAINER = {
@@ -32,19 +33,6 @@ const MeetingEnter = (): JSX.Element => {
   const inputRefs = useRef<HTMLInputElement[]>([])
   const [focusIdx, setFocusIdx] = useState(0)
 
-  interface CustomError {
-    status: number
-    data: {
-      code: string
-      data: {
-        errorCode: number
-        message: {
-          inviteCode: string[]
-        }
-      }
-    }
-  }
-
   const handleClickEnter = async (): Promise<void> => {
     const stringCode = code.join("")
     try {
@@ -55,7 +43,7 @@ const MeetingEnter = (): JSX.Element => {
       const { meetingId } = res.data
       navigate(`../${meetingId}`)
     } catch (error) {
-      const err = error as CustomError
+      const err = error as MeetingError
       const { errorCode } = err.data.data
       switch (errorCode) {
         case 103:

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
   Grid,
@@ -25,7 +25,11 @@ import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
 import MemberInfoModal from "components/meeting/MemberInfoModal"
-import { User, Place as MeetingPlace } from "types/API/meeting-service"
+import {
+  User,
+  Place as MeetingPlace,
+  MeetingError,
+} from "types/API/meeting-service"
 import { Place as CoursePlace } from "components/common/card/SearchCard"
 import { useDispatch } from "react-redux"
 import { addCoursePlace } from "features/course/courseSlice"
@@ -64,6 +68,10 @@ const Title = styled(Typography)`
 
 const MeetingEdit = (): JSX.Element => {
   const { meetingId } = useParams()
+  const theme = useTheme()
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [memberInfoModalOpen, setmMemberInfoModalOpen] = useState(false)
   const [clickedMember, setClickedMember] = useState<User>()
@@ -73,12 +81,32 @@ const MeetingEdit = (): JSX.Element => {
     data: response,
     isFetching,
     isSuccess,
+    error: getMeetingError,
   } = useGetMeetingQuery(Number(meetingId))
 
-  const theme = useTheme()
+  useEffect(() => {
+    if (!getMeetingError) return
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+    const meetingError = getMeetingError as MeetingError
+    const { errorCode } = meetingError.data.data
+
+    switch (errorCode) {
+      case 104:
+        navigate("/not-found", {
+          state: { content: "존재하지 않는 모임입니다." },
+        })
+        break
+      case 105:
+        navigate("/not-found", {
+          state: { content: "입장 권한이 없습니다." },
+        })
+        break
+      default:
+        navigate("/not-found", {
+          state: { content: "관리자에게 문의하세요." },
+        })
+    }
+  }, [getMeetingError, navigate])
 
   const addNewPlace = (): void => {
     navigate(`/meeting/${meetingId}/place`)

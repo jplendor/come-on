@@ -150,7 +150,8 @@ const CardDialog = memo(
     meetingCodeId,
   }: CardDialogProps): JSX.Element => {
     const [copy] = useCopyToClipboard()
-    const handleCloseDialog = (): void => {
+    const handleCloseDialog = (e: React.MouseEvent<HTMLElement>): void => {
+      e.stopPropagation()
       setAnchorEl(null)
       setDialog(false)
     }
@@ -173,7 +174,8 @@ const CardDialog = memo(
       [codeInfo]
     )
 
-    const handleOnClick = (): void => {
+    const handleOnClick = (e: React.MouseEvent<HTMLElement>): void => {
+      e.stopPropagation()
       // 초기 핸들러 방지
       if (isLoading) return
       // 초대코드 재요청
