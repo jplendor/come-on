@@ -22,6 +22,7 @@ import {
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 import {
+  CoursePlace,
   CoursePlaceProps,
   coursePlaceToModify,
   CourseUpdatePlaceProps,
@@ -39,18 +40,6 @@ const MAIN_CONTAINER = {
 enum PlaceType {
   m = "meeting",
   c = "course",
-}
-
-interface CoursePlaceState {
-  order: number
-  name: string
-  description: string
-  lng: number // 경도 x
-  lat: number // 위도 y
-  apiId: number
-  category: string
-  address: string
-  id: number
 }
 
 interface pageProps {
@@ -72,7 +61,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
   const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [placeData, setPlaceData] = useState<CoursePlaceState[]>(placeList)
+  const [placeData, setPlaceData] = useState<CoursePlace[]>(placeList)
 
   const setUpdateCourseForDnD = async (
     newModify: coursePlaceToModify[]
@@ -116,13 +105,11 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     newPlaceNames.splice(source.index, 1)
     newPlaceNames.splice(destination.index, 0, draggableId)
 
-    const newPlace: Array<CoursePlaceState> = []
+    const newPlace: Array<CoursePlace> = []
     for (let i = 0; i < newPlaceNames.length; i += 1) {
-      const temp: CoursePlaceState[] = placeData.filter(
-        (place: { id: number }) => {
-          return String(place.id) === String(newPlaceNames[i])
-        }
-      )
+      const temp: CoursePlace[] = placeData.filter((place: { id: number }) => {
+        return String(place.id) === String(newPlaceNames[i])
+      })
       const temp2 = { ...temp[0] }
 
       const newState = {
@@ -181,7 +168,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     const deleteData = placeData.filter((place) => place.order === index)
     /* eslint array-callback-return: "error" */
     // eslint-disable-next-line array-callback-return, @typescript-eslint/no-explicit-any
-    const data = filteredData.map((place: CoursePlaceState): any => {
+    const data = filteredData.map((place: CoursePlace): any => {
       const temp = place
       if (place.order > index) {
         const temp2 = { ...temp, order: temp.order - 1 }

@@ -11,7 +11,7 @@ import {
   Container,
   Tooltip,
 } from "@mui/material"
-import { generateComponent } from "utils"
+import { generateComponent, getReorderedPlaces } from "utils"
 import { useTheme } from "@mui/material/styles"
 import Calendar from "components/meeting/Calendar"
 import {
@@ -25,30 +25,12 @@ import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
 import MemberInfoModal from "components/meeting/MemberInfoModal"
-import {
-  User,
-  Place as MeetingPlace,
-  MeetingError,
-} from "types/API/meeting-service"
+import { User, MeetingPlace, MeetingError } from "types/API/meeting-service"
 import { Place as CoursePlace } from "components/common/card/SearchCard"
 import { useDispatch } from "react-redux"
 import { addCoursePlace } from "features/course/courseSlice"
-import { DragDropContext, Droppable } from "react-beautiful-dnd"
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
 import { PlaceType } from "types/API/course-service"
-
-const CATEGORY_LIST = [
-  { name: "SCHOOL", value: "학교" },
-  { name: "CAFE", value: "카페" },
-  { name: "BAR", value: "술집" },
-  { name: "SPORT", value: "스포츠" },
-  { name: "SHOPPING", value: "쇼핑" },
-  { name: "ETC", value: "기타" },
-  { name: "ATTRACTION", value: "관광명소" },
-  { name: "RESTAURANT", value: "음식점" },
-  { name: "ACCOMMODATION", value: "숙박" },
-  { name: "CULTURE", value: "문화시설" },
-  { name: "ACTIVITY", value: "액티비티" },
-]
 
 const NewPlace = {
   border: "dashed 2px gray",
@@ -168,47 +150,32 @@ const MeetingEdit = (): JSX.Element => {
     const isHost = meeting.myMeetingRole === "HOST"
     const isEditable = isHost || meeting.myMeetingRole === "EDITOR"
 
-    const onDragEnd = async (result: any): Promise<void> => {
-      const places = meeting.meetingPlaces
+    const onDragEnd = async (result: DropResult): Promise<void> => {
+      const reorderedPlaces = getReorderedPlaces(
+        result,
+        meeting.meetingPlaces,
+        PlaceType.m
+      )
 
-      const copyPlaces = [...places]
+      if (reorderedPlaces) {
+        const targetPlace = reorderedPlaces[result.destination!.index]
 
-      const { destination, source } = result
-      if (!destination) {
-        return
-      }
-      if (
-        destination.droppableId === source.droppableId &&
-        destination.index === source.index
-      ) {
-        return
-      }
+        try {
+          const res = await updateMeetingPlaceMutation({
+            meetingId: Number(meetingId),
+            placeId: targetPlace.id,
+            updatedPlace: targetPlace,
+          }).unwrap()
 
-      const sourcePlace = copyPlaces.splice(source.index, 1)[0]
-      copyPlaces.splice(destination.index, 0, sourcePlace)
-
-      const newPlaces = copyPlaces.map((item: MeetingPlace, index: number) => ({
-        ...item,
-        order: index + 1,
-      }))
-
-      const targetPlace = newPlaces[destination.index]
-
-      try {
-        const res = await updateMeetingPlaceMutation({
-          meetingId: Number(meetingId),
-          placeId: targetPlace.id,
-          updatedPlace: targetPlace,
-        }).unwrap()
-
-        if (res.code !== "SUCCESS") {
-          throw new Error(`error code: ${res.code}`)
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(error.message)
-        } else {
-          alert(`unexpected error: ${error}`)
+          if (res.code !== "SUCCESS") {
+            throw new Error(`error code: ${res.code}`)
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            alert(error.message)
+          } else {
+            alert(`unexpected error: ${error}`)
+          }
         }
       }
     }
