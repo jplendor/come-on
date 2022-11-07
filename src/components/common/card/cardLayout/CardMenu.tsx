@@ -47,12 +47,24 @@ const CardMenu = memo(
   ({ meetingId, meetingCodeId, myMeetingRole }: CardMenuProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
-    const handleClick = (event: React.MouseEvent<HTMLElement>) =>
-      setAnchorEl(event.currentTarget)
+    const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      setAnchorEl(e.currentTarget)
+    }
     const [dialog, setDialog] = useState(false)
     const handleClose = () => setAnchorEl(null)
-    const handleOpenDialog = () => setDialog(true)
+    const handleOpenDialog = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      setDialog(true)
+    }
+
     const [deleteMeeting, { isLoading }] = useDeleteMeetingMutation()
+
+    const handleClickDelete = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      deleteMeeting({ meetingId })
+    }
+
     const isHost = myMeetingRole === "HOST"
 
     return (
@@ -102,7 +114,7 @@ const CardMenu = memo(
           <MenuItem onClick={handleOpenDialog}>
             <MenuItemText>초대코드 관리하기</MenuItemText>
           </MenuItem>
-          <MenuItem onClick={() => deleteMeeting({ meetingId })}>
+          <MenuItem onClick={handleClickDelete}>
             <MenuItemText>
               {isLoading ? "모임 삭제중..." : "모임 삭제하기"}
             </MenuItemText>
