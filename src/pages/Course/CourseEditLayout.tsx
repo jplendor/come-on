@@ -125,7 +125,7 @@ const CourseEditLayout = (): JSX.Element => {
                 }}
               >
                 {page === 1
-                  ? "코스등록"
+                  ? "코스수정"
                   : page === 2
                   ? "장소선택"
                   : page === 3

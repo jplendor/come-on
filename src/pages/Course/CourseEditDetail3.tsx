@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { useState, SetStateAction, Dispatch, useEffect } from "react"
+import React, {
+  useState,
+  SetStateAction,
+  Dispatch,
+  useEffect,
+  useCallback,
+} from "react"
 import { useNavigate } from "react-router-dom"
 import { MydetailRes } from "types/API/user-service"
 import { toStringYyyymmdd, generateComponent } from "utils"
@@ -11,11 +17,12 @@ import { styled } from "@mui/material/styles"
 import { Box, Typography } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
-import { useSelector } from "react-redux"
-import { RootState } from "store"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState, AppDispatch } from "store"
 import {
   useAddCoursePlaceMutation,
   useAddCourseDetailMutation,
+  fetchByIdCourseDetail,
 } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"
@@ -25,7 +32,17 @@ import PlaceDetailCard from "components/common/card/PlaceDetailCard"
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
-import { CoursePlaceProps, PlaceType } from "types/API/course-service"
+import {
+  CourseDetailResponse,
+  CoursePlaceProps,
+  PlaceType,
+} from "types/API/course-service"
+import {
+  AsyncThunkAction,
+  ThunkDispatch,
+  CombinedState,
+  AnyAction,
+} from "@reduxjs/toolkit"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -130,7 +147,7 @@ api연동부분
   interface MyDetailQueryProps extends QueryProps {
     data: MydetailRes
   }
-
+  const dispatch = useDispatch<AppDispatch>()
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [addCourseDetail] = useAddCourseDetailMutation()
   const [addCoursePlace] = useAddCoursePlaceMutation()
@@ -154,6 +171,17 @@ api연동부분
       setselectedNumber("")
     }
   }
+
+  const dis = useCallback(async () => {
+    const loadData = await dispatch(fetchByIdCourseDetail(id))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const myData: any = loadData.payload
+    console.log(myData.data.coursePlaces)
+  }, [dispatch, id])
+
+  useEffect(() => {
+    if (page === 4) dis()
+  }, [dis, page])
 
   // 제출용 폼데이터 만드는 함수
   // base64 => File => blob으로 만들었다.
