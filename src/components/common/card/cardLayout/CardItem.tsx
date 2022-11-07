@@ -115,7 +115,7 @@ export const CardItem = memo(
     const navigate = useNavigate()
 
     const handleClickCard = (): void => {
-      navigate(`./course/${courseId}`)
+      navigate(`/course/${courseId}`)
     }
 
     return (
