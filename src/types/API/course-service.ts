@@ -2,6 +2,18 @@
 
 import { Server } from "http"
 
+export interface CoursePlace {
+  order: number
+  name: string
+  description: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  apiId: number
+  category: string
+  address: string
+  id: number
+}
+
 export interface SearchCardProp {
   index: number // 카드의 인덱스 넘버 - order
   address_name: string // 주소

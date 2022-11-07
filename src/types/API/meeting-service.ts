@@ -98,7 +98,7 @@ interface MeetingDate {
   dateStatus: DateStatusType
 }
 
-export interface Place {
+export interface MeetingPlace {
   apiId: number
   category: string
   id: number
@@ -118,7 +118,7 @@ export interface Meeting {
   endDate: string
   meetingUsers: User[]
   meetingDates: MeetingDate[]
-  meetingPlaces: Place[]
+  meetingPlaces: MeetingPlace[]
 }
 
 export interface MeetingDateForCreate {
