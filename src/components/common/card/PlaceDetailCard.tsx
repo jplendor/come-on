@@ -16,6 +16,20 @@ import PlaceDetailEditCard from "./PlaceDetailEditCard"
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
 // 2. 리스트 삭제 버튼 [V]
+const CATEGORY_LIST = [
+  { name: "SCHOOL", value: "학교" },
+  { name: "CAFE", value: "카페" },
+  { name: "BAR", value: "술집" },
+  { name: "SPORT", value: "스포츠" },
+  { name: "SHOPPING", value: "쇼핑" },
+  { name: "ETC", value: "기타" },
+  { name: "ATTRACTION", value: "관광명소" },
+  { name: "RESTAURANT", value: "음식점" },
+  { name: "ACCOMMODATION", value: "숙박" },
+  { name: "CULTURE", value: "문화시설" },
+  { name: "ACTIVITY", value: "액티비티" },
+  { name: "기타", value: "ETC" },
+]
 
 const ThemeCardNumbering = styled(Typography)<TypographyProps>(() => ({
   borderRadius: "30px",
@@ -135,16 +149,22 @@ const TITLE_FONT = {
 }
 
 const TITLE_CATEGORY = {
+  display: "block",
   fontSize: "10px",
-  padding: "1px 3px",
-  backgroundColor: "#EEEEEE",
-  textAlign: "center",
+
   color: "#9E9E9E",
-  m: "0 10px",
-  height: "20px",
-  borderRadius: "2px",
 }
 
+const CATEGORY_BOX = {
+  display: "flex",
+  m: "0 10px",
+  padding: "1px 3px",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "19px",
+  borderRadius: "2px",
+  backgroundColor: "#EEEEEE",
+}
 const DES_BOX = {
   width: "100%",
   display: "flex",
@@ -258,6 +278,14 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
     )
   }
 
+  const filterCategory = (): string => {
+    const newCategory = category === "" || undefined ? "ETC" : category
+    const korCategory = CATEGORY_LIST.filter((it) => it.name === newCategory)[0]
+      .value
+
+    return korCategory
+  }
+
   return (
     <Grid container spacing={2} sx={GRID_WRAP}>
       <Grid item xs={2} sx={NUMBERING_BOX}>
@@ -295,9 +323,12 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
             <Box sx={ITEM_BOX}>
               <Box sx={TITLE_BOX}>
                 <Typography sx={TITLE_FONT}>{placeName}</Typography>
-                <Typography component="span" sx={TITLE_CATEGORY}>
-                  {category}
-                </Typography>
+                <Box sx={CATEGORY_BOX}>
+                  <Typography component="span" sx={TITLE_CATEGORY}>
+                    {filterCategory()}
+                  </Typography>
+                </Box>
+
                 {isEditable && (
                   <IconButton
                     sx={ICON}
@@ -321,11 +352,11 @@ const PlaceDetailCard: React.FC<ListDetailCardProps> = ({
             </Box>
           </Grid>
           <Grid item xs={2} sx={ButtonGroup}>
-            {isEditable && (
+            {/* {isEditable && (
               <IconButton sx={ICON} onClick={handleClickClose}>
                 <Close />
               </IconButton>
-            )}
+            )} */}
             <a href={routeUrl} target="_blank" rel="noreferrer">
               <IconButton sx={ICON}>
                 <KeyboardArrowRight />

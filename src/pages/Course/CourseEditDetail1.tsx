@@ -49,6 +49,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = detailData.payload
     setDescription(myData.data.description)
+
     setTitle(myData.data.title)
     setImage(myData.data.imageUrl)
   }, [dispatch, id])
@@ -109,8 +110,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     }
 
     await updateCourseDetail({ id, data: newDetail })
-    console.log(res)
-    // navigate(`/course/${id}/update`, { state: 2 })
+
     setPage(2)
   }
 
@@ -133,6 +133,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
           title="코스이름"
           name="title"
           value={title}
+          maxLength={10}
           placeholder="코스명을 입력해 주세요"
           handleChange={handleChangeTitle}
         />
@@ -144,6 +145,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
           placeholder="코스설명을 입력해주세요"
           rows={8}
           name="description"
+          maxLength={30}
           value={description}
           handleChange={handleChangeDes}
         />

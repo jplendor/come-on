@@ -125,7 +125,7 @@ const CourseEditLayout = (): JSX.Element => {
                 }}
               >
                 {page === 1
-                  ? "코스등록"
+                  ? "코스수정"
                   : page === 2
                   ? "장소선택"
                   : page === 3
@@ -145,9 +145,10 @@ const CourseEditLayout = (): JSX.Element => {
             />
           )}
         </Box>
-        {page === 1 ? (
+        {page === 1 && (
           <CourseEditDetail1 page={1} setPage={setPage} id={Number(id)} />
-        ) : page === 2 ? (
+        )}
+        {page === 2 && (
           <SearchPlace
             mode={PlaceType.c}
             editMode={false}
@@ -155,9 +156,11 @@ const CourseEditLayout = (): JSX.Element => {
             page={2}
             setPage={setPage}
           />
-        ) : page === 3 ? (
+        )}
+        {page === 3 && (
           <CourseEditDetail2 page={3} setPage={setPage} id={Number(id)} />
-        ) : (
+        )}
+        {page === 4 && (
           <CourseEditDetail3 page={4} setPage={setPage} id={Number(id)} />
         )}
       </Box>

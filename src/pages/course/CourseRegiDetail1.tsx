@@ -151,6 +151,7 @@ const CourseRegiDetail = ({
         <TextInput
           title="코스이름"
           name="title"
+          maxLength={10}
           value={title}
           placeholder="코스명을 입력해 주세요"
           handleChange={handleChangeTitle}
@@ -162,6 +163,7 @@ const CourseRegiDetail = ({
           title="코스설명"
           placeholder="코스설명을 입력해주세요"
           rows={8}
+          maxLength={30}
           name="description"
           value={description}
           handleChange={handleChangeDes}

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   Box,
@@ -24,6 +24,7 @@ import {
 import { PlaceType } from "types/API/course-service"
 import { RootState } from "store"
 import { PlaceOutlined } from "@mui/icons-material"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 interface PlaceAddModalProps {
   open: boolean
@@ -115,6 +116,15 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
   const placeItems = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
+
+  const [valid, isValid] = useState(false)
+
+  useEffect(() => {
+    if (memo !== "" && category !== "") {
+      isValid(true)
+    }
+  }, [memo, category])
+
   const handleCategoryChange = (e: SelectChangeEvent): void => {
     setCategory(e.target.value)
   }
@@ -229,7 +239,6 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
     return (
       <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
         <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
-
         <Box sx={ADDRESS_STYLE}>
           <PlaceOutlined sx={{ color: "#616161", fontSize: "20px" }} />
           <Typography sx={{ color: "#616161" }}>{newPlace.address}</Typography>
@@ -256,15 +265,21 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
             title="모임메모"
             name="memo"
             value={memo}
+            maxLength={30}
             placeholder="모임 장소에 대한 메모를 남겨보세요."
             handleChange={handleMemoChange}
             multiline
             rows={2}
           />
         </Box>
-        <Button variant="contained" sx={BUTTON_STYLE} onClick={addPlace}>
-          추가하기
-        </Button>
+        <CourseNextStepButton
+          btnStyle={BUTTON_STYLE}
+          onClick={addPlace}
+          isValid={valid}
+          content="추가하기"
+        >
+          하이
+        </CourseNextStepButton>
       </Dialog>
     )
   }
@@ -300,23 +315,24 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
             title="코스메모"
             name="memo"
             value={memo}
+            maxLength={30}
             placeholder="코스 장소에 대한 메모를 남겨보세요."
             handleChange={handleMemoChange}
             multiline
             rows={2}
           />
         </Box>
-        <Button
-          variant="contained"
-          sx={BUTTON_STYLE}
+
+        <CourseNextStepButton
+          btnStyle={BUTTON_STYLE}
           onClick={
             mode === PlaceType.c
               ? onClickAddCoursePlace
               : onClickUpdateAddCoursePlace
           }
-        >
-          추가하기
-        </Button>
+          isValid={valid}
+          content="추가하기"
+        />
       </Dialog>
     )
   }

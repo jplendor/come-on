@@ -34,6 +34,12 @@ const actions2 = [
   { icon: <MeetingRoom />, name: "모임입장", url: Url.meetingEnter },
 ]
 
+// speedDial을 사용할 URL 목록
+enum DIAL_URL {
+  COURSE_LIST = "/",
+  MEETING_LIST = "/meeting",
+}
+
 interface ActionType {
   icon: JSX.Element
   name: string
@@ -55,9 +61,12 @@ const SpeedDial = (): JSX.Element | null => {
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
 
-  // 마이페이지 & 비로그인 컴포넌트 비활성화
+  // !(코스/모임 리스트) || 마이페이지 || 비로그인 컴포넌트 비활성
+  const pathName = window.location.pathname
+  const pathDial = Object.values(DIAL_URL)
 
-  if (currentIndex === 2 || !isloggedin) return null
+  const onDial = pathDial.includes(pathName as DIAL_URL)
+  if (!onDial || currentIndex === 2 || !isloggedin) return null
 
   return (
     <ThemeSpeedDial
