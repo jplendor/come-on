@@ -176,7 +176,6 @@ api연동부분
     const loadData = await dispatch(fetchByIdCourseDetail(id))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = loadData.payload
-    console.log(myData.data.coursePlaces)
   }, [dispatch, id])
 
   useEffect(() => {

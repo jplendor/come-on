@@ -7,12 +7,14 @@ import { loggedIn } from "features/auth/authSlice"
 interface NavigateState {
   navbar: {
     currentIndex: number
+    onDial: boolean
   }
 }
 
 const initialState: NavigateState = {
   navbar: {
     currentIndex: 0,
+    onDial: false,
   },
 }
 
