@@ -169,9 +169,11 @@ const MeetingEdit = (): JSX.Element => {
     const isEditable = isHost || meeting.myMeetingRole === "EDITOR"
 
     const onDragEnd = async (result: any): Promise<void> => {
-      const placeData = meeting.meetingPlaces
+      const places = meeting.meetingPlaces
 
-      const { destination, source, draggableId } = result
+      const copyPlaces = [...places]
+
+      const { destination, source } = result
       if (!destination) {
         return
       }
@@ -181,31 +183,16 @@ const MeetingEdit = (): JSX.Element => {
       ) {
         return
       }
-      const newPlaceNames = placeData.map((place) => {
-        return place.name
-      })
-      newPlaceNames.splice(source.index, 1)
-      newPlaceNames.splice(destination.index, 0, draggableId)
-      const newPlace: Array<MeetingPlace> = []
-      for (let i = 0; i < newPlaceNames.length; i += 1) {
-        const temp: any = placeData.filter((place) => {
-          return place.name === newPlaceNames[i]
-        })
-        const temp2 = { ...temp[0] }
-        const newState = {
-          ...temp2,
-          order: i + 1,
-        }
-        newPlace.push(newState)
-      }
 
-      let targetPlace = newPlace[destination.index]
+      const sourcePlace = copyPlaces.splice(source.index, 1)[0]
+      copyPlaces.splice(destination.index, 0, sourcePlace)
 
-      const categoryCode = CATEGORY_LIST.filter(
-        (it) => it.value === targetPlace.category
-      )[0].name
+      const newPlaces = copyPlaces.map((item: MeetingPlace, index: number) => ({
+        ...item,
+        order: index + 1,
+      }))
 
-      targetPlace = { ...targetPlace, category: categoryCode }
+      const targetPlace = newPlaces[destination.index]
 
       try {
         const res = await updateMeetingPlaceMutation({
