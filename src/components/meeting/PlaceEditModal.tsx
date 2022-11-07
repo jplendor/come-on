@@ -322,6 +322,7 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
             title="코스메모"
             name="memo"
             value={memo}
+            maxLength={30}
             handleChange={handleMemoChange}
             multiline
             rows={2}

@@ -256,6 +256,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
             title="모임메모"
             name="memo"
             value={memo}
+            maxLength={30}
             placeholder="모임 장소에 대한 메모를 남겨보세요."
             handleChange={handleMemoChange}
             multiline
@@ -300,6 +301,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
             title="코스메모"
             name="memo"
             value={memo}
+            maxLength={30}
             placeholder="코스 장소에 대한 메모를 남겨보세요."
             handleChange={handleMemoChange}
             multiline

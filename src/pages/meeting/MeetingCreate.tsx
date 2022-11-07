@@ -165,6 +165,7 @@ const MeetingCreate = (): JSX.Element => {
               title="모임이름"
               name="title"
               value={title}
+              maxLength={10}
               placeholder="모임이름을 입력해주세요!"
               handleChange={handleChange}
             />

@@ -133,6 +133,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
           title="코스이름"
           name="title"
           value={title}
+          maxLength={10}
           placeholder="코스명을 입력해 주세요"
           handleChange={handleChangeTitle}
         />
@@ -144,6 +145,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
           placeholder="코스설명을 입력해주세요"
           rows={8}
           name="description"
+          maxLength={30}
           value={description}
           handleChange={handleChangeDes}
         />
