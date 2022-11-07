@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { TextField } from "@mui/material"
 import { kMaxLength } from "buffer"
 import InputWrapper from "./InputWrapper"
@@ -27,7 +27,7 @@ const TextInput = ({
   maxLength,
   defaultVal,
 }: TextInputProps): JSX.Element => {
-  const [inputValue, setInputValue] = useState<string>(value)
+  const [inputValue, setInputValue] = useState(value)
   const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newValue = e.target.value
     const ml = maxLength || 30
@@ -36,11 +36,14 @@ const TextInput = ({
 
       setInputValue(v)
     } else {
-      setInputValue(newValue)
+      setInputValue(e.target.value)
     }
 
     handleChange(e)
   }
+  useEffect(() => {
+    setInputValue(value)
+  }, [value])
 
   const item =
     defaultVal !== "" ? (
@@ -65,15 +68,17 @@ const TextInput = ({
     )
 
   return (
-    <InputWrapper
-      title={title}
-      subTitle={
-        <div>
-          {inputValue.length}/{maxLength}
-        </div>
-      }
-      inputItem={item}
-    />
+    item && (
+      <InputWrapper
+        title={title}
+        subTitle={
+          <div>
+            {inputValue.length}/{maxLength}
+          </div>
+        }
+        inputItem={item}
+      />
+    )
   )
 }
 
