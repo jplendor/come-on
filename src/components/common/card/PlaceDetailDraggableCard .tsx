@@ -282,7 +282,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
 
   const handleClickClose = (e: React.MouseEvent<HTMLElement>): void => {
     e.stopPropagation()
-    onRemove(index)
+    onRemove(id)
   }
 
   const filterCategory = (): string => {
