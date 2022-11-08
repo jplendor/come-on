@@ -6,6 +6,7 @@ import {
   Avatar,
   CircularProgress,
   Typography,
+  Button,
 } from "@mui/material"
 
 import { generateComponent } from "utils"
@@ -32,6 +33,7 @@ const DIALOG_TITLE = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  fontWeight: "bold",
 }
 
 const PAPER_PROPS = {
@@ -54,13 +56,27 @@ const GRID_CONTAINER = {
 
 const GRID_ITEM = {
   display: "flex",
+  flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
 }
 
-const SUMMARY = {
-  height: "60px",
+const MEMBER_CONTAINER = {
+  width: "60%",
   display: "flex",
+  justifyContent: "start",
+  alignItems: "center",
+}
+
+const NICKNAME = {
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+}
+
+const SUMMARY = {
+  p: "26px",
+  display: "flex",
+  flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
   borderTop: `solid 2px ${theme.grayscale[200]}`,
@@ -111,7 +127,7 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
           },
         }}
       >
-        <Typography sx={DIALOG_TITLE} variant="subtitle1">
+        <Typography sx={{ ...DIALOG_TITLE, ...theme.textStyles.title4 }}>
           {`${date.replaceAll("-", ".")}(${getDayOfWeek(date)})`}
         </Typography>
         {userCount === 0 ? (
@@ -121,22 +137,33 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
         ) : (
           <>
             <Grid container sx={GRID_CONTAINER}>
-              {generateComponent(dateUsers, (data, key) => (
-                <Grid item key={key} sx={GRID_ITEM} xs={12}>
-                  <Avatar
-                    alt="프로필 이미지"
-                    src={data.imageLink}
-                    sx={{ mr: "10px" }}
-                  />
-                  <Typography variant="subtitle1">{data.nickname}</Typography>
-                </Grid>
-              ))}
+              <Grid item sx={GRID_ITEM} xs={12}>
+                {generateComponent(dateUsers, (data, key) => (
+                  <Box key={key} sx={MEMBER_CONTAINER}>
+                    <Avatar
+                      alt="프로필 이미지"
+                      src={data.imageLink}
+                      sx={{ mr: "10px" }}
+                    />
+                    <Typography variant="subtitle1" sx={NICKNAME}>
+                      {data.nickname}
+                    </Typography>
+                  </Box>
+                ))}
+              </Grid>
             </Grid>
             <Box sx={SUMMARY}>
-              <Typography variant="subtitle1" fontWeight="bold">
+              <Typography
+                variant="subtitle1"
+                fontWeight="bold"
+                sx={{ mb: "16px" }}
+              >
                 {"가능 인원 : "} <Count> {userCount}</Count>
                 {` / ${totalMemberNumber}`}
               </Typography>
+              <Button variant="contained" fullWidth sx={{ height: "48px" }}>
+                모임 날짜로 확정하기
+              </Button>
             </Box>
           </>
         )}
