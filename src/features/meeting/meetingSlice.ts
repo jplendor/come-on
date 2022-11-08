@@ -63,6 +63,7 @@ export const meetingApiSlice = api.injectEndpoints({
         method: "POST",
         body: meeting,
       }),
+      invalidatesTags: ["Meeting"],
     }),
     // 모임 단건 조회
     getMeeting: builder.query<ServerResponse<Meeting>, number>({
