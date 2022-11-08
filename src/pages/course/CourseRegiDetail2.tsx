@@ -101,9 +101,9 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     const newPlaceNames = placeData.map((place: { id: number }) => {
       return place.id
     })
-
     newPlaceNames.splice(source.index, 1)
-    newPlaceNames.splice(destination.index, 0, draggableId)
+
+    newPlaceNames.splice(destination.index, 0, Number(draggableId))
 
     const newPlace: Array<CoursePlace> = []
     for (let i = 0; i < newPlaceNames.length; i += 1) {
@@ -135,8 +135,6 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       }
       newModify.push(modifyPlace)
     })
-
-    console.log(newModify)
 
     dispatch(updateToModify(newModify))
 
@@ -187,9 +185,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
       courseId: id,
       toDelete: deleteData,
     }
-    console.log(deleteData)
     const res = await updateCoursePlaceToDB(deleteCourse)
-    console.log(res)
 
     // toSave에도 추가하면 안됨
   }

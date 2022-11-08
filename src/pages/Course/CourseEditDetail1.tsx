@@ -48,10 +48,10 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     const detailData = await dispatch(fetchByIdCourseDetail(id))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = detailData.payload
-    setDescription(myData.data.description)
+    setDescription(myData.description)
 
-    setTitle(myData.data.title)
-    setImage(myData.data.imageUrl)
+    setTitle(myData.title)
+    setImage(myData.imageUrl)
   }, [dispatch, id])
 
   useEffect(() => {
