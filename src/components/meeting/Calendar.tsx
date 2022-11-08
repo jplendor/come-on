@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, CSSProperties } from "react"
 import { Box, FormControlLabel, Typography } from "@mui/material"
 import Switch, { SwitchProps } from "@mui/material/Switch"
 import { useTheme, styled } from "@mui/material/styles"
@@ -7,6 +7,7 @@ import {
   useCreateMeetingDateMutation,
   useDeleteMeetingDateMutation,
 } from "features/meeting/meetingSlice"
+import { MeetingDate } from "types/API/meeting-service"
 import SelectedDateModal from "./SelectedDateModal"
 
 interface dateInfo {
@@ -155,6 +156,11 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     alignItems: "center",
   }
 
+  // 임시 스타일
+  const FIXED = {
+    border: "solid 3px green",
+  }
+
   const getAllDates = useCallback(
     (fromString: string, toString: string): CalendarData[] => {
       const newAllDates: CalendarData[] = []
@@ -240,7 +246,7 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
 
     const targetDate = e.target.dataset.date
     const filteredMeetingDates = meetingDates.filter(
-      (item: any) => item.date === targetDate
+      (item: MeetingDate) => item.date === targetDate
     )
 
     if (mode === Mode.Select) {
@@ -299,6 +305,15 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
     return { color: theme.grayscale[500] }
   }
 
+  // 날짜 상태(dateStatus)에 따른 style
+  const getStyleByStatus = (date: string): CSSProperties => {
+    const filteredDate: MeetingDate[] = meetingDates.filter(
+      (item: MeetingDate) => item.date === date && item.dateStatus === "FIXED"
+    )
+
+    return filteredDate.length === 0 ? {} : FIXED
+  }
+
   useEffect(() => {
     setAllDates(getAllDates(startDate, endDate))
   }, [startDate, endDate, getAllDates])
@@ -348,6 +363,11 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
                     sx={{
                       backgroundColor: `rgba(51,127,254, ${monthData.percentage})`,
                       cursor: "pointer",
+                      ...getStyleByStatus(
+                        toStringYyyymmdd(
+                          new Date(allData.year, allData.month, monthData.date)
+                        )
+                      ),
                     }}
                   >
                     {monthData.date === 0 ? "" : monthData.date}
