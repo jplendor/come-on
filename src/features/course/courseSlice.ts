@@ -17,6 +17,7 @@ import {
   CourseDetail,
   GetCoursePlacesRes,
   CourseError,
+  CourseDeleteRes,
 } from "types/API/course-service"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -167,7 +168,22 @@ export const courseApi = api.injectEndpoints({
         return response.data.courseId
       },
     }),
-    deleteCoursePlace: builder.mutation<ServerRes, any>({
+    addCoursePlaceSingle: builder.mutation<CourseDetailResponse, any>({
+      query: ({ postData, courseId }) => ({
+        url: `/courses/${courseId}/course-places`,
+        method: "POST",
+        body: postData,
+      }),
+      transformResponse: (response: any) => {
+        console.log(
+          "courseId : %d courseStatus : %s",
+          response.data.targetCourseId,
+          response.data.courseStatus
+        )
+        return response.data
+      },
+    }),
+    deleteCoursePlace: builder.mutation<CourseDeleteRes, any>({
       query: ({ courseId, coursePlaceId }) => ({
         url: `/courses/${courseId}/course-places/${coursePlaceId}`,
         method: "DELETE",
@@ -226,6 +242,7 @@ export const {
   useUpdateCoursePlaceToDBMutation,
   useUpdateCourseDetailMutation,
   useDeleteCoursePlaceMutation,
+  useAddCoursePlaceSingleMutation,
 } = courseApi
 
 // data setUp에 필요한 thunk 만들기
@@ -278,10 +295,9 @@ export const coursePlaceSlice = createSlice({
       state.searchText = action.payload
     },
     addCoursePlace: (state, action: PayloadAction<CoursePlaceProps>) => {
-      if (state.coursePlaces.length === 0) {
+      if (state.coursePlaces && state.coursePlaces.length === 0) {
         state.coursePlaces[0] = { ...action.payload, order: 1 }
       } else {
-        if (state.coursePlaces[0].name === "newName") state.coursePlaces.pop()
         state.coursePlaces.push({
           ...action.payload,
           order: state.coursePlaces.length + 1,

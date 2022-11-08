@@ -293,6 +293,11 @@ export interface CourseError {
     }
   }
 }
+export interface CourseDeleteResponse {
+  coursePlaces: CoursePlaceProps[]
+  courseStatus: string
+  targetCourseId: number
+}
 
 enum Code {
   BAD_PARAMETER = "BAD_PARAMETER",
@@ -316,8 +321,12 @@ export interface ServerRes {
     | CoursePlaceProps
     | GetCoursePlacesRes
     | CourseResMsg
+    | CourseDeleteResponse
     | undefined
-  error?: CourseError
+}
+
+export interface CourseDeleteRes extends ServerRes {
+  data: CourseDeleteResponse
 }
 
 // GET /courses/my & GET /courses/like

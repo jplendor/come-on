@@ -135,9 +135,9 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
   // 원본데이터를 삭제할 경우, toDelete에 올리고 courseList에서 삭제하고, modify에 있다면 삭제
   // 추가데이터를 삭제할 경우, courseList에서 삭제하고 toSave에서 삭제함
 
-  const onRemove = async (index: number): Promise<void> => {
-    const toDeleteData = placeData.filter((place) => place.order === index)
-    const restDeleteData = placeData.filter((place) => place.order !== index)
+  const onRemove = async (placeId: number): Promise<void> => {
+    const toDeleteData = placeData.filter((place) => place.id === placeId)
+    const restDeleteData = placeData.filter((place) => place.id !== placeId)
 
     await deleteCoursePlace({
       courseId: String(id),
@@ -223,7 +223,7 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
           />
         )}
         <IconContainer />
-        {placeData.length !== 0 && placeData[0] !== undefined && (
+        {placeData && placeData[0] !== undefined && (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="placeData">
               {(provided) => (

@@ -18,6 +18,7 @@ import {
   useUpdateCoursePlaceToDBMutation,
   fetchByIdCoursePlaces,
   updateToModify,
+  useDeleteCoursePlaceMutation,
 } from "features/course/courseSlice"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
@@ -48,6 +49,7 @@ interface pageProps {
   id: number
 }
 const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
+  const [deleteCoursePlace] = useDeleteCoursePlaceMutation()
   const [selectedNumber, setselectedNumber] = useState<string>("")
   const [isValid, setIsValid] = useState(false)
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
@@ -142,7 +144,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   }
 
   const onValid = useCallback((): void => {
-    if (placeData.length !== 0) setIsValid(true)
+    if (placeData && placeData.length !== 0) setIsValid(true)
     else {
       setIsValid(false)
     }
@@ -161,33 +163,17 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     }
   }
 
-  const onRemove = async (index: number): Promise<void> => {
-    const filteredData = placeData.filter((place) => place.order !== index)
-    const deleteData = placeData.filter((place) => place.order === index)
-    /* eslint array-callback-return: "error" */
-    // eslint-disable-next-line array-callback-return, @typescript-eslint/no-explicit-any
-    const data = filteredData.map((place: CoursePlace): any => {
-      const temp = place
-      if (place.order > index) {
-        const temp2 = { ...temp, order: temp.order - 1 }
-        return temp2
-      }
-      return temp
+  const onRemove = async (placeId: number): Promise<void> => {
+    const res = await deleteCoursePlace({
+      courseId: String(id),
+      coursePlaceId: String(placeId),
     })
-    setPlaceData(data)
 
-    // 전역 상태인 course에서 삭제시키고
+    const resData = res as any
+    const newData = resData.data.data.coursePlaces
 
-    dispatch(updateCoursePlace(data))
-
-    // 딜리트에 넣어서 db에서 삭제시키기
-    const deleteCourse = {
-      courseId: id,
-      toDelete: deleteData,
-    }
-    const res = await updateCoursePlaceToDB(deleteCourse)
-
-    // toSave에도 추가하면 안됨
+    setPlaceData(newData)
+    dispatch(updateCoursePlace(newData))
   }
 
   const onClicKNextPage = (): void => {
@@ -199,52 +185,49 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     setPage(2)
   }
   return (
-    placeData && (
-      <MainContainer sx={MAIN_CONTAINER}>
-        {placeData.length !== 0 && (
-          <MapContainer
-            selectedNumber={selectedNumber}
-            placeLists={placeData}
-            isSuccess={placeData !== undefined}
-            isLoading={placeData === undefined}
-          />
-        )}
-        {/* //dragDropContext */}
-        <DragDropContext onDragEnd={onDragEnd}>
-          {placeList.length !== 0 && (
-            // droppable
-            <Droppable droppableId="placeData">
-              {(provided) => (
-                <Box ref={provided.innerRef} {...provided.droppableProps}>
-                  {generateComponent(placeList, (item, key) => (
-                    <PlaceDetailDraggableCard
-                      item={{ ...item, id: item.id }}
-                      key={key}
-                      onClick={onClickFocus}
-                      isSelected={
-                        item.order ===
-                        (selectedNumber === "" ? -10 : Number(selectedNumber))
-                      }
-                      editing={false}
-                      onRemove={onRemove}
-                      maxLen={placeList.length}
-                      mode={PlaceType.c}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </Box>
-              )}
-            </Droppable>
-          )}
-        </DragDropContext>
-        <AddCourseBox onClick={handleAddClick} />
-        <CourseNextStepButton
-          content="다음단계"
-          isValid={isValid}
-          onClick={onClicKNextPage}
+    <MainContainer sx={MAIN_CONTAINER}>
+      {placeData && placeData.length !== 0 && (
+        <MapContainer
+          selectedNumber={selectedNumber}
+          placeLists={placeData}
+          isSuccess={placeData !== undefined}
+          isLoading={placeData === undefined}
         />
-      </MainContainer>
-    )
+      )}
+      <DragDropContext onDragEnd={onDragEnd}>
+        {placeData && placeData.length !== 0 && placeData[0] !== undefined && (
+          // droppable
+          <Droppable droppableId="placeData">
+            {(provided) => (
+              <Box ref={provided.innerRef} {...provided.droppableProps}>
+                {generateComponent(placeData, (item, key) => (
+                  <PlaceDetailDraggableCard
+                    item={{ ...item, id: item.id }}
+                    key={key}
+                    onClick={onClickFocus}
+                    isSelected={
+                      item.order ===
+                      (selectedNumber === "" ? -10 : Number(selectedNumber))
+                    }
+                    editing={false}
+                    onRemove={onRemove}
+                    maxLen={placeData.length}
+                    mode={PlaceType.c}
+                  />
+                ))}
+                {provided.placeholder}
+              </Box>
+            )}
+          </Droppable>
+        )}
+      </DragDropContext>
+      <AddCourseBox onClick={handleAddClick} />
+      <CourseNextStepButton
+        content="다음단계"
+        isValid={isValid}
+        onClick={onClicKNextPage}
+      />
+    </MainContainer>
   )
 }
 

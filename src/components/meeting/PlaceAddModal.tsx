@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux"
 import {
   addCoursePlace,
   updateToSave,
+  useAddCoursePlaceSingleMutation,
   useUpdateCoursePlaceToDBMutation,
 } from "features/course/courseSlice"
 import { PlaceType } from "types/API/course-service"
@@ -116,7 +117,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
   const placeItems = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-
+  const [addCoursePlaceSingle] = useAddCoursePlaceSingleMutation()
   const [valid, isValid] = useState(false)
 
   useEffect(() => {
@@ -175,30 +176,21 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
   }
 
   const dispatch = useDispatch()
-  const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
 
   const onClickAddCoursePlace = async (): Promise<void> => {
-    const itemsLen = placeItems.length
-
-    const order = itemsLen === 0 ? 1 : itemsLen + 1
-
     const myPlace = {
-      id: newPlace.id,
-      apiId: newPlace.apiId,
       name: newPlace.name,
+      description: memo,
       lat: newPlace.lat,
       lng: newPlace.lng,
       address: newPlace.address,
-      order,
-      description: memo,
+      apiId: newPlace.apiId,
       category,
     }
 
-    dispatch(addCoursePlace(myPlace))
-    dispatch(updateToSave({ toSave: myPlace }))
+    // dispatch(addCoursePlace(myPlace))
 
-    await updateCoursePlaceToDB({ courseId: id!, toSave: [myPlace] })
-
+    const res = await addCoursePlaceSingle({ postData: myPlace, courseId: id })
     if (setPage !== undefined) setPage(3)
   }
 
