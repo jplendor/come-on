@@ -69,7 +69,7 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
   const { meetingId } = useParams()
   const [updateMeetingUserMutation] = useUpdateMeetingUserMutation()
 
-  const onClose = async (): Promise<void> => {
+  const updateMember = async (): Promise<void> => {
     try {
       if (isEditable) {
         const res = await updateMeetingUserMutation({
@@ -100,7 +100,7 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       PaperProps={{
         sx: {
           ...PAPER_PROPS,
@@ -114,7 +114,7 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
           {isEditable ? "권한 수정" : "권한 보기"}
         </Typography>
         {isEditable && (
-          <Button sx={COMPLETE_BTN} onClick={onClose}>
+          <Button sx={COMPLETE_BTN} onClick={updateMember}>
             수정완료
           </Button>
         )}
