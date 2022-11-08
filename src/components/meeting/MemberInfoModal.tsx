@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Avatar,
   Box,
@@ -93,6 +93,10 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
     handleClose()
   }
 
+  useEffect(() => {
+    setMeetingRole(member.meetingRole)
+  }, [member])
+
   return (
     <Dialog
       open={open}
@@ -137,7 +141,7 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
               value="HOST"
               control={<Radio />}
               label="생성자"
-              disabled={!isEditable}
+              disabled
             />
             <FormControlLabel
               value="EDITOR"
