@@ -232,6 +232,10 @@ interface SliceResponse<T> {
   last: boolean
 }
 
+interface CourseResMsg {
+  message: string
+  courseStatus: "COMPLETE" | "DISABLED" | "WRITING"
+}
 export type MyCoursesSliceRes = SliceResponse<MyCourses>
 export type CourseListSliceRes = SliceResponse<CourseList>
 
@@ -278,6 +282,18 @@ interface Exception {
  * UNAUTHORIZED    : 인증에 실패하였습니다.
  */
 
+export interface CourseError {
+  error: any
+  status: number
+  data: {
+    code: string
+    data: {
+      errorCode: number
+      message: string
+    }
+  }
+}
+
 enum Code {
   BAD_PARAMETER = "BAD_PARAMETER",
   FORBIDDEN = "FORBIDDEN",
@@ -299,7 +315,9 @@ export interface ServerRes {
     | CourseId
     | CoursePlaceProps
     | GetCoursePlacesRes
+    | CourseResMsg
     | undefined
+  error?: CourseError
 }
 
 // GET /courses/my & GET /courses/like

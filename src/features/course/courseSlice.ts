@@ -14,6 +14,9 @@ import {
   CoursePlaceState,
   coursePlaceToDelete,
   coursePlaceToModify,
+  CourseDetail,
+  GetCoursePlacesRes,
+  CourseError,
 } from "types/API/course-service"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -27,6 +30,7 @@ import type {
   LikeCourseRes,
 } from "types/API/course-service"
 import { AppDispatch } from "store"
+import { Server } from "http"
 
 export interface coursePlacesToSaveProps {
   toSave: {
@@ -163,6 +167,16 @@ export const courseApi = api.injectEndpoints({
         return response.data.courseId
       },
     }),
+    deleteCoursePlace: builder.mutation<ServerRes, any>({
+      query: ({ courseId, coursePlaceId }) => ({
+        url: `/courses/${courseId}/course-places/${coursePlaceId}`,
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json;charset=UTF-8",
+        },
+      }),
+      invalidatesTags: ["Course"],
+    }),
     updateCoursePlaceToDB: builder.mutation<
       CourseUpdateRes,
       CourseUpdatePlaceProps
@@ -211,39 +225,47 @@ export const {
   useGetCourseDetailQuery,
   useUpdateCoursePlaceToDBMutation,
   useUpdateCourseDetailMutation,
+  useDeleteCoursePlaceMutation,
 } = courseApi
 
 // data setUp에 필요한 thunk 만들기
 export const fetchByIdCourseDetail = createAsyncThunk<
-  CourseDetailResponse,
+  CourseDetail,
   number,
   {
     dispatch: AppDispatch
   }
 >(
   "coursePlace/fetchByIdCourseDetail",
-  async (id, { dispatch }): Promise<CourseDetailResponse> => {
-    const data = await dispatch(
+  async (id, { dispatch }): Promise<CourseDetail> => {
+    const { data, error } = await dispatch(
       getCourseDetail.initiate(id, { forceRefetch: true })
     )
-    return data.data as CourseDetailResponse
+    const resData = data?.data
+
+    return resData as CourseDetail
   }
 )
 
 // data setUp에 필요한 thunk 만들기
 export const fetchByIdCoursePlaces = createAsyncThunk<
-  CoursePlacesRes,
+  CoursePlacesRes | CourseError,
   number,
   {
     dispatch: AppDispatch
   }
 >(
   "coursePlace/fetchByIdCoursePlaces",
-  async (id, { dispatch }): Promise<CoursePlacesRes> => {
+  async (id, { dispatch }): Promise<CoursePlacesRes | CourseError> => {
     const data = await dispatch(
-      getCoursePlaces.initiate(id, { forceRefetch: true })
+      getCoursePlaces.initiate(id, {
+        forceRefetch: true,
+      })
     )
-    console.log(data)
+    const err = data.error
+    if (err && "data" in err) {
+      return err.data as CourseError
+    }
     return data.data as CoursePlacesRes
   }
 )
@@ -351,7 +373,6 @@ export const coursePlaceSlice = createSlice({
       state,
       action: PayloadAction<coursePlaceToModify[]>
     ): any => {
-      console.log(action.payload)
       state.updatePlaces.toModify = action.payload
     },
     updateToDelete: (
@@ -364,16 +385,16 @@ export const coursePlaceSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchByIdCourseDetail.fulfilled, (state, action) => {
       state.done = true
-      state.courseDetails.title = action.payload?.data?.title
-      state.courseDetails.description = action.payload?.data?.description
-      state.courseDetails.imgFile = action.payload?.data?.imageUrl
+      state.courseDetails.title = action.payload.title
+      state.courseDetails.description = action.payload.description
+      state.courseDetails.imgFile = action.payload.imageUrl
 
       // 초기화
       state.updatePlaces.toSave = []
       state.updatePlaces.toModify = []
       state.updatePlaces.toDelete = []
 
-      state.coursePlaces = action.payload?.data.coursePlaces
+      state.coursePlaces = action.payload?.coursePlaces
     })
     builder.addCase(fetchByIdCourseDetail.pending, (state) => {
       state.done = false
@@ -382,14 +403,16 @@ export const coursePlaceSlice = createSlice({
       state.done = false
     })
     builder.addCase(fetchByIdCoursePlaces.fulfilled, (state, action) => {
-      console.log(action.payload.data.contents)
-      if (action.payload.data) state.coursePlaces = action.payload.data.contents
+      const loadData = action.payload.data as GetCoursePlacesRes | ServerRes
+
+      if ("contents" in loadData) state.coursePlaces = loadData.contents
+      else if ("errorCode" in loadData) state.coursePlaces = []
       else state.coursePlaces = initialState
     })
     builder.addCase(fetchByIdCoursePlaces.pending, (state) => {
       state.done = false
     })
-    builder.addCase(fetchByIdCoursePlaces.rejected, (state) => {
+    builder.addCase(fetchByIdCoursePlaces.rejected, (state, action) => {
       state.done = false
     })
   },

@@ -38,12 +38,6 @@ const ImgContainer = styled(Box)(() => ({
   position: "relative",
 }))
 
-const KakaoContainer = styled(Box)(() => ({
-  display: "flex",
-  justifyContent: "right",
-  alignItems: "center",
-}))
-
 const FONT_TITLE = {
   fontSize: "22px",
   fontWeight: "bold",

@@ -72,8 +72,7 @@ const CourseRegiDetail = ({
   const getData = useCallback(async (): Promise<void> => {
     if (id !== 0) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      console.log(id)
-      console.log(courseDetail)
+
       setTitle(courseDetail.title)
       setDescription(courseDetail.description)
       setImage(courseDetail.imgFile)
