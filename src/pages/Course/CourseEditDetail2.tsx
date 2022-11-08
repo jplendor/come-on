@@ -150,7 +150,7 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
 
   const dis = useCallback(async () => {
     const myCourseData = await dispatch(fetchByIdCourseDetail(id))
-    console.log(myCourseData)
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = myCourseData
     dispatch(updateCoursePlace(myData.payload.coursePlaces))
