@@ -63,7 +63,6 @@ export interface GetCoursePlacesRes {
   count: number
   contents: CoursePlaceProps[]
 }
-
 export interface coursePlaceToModify {
   id: number
   description: string
@@ -293,6 +292,11 @@ export interface CourseError {
     }
   }
 }
+
+export interface CourseModifyList {
+  targetCourseId: number
+  coursePlaces: CoursePlace[]
+}
 export interface CourseDeleteResponse {
   coursePlaces: CoursePlaceProps[]
   courseStatus: string
@@ -322,6 +326,7 @@ export interface ServerRes {
     | GetCoursePlacesRes
     | CourseResMsg
     | CourseDeleteResponse
+    | CourseModifyList
     | undefined
 }
 
@@ -394,4 +399,18 @@ export interface UpdateCourseDetailQProps {
 export interface CoursePlacesRes extends ServerRes {
   id: number
   data: GetCoursePlacesRes
+}
+
+export interface CourseModifyRes extends ServerRes {
+  data: CourseModifyList
+}
+
+export interface CourseModifyData {
+  courseId: number
+  placeId: number
+  data: {
+    description: string
+    order: number
+    category: string
+  }
 }

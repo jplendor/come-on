@@ -18,6 +18,8 @@ import {
   GetCoursePlacesRes,
   CourseError,
   CourseDeleteRes,
+  CourseModifyRes,
+  CourseModifyData,
 } from "types/API/course-service"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
@@ -31,7 +33,6 @@ import type {
   LikeCourseRes,
 } from "types/API/course-service"
 import { AppDispatch } from "store"
-import { Server } from "http"
 
 export interface coursePlacesToSaveProps {
   toSave: {
@@ -160,11 +161,6 @@ export const courseApi = api.injectEndpoints({
         body: postData,
       }),
       transformResponse: (response: any) => {
-        console.log(
-          "courseId : %d courseStatus : %s",
-          response.data.courseId,
-          response.data.courseStatus
-        )
         return response.data.courseId
       },
     }),
@@ -175,14 +171,20 @@ export const courseApi = api.injectEndpoints({
         body: postData,
       }),
       transformResponse: (response: any) => {
-        console.log(
-          "courseId : %d courseStatus : %s",
-          response.data.targetCourseId,
-          response.data.courseStatus
-        )
         return response.data
       },
     }),
+    modifyCoursePlace: builder.mutation<CourseModifyRes, CourseModifyData>({
+      query: ({ courseId, placeId, data }) => ({
+        url: `courses/${courseId}/course-places/${placeId}`,
+        method: "PATCH",
+        body: data,
+      }),
+      transformResponse: (response: any) => {
+        return response.data.coursePlaces
+      },
+    }),
+
     deleteCoursePlace: builder.mutation<CourseDeleteRes, any>({
       query: ({ courseId, coursePlaceId }) => ({
         url: `/courses/${courseId}/course-places/${coursePlaceId}`,
@@ -203,12 +205,6 @@ export const courseApi = api.injectEndpoints({
         body: { toSave, toModify, toDelete },
       }),
       transformResponse: (response: CourseUpdateRes) => {
-        console.log(
-          "courseId:%d , courseStatus:%s , message:%s",
-          response.data.courseId,
-          response.data.courseStatus,
-          response.data.message
-        )
         return response
       },
     }),
@@ -243,6 +239,7 @@ export const {
   useUpdateCourseDetailMutation,
   useDeleteCoursePlaceMutation,
   useAddCoursePlaceSingleMutation,
+  useModifyCoursePlaceMutation,
 } = courseApi
 
 // data setUp에 필요한 thunk 만들기

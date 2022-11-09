@@ -186,21 +186,21 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
   }
   return (
     <MainContainer sx={MAIN_CONTAINER}>
-      {placeData && placeData.length !== 0 && (
+      {placeList && placeList.length !== 0 && (
         <MapContainer
           selectedNumber={selectedNumber}
-          placeLists={placeData}
-          isSuccess={placeData !== undefined}
-          isLoading={placeData === undefined}
+          placeLists={placeList}
+          isSuccess={placeList !== undefined}
+          isLoading={placeList === undefined}
         />
       )}
       <DragDropContext onDragEnd={onDragEnd}>
-        {placeData && placeData.length !== 0 && placeData[0] !== undefined && (
+        {placeList && placeList.length !== 0 && placeList[0] !== undefined && (
           // droppable
           <Droppable droppableId="placeData">
             {(provided) => (
               <Box ref={provided.innerRef} {...provided.droppableProps}>
-                {generateComponent(placeData, (item, key) => (
+                {generateComponent(placeList, (item, key) => (
                   <PlaceDetailDraggableCard
                     item={{ ...item, id: item.id }}
                     key={key}
@@ -211,7 +211,7 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
                     }
                     editing={false}
                     onRemove={onRemove}
-                    maxLen={placeData.length}
+                    maxLen={placeList.length}
                     mode={PlaceType.c}
                   />
                 ))}

@@ -188,9 +188,7 @@ const PlaceAddModal = (props: PlaceAddModalProps): JSX.Element => {
       category,
     }
 
-    // dispatch(addCoursePlace(myPlace))
-
-    const res = await addCoursePlaceSingle({ postData: myPlace, courseId: id })
+    await addCoursePlaceSingle({ postData: myPlace, courseId: id })
     if (setPage !== undefined) setPage(3)
   }
 

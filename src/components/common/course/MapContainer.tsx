@@ -7,7 +7,7 @@ import Face, { CollectionsOutlined } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { Box, Button } from "@mui/material"
 import ReactDOMServer from "react-dom/server"
-import { SearchCardProp } from "types/API/course-service"
+import { CoursePlace, SearchCardProp } from "types/API/course-service"
 import zIndex from "@mui/material/styles/zIndex"
 import KakaoComponent from "./KakaoComponent"
 import MarkerOveray from "./MarkerOveray"
@@ -36,27 +36,18 @@ const createMarker: any = (
   })
 }
 
-interface CoursePlaceState {
-  order: number
-  name: string
-  description: string
-  lng: number // 경도 x
-  lat: number // 위도 y
-  apiId: number
-  category: string
-  id?: number
-}
-
 export interface MapContainerProps {
   selectedNumber: string
-  placeLists: CoursePlaceState[]
+  placeLists: CoursePlace[]
   isSuccess: boolean
   isLoading: boolean
 }
 // {첫번째 데이터를 중심으로 잡기}
 
-const makeData = (placeLists: CoursePlaceState[]): MapProps[] => {
-  const mapData2 = placeLists.map((place) => {
+const makeData = (placeLists: Array<CoursePlace>): MapProps[] => {
+  const arr = placeLists as Array<CoursePlace>
+
+  const mapData2 = Array.from(placeLists).map((place) => {
     return {
       order: place.order,
       title: place.name,
@@ -85,6 +76,7 @@ const MapContainer = ({
 
     const bounds = new kakao.maps.LatLngBounds()
     if (placeLists !== undefined && selectedNumber === "") {
+      console.log(placeLists)
       placeLists.map((place) =>
         bounds.extend(new kakao.maps.LatLng(place.lat, place.lng))
       )
