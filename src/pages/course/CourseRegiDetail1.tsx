@@ -5,21 +5,19 @@ import React, {
   useEffect,
   useCallback,
 } from "react"
-import { Grid } from "@mui/material"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-
-import TextInput from "components/common/input/TextInput"
-import ImageInput from "components/common/input/ImageInput"
 
 import {
   setCourseDetail,
   useAddCourseDetailMutation,
-  useGetCourseDetailQuery,
   useUpdateCourseDetailMutation,
 } from "features/course/courseSlice"
 
-import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "store"
+import { Grid } from "@mui/material"
+import { useDispatch, useSelector } from "react-redux"
+import TextInput from "components/common/input/TextInput"
+import ImageInput from "components/common/input/ImageInput"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 interface pageProps {
   page: number
@@ -39,18 +37,18 @@ const CourseRegiDetail = ({
   page,
 }: pageProps): JSX.Element => {
   const dispatch = useDispatch()
-
-  const [addCourseDetail] = useAddCourseDetailMutation()
   const [isValid, setIsValid] = useState(false)
   const [image, setImage] = useState<string>("")
   const [title, setTitle] = useState<string>("")
+  const [addCourseDetail] = useAddCourseDetailMutation()
   const [description, setDescription] = useState<string>("")
+
   const courseDetail = useSelector((state: RootState) => {
     return state.course.courseDetails
   })
+
   const changeFileToObjectUrl = (file: File): string => {
     const fileUrl = URL.createObjectURL(file)
-
     return fileUrl
   }
 
@@ -71,13 +69,12 @@ const CourseRegiDetail = ({
 
   const getData = useCallback(async (): Promise<void> => {
     if (id !== 0) {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-
       setTitle(courseDetail.title)
       setDescription(courseDetail.description)
       setImage(courseDetail.imgFile)
     }
-  }, [id])
+  }, [courseDetail.description, courseDetail.imgFile, courseDetail.title, id])
+
   useEffect(() => {
     if ((id !== 0 && title === "") || description === "") getData()
   })
@@ -85,6 +82,7 @@ const CourseRegiDetail = ({
     if (title === "") return
     if (description === "") return
     if (image === "" || image === "undefined") return
+
     setIsValid(true)
   }, [description, image, title])
 
@@ -108,7 +106,7 @@ const CourseRegiDetail = ({
     return Promise.resolve(res.data.courseId)
   }
 
-  const [updateCourseDetail, { data: res }] = useUpdateCourseDetailMutation()
+  const [updateCourseDetail] = useUpdateCourseDetailMutation()
 
   const onClickNextPage = async (): Promise<void> => {
     if (id === 0) {
@@ -121,10 +119,12 @@ const CourseRegiDetail = ({
 
       newDetail.append("title", title)
       newDetail.append("description", description)
+
       if (image) {
         const imgFile = await changeObjectUrlToFile()
         newDetail.append("imgFile", imgFile)
       }
+
       await updateCourseDetail({ id, data: newDetail })
     }
 

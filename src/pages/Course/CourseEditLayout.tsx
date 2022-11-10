@@ -1,14 +1,11 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState } from "react"
-import { useLocation, useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 
 import { Box, LinearProgress, Typography } from "@mui/material"
 import { Close, ArrowBackIosNewOutlined } from "@mui/icons-material"
 
-import { useUpdateCoursePlaceToDBMutation } from "features/course/courseSlice"
-import { CourseUpdatePlaceProps, PlaceType } from "types/API/course-service"
-import { useSelector } from "react-redux"
-import { RootState } from "store"
+import { PlaceType } from "types/API/course-service"
 import CourseEditDetail1 from "./CourseEditDetail1"
 import CourseEditDetail2 from "./CourseEditDetail2"
 import CourseEditDetail3 from "./CourseEditDetail3"
@@ -57,50 +54,13 @@ const MIDTITLE = {
   alignItems: "center",
 }
 
-interface PageState {
-  state: number
-}
-
 const CourseEditLayout = (): JSX.Element => {
+  const navigate = useNavigate()
   const { id } = useParams<string>()
   const [page, setPage] = useState<number>(1)
-  const navigate = useNavigate()
-  const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
-  const updatePlaces: CourseUpdatePlaceProps = useSelector(
-    (state: RootState) => {
-      return state.course.updatePlaces
-    }
-  )
-  const handleChange = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ): void => {
-    setPage(newValue)
-  }
-
-  const { state: pageState } = useLocation() as PageState
-  const setUpdateCourse = (): void => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const updateCourse = {
-      courseId: Number(id),
-      toSave: updatePlaces.toSave,
-      toModify: updatePlaces.toModify,
-      toDelete: updatePlaces.toDelete,
-    }
-    // 오류나면 updatePlaces로 바꿀것
-    updateCoursePlaceToDB(updateCourse)
-  }
-
   const onClickClose = (): void => {
     navigate("/")
   }
-  // const onClickPrev = (): void => {
-  //   if (pageState < 0) {
-  //     navigate(`/course/${id}/update`, { state: 1 })
-  //   }
-  //   setUpdateCourse()
-  //   navigate(`/course/${id}/update`, { state: pageState - 1 })
-  // }
 
   const onClickPrev = (): void => {
     if (page !== 1) setPage(page - 1)

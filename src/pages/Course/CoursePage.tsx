@@ -4,22 +4,20 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { Box, Button, Typography } from "@mui/material"
-
-import { AccountCircleOutlined, DateRange, Share } from "@mui/icons-material"
-
-import { styled } from "@mui/material/styles"
-import MapContainer from "components/common/course/MapContainer"
-import KakaoShare from "components/KakaoShare"
 import { generateComponent } from "utils"
-import KakaoIcon from "assets/nav/KakaoIcon"
+import { Box, Typography } from "@mui/material"
+import { styled } from "@mui/material/styles"
+
+import KakaoShare from "components/KakaoShare"
+import MapContainer from "components/common/course/MapContainer"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import {
   useClickLikeCourseMutation,
   useGetCourseDetailQuery,
 } from "features/course/courseSlice"
-import PlaceDetailCard from "components/common/card/PlaceDetailCard"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -124,7 +122,6 @@ const CoursePage = (): JSX.Element => {
     isLoading,
     isFetching,
     error: err,
-    // eslint-disable-next-line react-hooks/rules-of-hooks
   } = useGetCourseDetailQuery(id)
   const [clickLikeCourse] = useClickLikeCourseMutation()
   const loadData = resultCourseDetail?.data?.coursePlaces

@@ -1,26 +1,22 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState, SetStateAction, Dispatch, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { MydetailRes } from "types/API/user-service"
-import { toStringYyyymmdd, generateComponent } from "utils"
-
-import { useMyDetailQuery } from "features/user/userSlice"
-import { styled } from "@mui/material/styles"
-
-import { Box, Typography } from "@mui/material"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-
-import { useSelector } from "react-redux"
-import { RootState } from "store"
-import { useAddCoursePlaceMutation } from "features/course/courseSlice"
-
 import { Buffer } from "buffer"
-import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
-import PlaceDetailCard from "components/common/card/PlaceDetailCard"
-import { CoursePlaceProps, PlaceType } from "types/API/course-service"
+import { RootState } from "store"
+import { useSelector } from "react-redux"
+import { styled } from "@mui/material/styles"
+import { useNavigate } from "react-router-dom"
+import { Box, Typography } from "@mui/material"
+import { MydetailRes } from "types/API/user-service"
+import { useMyDetailQuery } from "features/user/userSlice"
+import { toStringYyyymmdd, generateComponent } from "utils"
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
+import { CoursePlaceProps, PlaceType } from "types/API/course-service"
+import { useAddCoursePlaceMutation } from "features/course/courseSlice"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -92,31 +88,13 @@ const DES_STYLE = {
 
 window.Buffer = Buffer
 
-// const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
-//   const arr = dataUrl.split(",")
-//   if (arr.length < 2) {
-//     return undefined
-//   }
-//   const mimeArr = arr[0].match(/:(.*?);/)
-//   if (!mimeArr || mimeArr.length < 2) {
-//     return undefined
-//   }
-//   const mime = mimeArr[1]
-//   const buff = Buffer.from(arr[1], "base64")
-//   return new File([buff], filename, { type: mime })
-// }
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
   id: number
 }
-// 코스등록 전 미리보기 페이지
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
-  /* **********************************************************************
-api연동부분
- 2
-************************************************************************** */
   interface MyDetailQueryProps extends QueryProps {
     data: MydetailRes
   }
@@ -143,26 +121,6 @@ api연동부분
     }
   }
 
-  // 제출용 폼데이터 만드는 함수
-  // base64 => File => blob으로 만들었다.
-  // const makeFormData = async (): Promise<FormData> => {
-  //   const formData = new FormData()
-  //   formData.append("title", courseDetail.title)
-  //   formData.append("description", courseDetail.description)
-  //   const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
-
-  //   if (myfile !== undefined) {
-  //     await myfile?.arrayBuffer().then((arrayBuffer) => {
-  //         const blob = new Blob([new Uint8Array(arrayBuffer)], {
-  //         type: myfile.type,
-  //       })
-  //     })
-  //     formData.append("imgFile", myfile)
-  //   }
-
-  //   return formData
-  // }
-
   const courseList = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
@@ -185,7 +143,6 @@ api연동부분
     toSave: [initialPlace],
   }
 
-  // // 장소리스트 전송하는 함수
   const submitPlaceList = async (courseId: number): Promise<boolean> => {
     // map으로 toSave배열에 코스 추가하기
     // toSave 전처리
@@ -197,7 +154,6 @@ api연동부분
     return Promise.resolve(true)
   }
 
-  // 무한리렌더링 조심 부분
   // 하트 컴포넌트
   const [isLike, setIsLike] = useState<boolean>(true)
   let likeCount = 999
@@ -303,7 +259,7 @@ api연동부분
                 onRemove={() => {}}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
-                isEditable
+                isEditable={false}
               />
             ))}
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>

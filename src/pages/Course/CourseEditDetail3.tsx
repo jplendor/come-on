@@ -32,17 +32,7 @@ import PlaceDetailCard from "components/common/card/PlaceDetailCard"
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
-import {
-  CourseDetailResponse,
-  CoursePlaceProps,
-  PlaceType,
-} from "types/API/course-service"
-import {
-  AsyncThunkAction,
-  ThunkDispatch,
-  CombinedState,
-  AnyAction,
-} from "@reduxjs/toolkit"
+import { CoursePlaceProps, PlaceType } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -135,14 +125,6 @@ interface pageProps {
 
 // 코스등록 전 미리보기 페이지
 const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
-  const [winReady, setWinReady] = useState(false)
-  useEffect(() => {
-    setWinReady(true)
-  }, [])
-  /* **********************************************************************
-api연동부분
- 2
-************************************************************************** */
   const navigate = useNavigate()
   interface MyDetailQueryProps extends QueryProps {
     data: MydetailRes
@@ -269,7 +251,7 @@ api연동부분
 
   if (isLoadingUser) return <div>Loading...</div>
   return (
-    courseDetail && { winReady } && (
+    courseDetail && (
       <>
         <ImgContainer>
           <img
