@@ -2,11 +2,11 @@ import React from "react"
 import { Route, Routes } from "react-router-dom"
 import RequireAuth from "components/auth/RequireAuth"
 
-import CoursePlaceAdd from "pages/course/CoursePlaceAdd"
 import Error404 from "components/common/Error404"
-import CourseRegiLayout from "./CourseRegiLayout"
+import CoursePlaceAdd from "pages/course/CoursePlaceAdd"
 import CoursePage from "./CoursePage"
 import CourseUpdate from "./CourseUpdate"
+import CourseRegiLayout from "./CourseRegiLayout"
 
 const AuthCoursePage = (): JSX.Element => (
   <RequireAuth>

@@ -28,7 +28,7 @@ const MainContainer = styled(Box)(() => ({
   margin: "0px 20px 16px 20px",
   flexDirection: "column",
   position: "relative",
-  top: "-40px",
+  top: "-50px",
 }))
 
 const ImgContainer = styled(Box)(() => ({
@@ -42,13 +42,8 @@ const ImgContainer = styled(Box)(() => ({
 const FONT_TITLE = {
   fontSize: "22px",
   fontWeight: "bold",
+  marginTop: "10px",
   margin: "auto 0",
-}
-
-const FONT_SUBTITLE = {
-  fontSize: "13px",
-  lineHeight: "145%",
-  color: "#9E9E9E",
 }
 
 const ICON_BOX = {
@@ -80,11 +75,36 @@ const TITLE = {
   justifyContent: "space-between",
 }
 
-const DES_STYLE = {
-  fontSize: "14px",
-  lineHeight: "140%",
-  color: "#616161",
-}
+const DesText = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body1: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    color: grayscale[700],
+    margin: "auto 5px",
+  })
+)
+
+const FontSubtitle = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body2: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    color: grayscale[500],
+  })
+)
 
 window.Buffer = Buffer
 
@@ -218,23 +238,19 @@ const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
               )}
             </Box>
             <Box className="subTitle" sx={SUBTITLE}>
-              <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
+              <FontSubtitle>
                 <Box sx={ICON_BOX}>
                   <AccountCircleOutlined sx={ICON_STYLE} />
-                  <Typography
-                    variant="subtitle1"
-                    sx={FONT_SUBTITLE}
-                    style={{ margin: "auto 5px" }}
-                  >
-                    {userData.data.nickname}
-                  </Typography>
+                  <FontSubtitle>{userData.data.nickname}</FontSubtitle>
                   <DateRange sx={ICON_STYLE} />
                   {toStringYyyymmdd(new Date())}
                 </Box>
-              </Typography>
+              </FontSubtitle>
             </Box>
           </TitleContainer>
-          <Box sx={DES_STYLE}>{courseDetail?.description}</Box>
+          <Box>
+            <DesText>{courseDetail?.description}</DesText>
+          </Box>
           {placeList !== null && placeList !== undefined && (
             <MapContainer
               selectedNumber={selectedNumber}

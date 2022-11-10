@@ -18,7 +18,7 @@ import { Box, Typography } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import { useDispatch, useSelector } from "react-redux"
-import { RootState, AppDispatch } from "store"
+import theme from "theme"
 import {
   useAddCoursePlaceMutation,
   useAddCourseDetailMutation,
@@ -26,13 +26,14 @@ import {
 } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"
-import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
+import { RootState, AppDispatch } from "store"
 import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
-import LikeButton from "components/common/card/cardLayout/CardItemButton"
 import { CoursePlaceProps, PlaceType } from "types/API/course-service"
+import LikeButton from "components/common/card/cardLayout/CardItemButton"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -44,7 +45,7 @@ const MainContainer = styled(Box)(() => ({
   margin: "0px 20px 16px 20px",
   flexDirection: "column",
   position: "relative",
-  top: "-40px",
+  top: "-50px",
 }))
 
 const ImgContainer = styled(Box)(() => ({
@@ -52,6 +53,7 @@ const ImgContainer = styled(Box)(() => ({
   height: "230px",
   overflow: "hidden",
   position: "relative",
+  marginBottom: "0px",
   top: "-60px",
 }))
 
@@ -61,11 +63,20 @@ const FONT_TITLE = {
   margin: "auto 0",
 }
 
-const FONT_SUBTITLE = {
-  fontSize: "13px",
-  lineHeight: "145%",
-  color: "#9E9E9E",
-}
+const FontSubtitle = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body2: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    color: grayscale[500],
+  })
+)
 
 const ICON_BOX = {
   lineHegiht: "145%",
@@ -92,15 +103,25 @@ const SUBTITLE = {
 const TITLE = {
   width: "100%",
   display: "flex",
-  marginTop: "10px",
   justifyContent: "space-between",
+  alignItems: "center",
 }
 
-const DES_STYLE = {
-  fontSize: "14px",
-  lineHeight: "140%",
-  color: "#616161",
-}
+const DesText = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body1: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    color: grayscale[700],
+    margin: "auto 5px",
+  })
+)
 
 window.Buffer = Buffer
 
@@ -143,7 +164,6 @@ const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-  const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
@@ -211,11 +231,8 @@ const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
 
   const postData = {
     toSave: [initialPlace],
-    // toModify: [{ ...initialPlace, coursePlaceId: courseId }],
-    // toDelete: [{ coursePlaceId: courseId }],
   }
 
-  // // 장소리스트 전송하는 함수
   const submitPlaceList = async (courseId: number): Promise<boolean> => {
     // map으로 toSave배열에 코스 추가하기
     // toSave 전처리
@@ -286,23 +303,19 @@ const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
               )}
             </Box>
             <Box className="subTitle" sx={SUBTITLE}>
-              <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
+              <FontSubtitle>
                 <Box sx={ICON_BOX}>
                   <AccountCircleOutlined sx={ICON_STYLE} />
-                  <Typography
-                    variant="subtitle1"
-                    sx={FONT_SUBTITLE}
-                    style={{ margin: "auto 5px" }}
-                  >
-                    {userData.data.nickname}
-                  </Typography>
+                  <FontSubtitle>{userData.data.nickname}</FontSubtitle>
                   <DateRange sx={ICON_STYLE} />
                   {toStringYyyymmdd(new Date())}
                 </Box>
-              </Typography>
+              </FontSubtitle>
             </Box>
           </TitleContainer>
-          <Box sx={DES_STYLE}>{courseDetail?.description}</Box>
+          <Box>
+            <DesText>{courseDetail?.description}</DesText>
+          </Box>
           {placeList !== null && placeList !== undefined && (
             <MapContainer
               selectedNumber={selectedNumber}
@@ -325,7 +338,7 @@ const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
                 courseId={courseIdProps}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
-                isEditable
+                isEditable={false}
               />
             ))}
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>

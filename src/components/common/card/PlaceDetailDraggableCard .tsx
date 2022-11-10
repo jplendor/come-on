@@ -1,18 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from "react"
-import {
-  Box,
-  Grid,
-  GridProps,
-  IconButton,
-  Typography,
-  TypographyProps,
-} from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
 import { Draggable } from "react-beautiful-dnd"
+import React, { useEffect, useState } from "react"
 import { PlaceType } from "types/API/course-service"
 import PlaceEditModal from "components/meeting/PlaceEditModal"
+import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
+import { Box, Grid, GridProps, IconButton, Typography } from "@mui/material"
+import theme from "theme"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -33,19 +27,18 @@ const CATEGORY_LIST = [
   { name: "기타", value: "ETC" },
 ]
 
-const ThemeCardNumbering = styled(Typography)<TypographyProps>(() => ({
-  borderRadius: "30px",
+const ThemeCardNumbering = styled(Typography)({
   width: "22px",
   height: "22px",
-  margin: "auto",
-  backgroundColor: "#337FFE",
-  color: "white",
-
   zIndex: "100",
-}))
+  color: "white",
+  margin: "auto",
+  borderRadius: "30px",
+  backgroundColor: theme.primary[500],
+})
 
 const SELECTED_NUM_CARD = {
-  backgroundColor: "#1951B2",
+  backgroundColor: theme.primary[700],
   padding: "0px",
 }
 
@@ -58,20 +51,28 @@ const SELECTED_CARD = {
   border: "1px solid #1951B2",
   padding: "0px",
 }
-const ThemeGrid = styled(Grid)<GridProps>(({ theme }) => ({
+const ThemeGrid = styled(Grid)<GridProps>({
   "&.MuiGrid-root": {
     borderRadius: "4px",
     color: "black",
   },
   border: `1px solid #EEEEEE`,
-}))
+})
 
-const ADDRESS_FONT = {
-  fontSize: "12px",
-  padding: "0px",
-
-  color: "#9E9E9E",
-}
+const AddressFont = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body3: { regular },
+      },
+    },
+  }) => ({
+    fontSize: regular.fontSize,
+    padding: "0px",
+    color: grayscale[500],
+  })
+)
 const CARD_NUMBERING = {
   color: "primary",
   margin: "center",
@@ -80,119 +81,132 @@ const CARD_NUMBERING = {
 }
 
 const ITEM_BOX = {
-  color: "#EEEEEE",
+  color: theme.grayscale[200],
   padding: "8px 12px",
 }
-
 const LINE_FIRST = {
-  position: "relative",
-  zIndex: "10",
-  borderLeft: "thin solid #EEEEEE;",
-  left: "25px",
   top: "52px",
+  left: "25px",
+  zIndex: "10",
   height: "52px",
+  position: "relative",
+  borderLeft: "thin solid #EEEEEE",
 }
 
 const LINE_MIDDLE = {
-  position: "relative",
-  zIndex: "11",
-  borderLeft: "thin solid #EEEEEE;",
   left: "25px",
+  zIndex: "11",
   height: "92px",
+  position: "relative",
+  borderLeft: "thin solid #EEEEEE",
 }
 
 const LINE_LAST = {
   margin: "0",
-  position: "relative",
   zIndex: "10",
-  borderLeft: "thin solid #EEEEEE",
   left: "25px",
   height: "52px",
   bottom: "12px",
   padding: "0px",
+  position: "relative",
+  borderLeft: "thin solid #EEEEEE",
 }
 
-const TITLE_DES = {
-  margin: "0",
-  lineHeight: "140%",
-  fontSize: "14px",
-  color: "#616161",
-  padding: "0px",
-}
-
+const TitleDes = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body1: { bold },
+      },
+    },
+  }) => ({
+    margin: "0",
+    padding: "0px",
+    color: grayscale[700],
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+  })
+)
 const GRID_WRAP = {
-  color: "#EEEEEE",
   padding: "0px",
+  color: theme.grayscale[200],
 }
 
 const NUMBERING_BOX = {
+  padding: "0px",
   display: "flex",
   alignItem: "center",
-  padding: "0px",
 }
 
 const TITLE_BOX = {
+  padding: "0px",
   display: "flex",
-  alignItems: "center",
   flexwrap: "nowrap",
   lineHeight: "140%",
-  padding: "0px",
+  alignItems: "center",
 }
 
-const TITLE_FONT = {
-  fontWeight: "bold",
-  lineHeight: "140%",
-  fontSize: "16px",
-  padding: "0px",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-  maxWidth: "60%",
-}
-
+const TitleFont = styled(Typography)(
+  ({
+    theme: {
+      textStyles: {
+        title4: { bold },
+      },
+    },
+  }) => ({
+    padding: "0px",
+    maxWidth: "60%",
+    overflow: "hidden",
+    fontWeight: "bold",
+    whiteSpace: "nowrap",
+    lineHeight: bold.lineHeight,
+    fontSize: bold.fontSize,
+    textOverflow: "ellipsis",
+  })
+)
 const DES_BOX = {
   width: "100%",
-  display: "flex",
-  justifyContent: "space-between",
-  displayDirection: "column",
-  flexwrap: "nowrap",
-  padding: "0px",
   margin: "0px",
+  padding: "0px",
+  display: "flex",
+  flexwrap: "nowrap",
+  displayDirection: "column",
+  justifyContent: "space-between",
 }
 
 const ICON = {
   width: "14px",
-  height: "14px",
-  fontSize: "14px",
   margin: "0px",
+  height: "14px",
   padding: "0px",
-  color: "#BDBDBD",
+  fontSize: "14px",
+  color: theme.grayscale[400],
 }
 
 const ButtonGroup = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "end",
-  justifyContent: "space-between",
   p: "10px",
+  display: "flex",
+  alignItems: "end",
+  flexDirection: "column",
+  justifyContent: "space-between",
 }
 
 const TITLE_CATEGORY = {
   display: "block",
   fontSize: "10px",
-
-  color: "#9E9E9E",
+  color: theme.grayscale[500],
 }
 
 const CATEGORY_BOX = {
-  display: "flex",
   m: "0 10px",
-  padding: "1px 3px",
-  justifyContent: "center",
-  alignItems: "center",
   height: "19px",
+  display: "flex",
+  padding: "1px 3px",
+  alignItems: "center",
   borderRadius: "2px",
-  backgroundColor: "#EEEEEE",
+  justifyContent: "center",
+  backgroundColor: theme.grayscale[200],
 }
 export interface ListDetailCardProp {
   index: number
@@ -339,8 +353,7 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
               <Grid item xs={10}>
                 <Box sx={ITEM_BOX}>
                   <Box sx={TITLE_BOX}>
-                    <Typography sx={TITLE_FONT}>{placeName}</Typography>
-
+                    <TitleFont>{placeName}</TitleFont>
                     <Box sx={CATEGORY_BOX}>
                       <Typography component="span" sx={TITLE_CATEGORY}>
                         {filterCategory()}
@@ -351,13 +364,11 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
                     </IconButton>
                   </Box>
                   <Box sx={DES_BOX}>
-                    <Typography variant="subtitle2" sx={TITLE_DES}>
+                    <TitleDes>
                       {description !== null ? description : memo}
-                    </Typography>
+                    </TitleDes>
                   </Box>
-                  <Typography variant="subtitle2" sx={ADDRESS_FONT}>
-                    {address}
-                  </Typography>
+                  <AddressFont>{address}</AddressFont>
                 </Box>
               </Grid>
               <Grid item xs={2} sx={ButtonGroup}>

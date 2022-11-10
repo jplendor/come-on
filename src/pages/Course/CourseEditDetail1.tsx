@@ -58,6 +58,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     if (title === "") return
     if (description === "") return
     if (image === "" || image === "undefined") return
+
     setIsValid(true)
   }, [description, image, title])
 

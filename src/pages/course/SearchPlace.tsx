@@ -117,20 +117,21 @@ const SearchPlace = ({
   setPage,
   page,
 }: SearchPlaceProps): JSX.Element => {
-  const [selectedNumber, setselectedNumber] = useState("")
-  const [inputedKeyword, setInputedKeyword] = useState<string>("")
-  const [searchKeyword, setSearchKeyword] = useState<string>("")
-  // const [searchedData, setSearchedData] = useState<ListDetailCardProp[]>([])
-  const [selectedData, setSelectedData] = useState<ListDetailCardProp>()
-  const [open, setOpen] = useState(false)
-  const { geoState } = useGeolocation()
   const [myLevel, setMyLevel] = useState(5)
+
+  const { geoState } = useGeolocation()
   const [myLatLng, setMyLatLng] = useState([
     geoState.info.lat,
     geoState.info.lng,
   ])
-  const [isSearch, setIsSearch] = useState(false)
   const containerRef = React.useRef(null)
+  const [open, setOpen] = useState(false)
+  const [selectedNumber, setselectedNumber] = useState("")
+  const [searchKeyword, setSearchKeyword] = useState<string>("")
+  const [inputedKeyword, setInputedKeyword] = useState<string>("")
+  const [selectedData, setSelectedData] = useState<ListDetailCardProp>()
+
+  const [isSearch, setIsSearch] = useState(false)
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
   // 검색창을 이용해 키워드를 검색
