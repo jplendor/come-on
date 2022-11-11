@@ -30,12 +30,22 @@ const ThemeGrid = styled(Grid)<GridProps>(() => ({
   backgroundColor: "white",
 }))
 
-const ADDRESS_FONT = {
-  fontSize: "14px",
-  lineHeight: "140%",
-  padding: "0px",
-  color: "#9E9E9E",
-}
+const AddressFont = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body1: { bold },
+      },
+    },
+  }) => ({
+    padding: "0px",
+    color: grayscale[500],
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+  })
+)
+
 const ITEM_BOX = {
   color: "#EEEEEE",
   padding: "16px 20px 0px 20px",
@@ -180,10 +190,10 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
               <Typography variant="h6" sx={TITLE_FONT}>
                 {obj.placeName}
               </Typography>
-              <Typography variant="subtitle2" sx={ADDRESS_FONT}>
+              <AddressFont>
                 {obj.addressName}
                 <IconButton aria-label="edit this" color="secondary" />
-              </Typography>
+              </AddressFont>
             </Box>
           </Grid>
           <Box sx={{ padding: "20px" }}>

@@ -43,7 +43,7 @@ const SELECTED_NUM_CARD = {
 }
 
 const DEFAULT_CARD = {
-  border: "1px solid #EEEEEE",
+  border: `1px solid ${theme.grayscale[200]}`,
   padding: "0px",
 }
 
@@ -56,7 +56,8 @@ const ThemeGrid = styled(Grid)<GridProps>({
     borderRadius: "4px",
     color: "black",
   },
-  border: `1px solid #EEEEEE`,
+
+  border: `1px solid ${theme.grayscale[200]}`,
 })
 
 const AddressFont = styled(Typography)(
@@ -73,6 +74,7 @@ const AddressFont = styled(Typography)(
     color: grayscale[500],
   })
 )
+
 const CARD_NUMBERING = {
   color: "primary",
   margin: "center",
@@ -81,8 +83,8 @@ const CARD_NUMBERING = {
 }
 
 const ITEM_BOX = {
-  color: theme.grayscale[200],
   padding: "8px 12px",
+  color: theme.grayscale[200],
 }
 const LINE_FIRST = {
   top: "52px",
@@ -90,7 +92,7 @@ const LINE_FIRST = {
   zIndex: "10",
   height: "52px",
   position: "relative",
-  borderLeft: "thin solid #EEEEEE",
+  borderLeft: `thin solid ${theme.grayscale[200]};`,
 }
 
 const LINE_MIDDLE = {
@@ -98,7 +100,7 @@ const LINE_MIDDLE = {
   zIndex: "11",
   height: "92px",
   position: "relative",
-  borderLeft: "thin solid #EEEEEE",
+  borderLeft: `thin solid ${theme.grayscale[200]};`,
 }
 
 const LINE_LAST = {
@@ -109,7 +111,7 @@ const LINE_LAST = {
   bottom: "12px",
   padding: "0px",
   position: "relative",
-  borderLeft: "thin solid #EEEEEE",
+  borderLeft: `thin solid ${theme.grayscale[200]};`,
 }
 
 const TitleDes = styled(Typography)(
@@ -165,6 +167,7 @@ const TitleFont = styled(Typography)(
     textOverflow: "ellipsis",
   })
 )
+
 const DES_BOX = {
   width: "100%",
   margin: "0px",

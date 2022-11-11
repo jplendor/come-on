@@ -19,6 +19,7 @@ import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { editCoursePlaceDetail } from "features/course/courseSlice"
 import { useParams } from "react-router-dom"
 import { useDispatch } from "react-redux"
+import theme from "theme"
 
 // TODO: 버튼 2개 작업
 // 1. 메모버튼 [V]
@@ -42,21 +43,20 @@ const CATEGORY_LIST = [
 const ThemeCardNumbering = styled(Typography)<TypographyProps>(() => ({
   borderRadius: "30px",
   width: "22px",
+  zIndex: "100",
   height: "22px",
   margin: "auto",
-  backgroundColor: "#337FFE",
   color: "white",
-
-  zIndex: "100",
+  backgroundColor: theme.primary[500],
 }))
 
 const SELECTED_NUM_CARD = {
-  backgroundColor: "#1951B2",
+  backgroundColor: theme.primary[700],
   padding: "0px",
 }
 
 const DEFAULT_CARD = {
-  border: "1px solid #EEEEEE",
+  border: `1px solid ${theme.grayscale[200]}`,
   padding: "0px",
 }
 
@@ -69,15 +69,23 @@ const ThemeGrid = styled(Grid)<GridProps>(() => ({
     borderRadius: "4px",
     color: "black",
   },
-  border: `1px solid #EEEEEE`,
+  border: `1px solid ${theme.grayscale[200]}`,
 }))
 
-const ADDRESS_FONT = {
-  fontSize: "12px",
-  padding: "0px",
-
-  color: "#9E9E9E",
-}
+const AddressFont = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body3: { regular },
+      },
+    },
+  }) => ({
+    fontSize: regular.fontSize,
+    padding: "0px",
+    color: grayscale[500],
+  })
+)
 const CARD_NUMBERING = {
   color: "primary",
   margin: "center",
@@ -86,76 +94,84 @@ const CARD_NUMBERING = {
 }
 
 const ITEM_BOX = {
-  color: "#EEEEEE",
+  color: theme.grayscale[200],
   padding: "8px 12px",
 }
 
 const LINE_FIRST = {
-  position: "relative",
-  zIndex: "10",
-  borderLeft: "thin solid #EEEEEE;",
-  left: "25px",
   top: "52px",
+  left: "25px",
+  zIndex: "10",
   height: "52px",
+  position: "relative",
+  borderLeft: `thin solid ${theme.grayscale[200]};`,
 }
 
 const LINE_MIDDLE = {
-  position: "relative",
-  zIndex: "11",
-  borderLeft: "thin solid #EEEEEE;",
   left: "25px",
+  zIndex: "11",
   height: "92px",
+  position: "relative",
+  borderLeft: `thin solid ${theme.grayscale[200]};`,
 }
 
 const LINE_LAST = {
   margin: "0",
-  position: "relative",
   zIndex: "10",
-  borderLeft: "thin solid #EEEEEE",
   left: "25px",
   height: "52px",
   bottom: "12px",
   padding: "0px",
+  position: "relative",
+  borderLeft: `thin solid ${theme.grayscale[200]};`,
 }
 
 const GRID_WRAP = {
-  color: "#EEEEEE",
   padding: "0px",
+  color: theme.grayscale[200],
 }
 
 const NUMBERING_BOX = {
+  padding: "0px",
   display: "flex",
   alignItem: "center",
-  padding: "0px",
 }
 
 const TITLE_BOX = {
+  padding: "0px",
   display: "flex",
-  alignItems: "center",
   flexwrap: "nowrap",
   lineHeight: "140%",
-  padding: "0px",
+  alignItems: "center",
 }
 
-const TITLE_FONT = {
-  fontWeight: "bold",
-  lineHeight: "140%",
-  fontSize: "16px",
-  padding: "0px",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-  maxWidth: "60%",
-}
+const TitleFont = styled(Typography)(
+  ({
+    theme: {
+      textStyles: {
+        title4: { bold },
+      },
+    },
+  }) => ({
+    padding: "0px",
+    maxWidth: "60%",
+    overflow: "hidden",
+    fontWeight: "bold",
+    whiteSpace: "nowrap",
+    lineHeight: bold.lineHeight,
+    fontSize: bold.fontSize,
+    textOverflow: "ellipsis",
+  })
+)
 
 const DES_BOX = {
   width: "100%",
-  display: "flex",
-  justifyContent: "space-between",
-  displayDirection: "column",
-  flexwrap: "nowrap",
-  padding: "0px",
   margin: "0px",
+  padding: "0px",
+  display: "flex",
+  flexwrap: "nowrap",
+  displayDirection: "column",
+  justifyContent: "space-between",
 }
 
 const ICON = {
@@ -324,7 +340,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
           <Grid item xs={10}>
             <Box sx={ITEM_BOX}>
               <Box sx={TITLE_BOX}>
-                <Typography sx={TITLE_FONT}>{placeName}</Typography>
+                <TitleFont>{placeName}</TitleFont>
                 {category && (
                   <Select
                     size="small"
@@ -356,9 +372,7 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
                   />
                 )}
               </Box>
-              <Typography variant="subtitle2" sx={ADDRESS_FONT}>
-                {address}
-              </Typography>
+              <AddressFont>{address}</AddressFont>
             </Box>
           </Grid>
           <Grid item xs={2} sx={ButtonGroup}>
