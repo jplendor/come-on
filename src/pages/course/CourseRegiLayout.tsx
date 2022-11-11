@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 
+import { styled } from "@mui/material/styles"
 import { Box, Typography } from "@mui/material"
 import { ArrowBackIosNewOutlined, Close } from "@mui/icons-material"
 
@@ -30,33 +31,48 @@ const ICON_STYLE = {
 }
 
 const NAVBAR = {
-  position: "sticky",
-  height: "42px",
-  margin: "10px 30px",
   display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
+  height: "42px",
   zIndex: "100",
+  position: "sticky",
+  margin: "10px 30px",
+  alignItems: "center",
+  justifyContent: "center",
 }
 
 const NAVBAR_STYLE2 = {
+  zIndex: "15",
   width: "380px",
   height: "42px",
-  margin: "10px 30px",
   display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
   color: "white",
+  margin: "10px 30px",
+  alignItems: "center",
+  justifyContent: "center",
   backgroundColor: "none",
-  zIndex: "15",
 }
 
 const MIDTITLE = {
-  margin: "0 auto",
   padding: "0",
   display: "flex",
+  margin: "0 auto",
   alignItems: "center",
 }
+
+const MidTitle = styled(Typography)(
+  ({
+    theme: {
+      textStyles: {
+        title3: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    fontWeight: bold.fontWeight,
+    zIndex: "15",
+  })
+)
 
 interface PageState {
   state: number
@@ -95,12 +111,8 @@ const CourseRegiLayout = (): JSX.Element => {
               <ArrowBackIosNewOutlined sx={ICON_STYLE} onClick={onClickPrev} />
             </Box>
             <Box sx={MIDTITLE}>
-              <Typography
+              <MidTitle
                 sx={{
-                  lineHeight: "135%",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  zIndex: "15",
                   color: page !== 4 ? "black" : "white",
                 }}
               >
@@ -111,7 +123,7 @@ const CourseRegiLayout = (): JSX.Element => {
                   : page === 3
                   ? "장소등록"
                   : "미리보기"}
-              </Typography>
+              </MidTitle>
             </Box>
             <Box sx={{ width: "24px", height: "24px", zIndex: "15" }}>
               <Close fontSize="medium" sx={ICON_STYLE} onClick={onClickClose} />

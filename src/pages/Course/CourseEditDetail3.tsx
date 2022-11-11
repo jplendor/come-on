@@ -19,11 +19,7 @@ import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import { useDispatch, useSelector } from "react-redux"
 import theme from "theme"
-import {
-  useAddCoursePlaceMutation,
-  useAddCourseDetailMutation,
-  fetchByIdCourseDetail,
-} from "features/course/courseSlice"
+import { fetchByIdCourseDetail } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"
 import { RootState, AppDispatch } from "store"
@@ -125,19 +121,6 @@ const DesText = styled(Typography)(
 
 window.Buffer = Buffer
 
-const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
-  const arr = dataUrl.split(",")
-  if (arr.length < 2) {
-    return undefined
-  }
-  const mimeArr = arr[0].match(/:(.*?);/)
-  if (!mimeArr || mimeArr.length < 2) {
-    return undefined
-  }
-  const mime = mimeArr[1]
-  const buff = Buffer.from(arr[1], "base64")
-  return new File([buff], filename, { type: mime })
-}
 interface pageProps {
   page: number
   id: number
@@ -152,8 +135,6 @@ const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
   }
   const dispatch = useDispatch<AppDispatch>()
   const [selectedNumber, setselectedNumber] = useState<string>("")
-  const [addCourseDetail] = useAddCourseDetailMutation()
-  const [addCoursePlace] = useAddCoursePlaceMutation()
   const [courseIdProps, setCourseIdProps] = useState<number>()
   const { data: userData, isLoading: isLoadingUser } =
     useMyDetailQuery() as MyDetailQueryProps
@@ -184,68 +165,6 @@ const CourseEditDetail3 = ({ id, setPage, page }: pageProps): JSX.Element => {
     if (page === 4) dis()
   }, [dis, page])
 
-  // 제출용 폼데이터 만드는 함수
-  // base64 => File => blob으로 만들었다.
-  const makeFormData = async (): Promise<FormData> => {
-    const formData = new FormData()
-    formData.append("title", courseDetail.title)
-    formData.append("description", courseDetail.description)
-    const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
-
-    if (myfile !== undefined) {
-      await myfile?.arrayBuffer().then((arrayBuffer) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const blob = new Blob([new Uint8Array(arrayBuffer)], {
-          type: myfile.type,
-        })
-      })
-      formData.append("imgFile", myfile)
-    }
-
-    return formData
-  }
-
-  // async (): Promise<boolean>
-  // 코스 디테일 전송하는 함수
-  const submitCourseDetail = async (): Promise<number> => {
-    const submitData = await makeFormData()
-    const res = await addCourseDetail(submitData).unwrap()
-
-    return Promise.resolve(res.data.courseId)
-  }
-
-  const courseList = useSelector((state: RootState) => {
-    return state.course.coursePlaces
-  })
-
-  const initialPlace = {
-    order: 1,
-    name: "newName",
-    description: "값을 입력해주세요",
-    lng: 38.05248142233915, // 경도 x
-    lat: 127.65930674808553, // 위도 y
-    apiId: 12346,
-    category: "ETC",
-    id: 0,
-  }
-
-  const postData = {
-    toSave: [initialPlace],
-  }
-
-  const submitPlaceList = async (courseId: number): Promise<boolean> => {
-    // map으로 toSave배열에 코스 추가하기
-    // toSave 전처리
-    postData.toSave.pop() // 첫번쨰 데이터 삭제
-    courseList.map((place: CoursePlaceProps) => postData.toSave.push(place))
-
-    await addCoursePlace({ courseId, postData })
-
-    return Promise.resolve(true)
-  }
-
-  // 무한리렌더링 조심 부분
-  // 하트 컴포넌트
   const [isLike, setIsLike] = useState<boolean>(true)
   let likeCount = 999
 

@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux"
 import TextInput from "components/common/input/TextInput"
 import ImageInput from "components/common/input/ImageInput"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
+import { fileToObjectUrl, objectUrlToFile } from "utils"
 
 interface pageProps {
   page: number
@@ -47,11 +48,6 @@ const CourseRegiDetail = ({
     return state.course.courseDetails
   })
 
-  const changeFileToObjectUrl = (file: File): string => {
-    const fileUrl = URL.createObjectURL(file)
-    return fileUrl
-  }
-
   const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setTitle(e.target.value)
   }
@@ -62,7 +58,7 @@ const CourseRegiDetail = ({
 
   const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files) {
-      const imgUrl = changeFileToObjectUrl(e.target.files[0])
+      const imgUrl = fileToObjectUrl(e.target.files[0])
       setImage(imgUrl)
     }
   }
@@ -86,11 +82,6 @@ const CourseRegiDetail = ({
     setIsValid(true)
   }, [description, image, title])
 
-  const changeObjectUrlToFile = async (): Promise<Blob> => {
-    const file = await fetch(image || "").then((r) => r.blob())
-    return file
-  }
-
   const submitCourseDetail = async (): Promise<number> => {
     const newDetail = new FormData()
 
@@ -99,10 +90,12 @@ const CourseRegiDetail = ({
     newDetail.append("title", title)
     newDetail.append("description", description)
     if (image) {
-      const imgFile = await changeObjectUrlToFile()
+      const imgFile = await objectUrlToFile(image)
       newDetail.append("imgFile", imgFile)
     }
+
     const res = await addCourseDetail(newDetail).unwrap()
+
     return Promise.resolve(res.data.courseId)
   }
 
@@ -121,7 +114,7 @@ const CourseRegiDetail = ({
       newDetail.append("description", description)
 
       if (image) {
-        const imgFile = await changeObjectUrlToFile()
+        const imgFile = await objectUrlToFile(image)
         newDetail.append("imgFile", imgFile)
       }
 

@@ -118,7 +118,6 @@ const SearchPlace = ({
   page,
 }: SearchPlaceProps): JSX.Element => {
   const [myLevel, setMyLevel] = useState(5)
-
   const { geoState } = useGeolocation()
   const [myLatLng, setMyLatLng] = useState([
     geoState.info.lat,

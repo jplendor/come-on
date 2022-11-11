@@ -16,7 +16,7 @@ import { AppDispatch } from "store"
 import { useDispatch } from "react-redux"
 
 import { Grid } from "@mui/material"
-
+import { fileToObjectUrl } from "utils"
 import TextInput from "components/common/input/TextInput"
 import ImageInput from "components/common/input/ImageInput"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
@@ -62,19 +62,11 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     setIsValid(true)
   }, [description, image, title])
 
-  const changeFileToObjectUrl = (file: File): string => {
-    const fileUrl = URL.createObjectURL(file)
-
-    return fileUrl
-  }
-
   const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files) {
-      console.log(e.target.files)
-      const a = changeFileToObjectUrl(e.target.files[0])
+      const img = fileToObjectUrl(e.target.files[0])
       setImageFile(e.target.files[0])
-      console.log(a)
-      setImage(String(a))
+      setImage(String(img))
     }
   }
 

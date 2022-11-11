@@ -14,7 +14,6 @@ import { QueryProps } from "components/common/BasicFrame/BasicFrame"
 import PlaceDetailCard from "components/common/card/PlaceDetailCard"
 import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 import { CoursePlaceProps, PlaceType } from "types/API/course-service"
-import { useAddCoursePlaceMutation } from "features/course/courseSlice"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
@@ -39,12 +38,20 @@ const ImgContainer = styled(Box)(() => ({
   top: "-60px",
 }))
 
-const FONT_TITLE = {
-  fontSize: "22px",
-  fontWeight: "bold",
-  marginTop: "10px",
-  margin: "auto 0",
-}
+const FontTitle = styled(Typography)(
+  ({
+    theme: {
+      textStyles: {
+        title2: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    fontWeight: bold.fontWeight,
+    marginTop: "10px",
+    margin: "auto 0",
+  })
+)
 
 const ICON_BOX = {
   lineHegiht: "145%",
@@ -115,12 +122,12 @@ interface pageProps {
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
+  const [isSubmit, setIsSubmit] = useState<boolean>(false)
+  const [selectedNumber, setselectedNumber] = useState<string>("")
   interface MyDetailQueryProps extends QueryProps {
     data: MydetailRes
   }
   const navigate = useNavigate()
-  const [selectedNumber, setselectedNumber] = useState<string>("")
-  const [addCoursePlace] = useAddCoursePlaceMutation()
   const { data: userData, isLoading: isLoadingUser } =
     useMyDetailQuery() as MyDetailQueryProps
 
@@ -130,7 +137,6 @@ const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-  const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
@@ -141,37 +147,8 @@ const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
     }
   }
 
-  const courseList = useSelector((state: RootState) => {
-    return state.course.coursePlaces
-  })
-
   const onClickModify = (): void => {
     setPage(1)
-  }
-
-  const initialPlace = {
-    order: 1,
-    name: "newName",
-    description: "값을 입력해주세요",
-    lng: 38.05248142233915, // 경도 x
-    lat: 127.65930674808553, // 위도 y
-    apiId: 12346,
-    category: "ETC",
-  }
-
-  const postData = {
-    toSave: [initialPlace],
-  }
-
-  const submitPlaceList = async (courseId: number): Promise<boolean> => {
-    // map으로 toSave배열에 코스 추가하기
-    // toSave 전처리
-    postData.toSave.pop() // 첫번쨰 데이터 삭제
-    courseList.map((place: CoursePlaceProps) => postData.toSave.push(place))
-
-    await addCoursePlace({ courseId, postData })
-
-    return Promise.resolve(true)
   }
 
   // 하트 컴포넌트
@@ -186,13 +163,12 @@ const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
   const onClickLike = (): void => {
     setIsLike(!isLike)
   }
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     likeCount = changeLikeCount()
   }, [isLike])
-  // 제출
+
   const submit = async (): Promise<boolean> => {
-    await submitPlaceList(id)
     setIsSubmit(true)
     return Promise.resolve(true)
   }
@@ -223,9 +199,7 @@ const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
         <MainContainer>
           <TitleContainer>
             <Box className="Title" sx={TITLE}>
-              <Typography variant="h5" sx={FONT_TITLE}>
-                {courseDetail?.title}
-              </Typography>
+              <FontTitle>{courseDetail?.title}</FontTitle>
               {likeCount && (
                 <LikeButton
                   isLike={isLike!}
