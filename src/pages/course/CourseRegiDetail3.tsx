@@ -230,7 +230,6 @@ const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
               selectedNumber={selectedNumber}
               placeLists={placeList}
               isSuccess
-              isLoading={false}
             />
           )}
 

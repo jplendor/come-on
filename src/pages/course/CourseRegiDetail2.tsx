@@ -24,7 +24,11 @@ import { generateComponent, getReorderedPlaces } from "utils"
 import MapContainer from "components/common/course/MapContainer"
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
 import AddCourseBox from "components/common/course/AddCourseBox"
-import { CoursePlace, CoursePlaceProps } from "types/API/course-service"
+import {
+  CoursePlace,
+  CoursePlaceProps,
+  PlaceType,
+} from "types/API/course-service"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
 
@@ -34,11 +38,6 @@ const MainContainer = styled(Box)(() => ({
 }))
 const MAIN_CONTAINER = {
   padding: "20px",
-}
-
-enum PlaceType {
-  m = "meeting",
-  c = "course",
 }
 
 interface pageProps {
@@ -142,7 +141,6 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
             selectedNumber={selectedNumber}
             placeLists={placeList}
             isSuccess={placeList !== undefined}
-            isLoading={placeList === undefined}
           />
         )}
         <DragDropContext onDragEnd={onDragEnd}>

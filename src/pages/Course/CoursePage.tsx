@@ -18,6 +18,7 @@ import {
   useClickLikeCourseMutation,
   useGetCourseDetailQuery,
 } from "features/course/courseSlice"
+import { PlaceType } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -62,10 +63,10 @@ const ICON_STYLE = {
 }
 
 const SUBTITLE = {
-  lineHegiht: "145%",
   margin: "10px 0",
   display: "flex",
   flexWrap: "nowrap",
+  lineHegiht: "145%",
   justifyContent: "flex-start",
 }
 
@@ -94,11 +95,6 @@ interface CoursePlaceState {
   address: string
 }
 
-enum PlaceType {
-  m = "meeting",
-  c = "course",
-}
-
 interface errorType {
   data: {
     code: string
@@ -119,7 +115,6 @@ const CoursePage = (): JSX.Element => {
   const {
     data: resultCourseDetail,
     isSuccess,
-    isLoading,
     isFetching,
     error: err,
   } = useGetCourseDetailQuery(id)
@@ -257,7 +252,6 @@ const CoursePage = (): JSX.Element => {
               selectedNumber={String(selectedNumber)}
               placeLists={loadData}
               isSuccess={isSuccess}
-              isLoading={isLoading}
             />
           )}
 

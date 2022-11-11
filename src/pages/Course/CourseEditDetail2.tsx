@@ -22,7 +22,11 @@ import { useDispatch, useSelector } from "react-redux"
 import { generateComponent, getReorderedPlaces } from "utils"
 import AddCourseBox from "components/common/course/AddCourseBox"
 import MapContainer from "components/common/course/MapContainer"
-import { CoursePlace, CoursePlaceProps } from "types/API/course-service"
+import {
+  CoursePlace,
+  CoursePlaceProps,
+  PlaceType,
+} from "types/API/course-service"
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
@@ -39,10 +43,6 @@ const MainContainer = styled(Box)(() => ({
 
 const MAIN_CONTAINER = {
   padding: "20px",
-}
-enum PlaceType {
-  m = "meeting",
-  c = "course",
 }
 
 interface pageProps {
