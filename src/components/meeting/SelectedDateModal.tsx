@@ -10,9 +10,13 @@ import {
 } from "@mui/material"
 
 import { generateComponent } from "utils"
-import { useGetMeetingDateQuery } from "features/meeting/meetingSlice"
+import {
+  useGetMeetingDateQuery,
+  useUpdateMeetingDateMutation,
+} from "features/meeting/meetingSlice"
 import theme from "theme"
 import styled from "@emotion/styled"
+import { DateStatusType } from "types/API/meeting-service"
 
 interface TargetDateInfo {
   date: string
@@ -95,25 +99,46 @@ const getDayOfWeek = (date: string): string => {
 }
 
 const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
-  const { open, onClose, meetingId, targetDateInfo, totalMemberNumber } = props
+  const {
+    open,
+    onClose,
+    meetingId,
+    targetDateInfo: { date: targetDate, dateId },
+    totalMemberNumber,
+  } = props
 
   let content
 
-  const skip = targetDateInfo.dateId === 0
+  const skip = dateId === 0
 
   const {
     data: response,
     isFetching,
     isSuccess,
   } = useGetMeetingDateQuery(
-    { meetingId, dateId: targetDateInfo.dateId },
-    { skip }
+    { meetingId, dateId },
+    { skip, refetchOnMountOrArgChange: true }
   )
+
+  const [updateMeetingDateMutation] = useUpdateMeetingDateMutation()
+
+  const handleClick = async (dateStatus: DateStatusType): Promise<void> => {
+    const isFixed = dateStatus === DateStatusType.FIXED
+
+    const res = updateMeetingDateMutation({
+      meetingId: Number(meetingId),
+      dateId,
+      updatedDate: {
+        dateStatus: isFixed ? DateStatusType.UNFIXED : DateStatusType.FIXED,
+      },
+    }).unwrap()
+  }
 
   const makeContent = (
     date: string,
     userCount: number,
-    dateUsers: Array<any>
+    dateUsers: Array<any>,
+    dateStatus: DateStatusType
   ): any => {
     return (
       <Dialog
@@ -161,8 +186,17 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
                 {"가능 인원 : "} <Count> {userCount}</Count>
                 {` / ${totalMemberNumber}`}
               </Typography>
-              <Button variant="contained" fullWidth sx={{ height: "48px" }}>
-                모임 날짜로 확정하기
+              <Button
+                variant="contained"
+                fullWidth
+                sx={{ height: "48px" }}
+                onClick={() => {
+                  handleClick(dateStatus)
+                }}
+              >
+                {dateStatus === DateStatusType.FIXED
+                  ? "모임 날짜 확정 취소하기"
+                  : "모임 날짜로 확정하기"}
               </Button>
             </Box>
           </>
@@ -171,7 +205,7 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
     )
   }
 
-  content = makeContent(targetDateInfo.date, 0, [])
+  content = makeContent(targetDate, 0, [], DateStatusType.FIXED)
 
   if (isFetching) {
     content = (
@@ -190,12 +224,10 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
       </Dialog>
     )
   } else if (isSuccess) {
-    const { data: meetingDate } = response
-    content = makeContent(
-      meetingDate.date,
-      meetingDate.userCount,
-      meetingDate.dateUsers
-    )
+    const {
+      data: { date, userCount, dateUsers, dateStatus },
+    } = response
+    content = makeContent(date, userCount, dateUsers, dateStatus)
   }
 
   return <Box>{content}</Box>

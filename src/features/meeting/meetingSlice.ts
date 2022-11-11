@@ -18,6 +18,7 @@ import {
   MeetingUserForUpdate,
   MeetingUserForCreate,
   MeetingUserForCreateSuccess,
+  MeetingDateForUpdate,
 } from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
@@ -82,6 +83,18 @@ export const meetingApiSlice = api.injectEndpoints({
         url: `/meetings/${meetingDate.meetingId}/dates`,
         method: "POST",
         body: { date: meetingDate.date },
+      }),
+      invalidatesTags: ["Meeting"],
+    }),
+    // 모임 날짜 수정
+    updateMeetingDate: builder.mutation<
+      ServerResponse<null>,
+      MeetingDateForUpdate
+    >({
+      query: (meetingDate) => ({
+        url: `/meetings/${meetingDate.meetingId}/dates/${meetingDate.dateId}`,
+        method: "PATCH",
+        body: meetingDate.updatedDate,
       }),
       invalidatesTags: ["Meeting"],
     }),
@@ -174,6 +187,7 @@ export const {
   useCreateMeetingMutation,
   useGetMeetingQuery,
   useCreateMeetingDateMutation,
+  useUpdateMeetingDateMutation,
   useDeleteMeetingDateMutation,
   useGetMeetingDateQuery,
   useGetMeetingListQuery,

@@ -158,7 +158,7 @@ const Calendar = ({ meetingInfo }: any): JSX.Element => {
 
   // 임시 스타일
   const FIXED = {
-    border: "solid 3px green",
+    backgroundColor: `${theme.palette.secondary.main}` as string,
   }
 
   const getAllDates = useCallback(

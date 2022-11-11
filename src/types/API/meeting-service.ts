@@ -87,11 +87,11 @@ export interface User {
   meetingRole: RoleType
 }
 
-enum DateStatusType {
+export enum DateStatusType {
   FIXED = "FIXED",
   UNFIXED = "UNFIXED",
 }
-interface MeetingDate {
+export interface MeetingDate {
   id: number
   date: string
   userCount: number
@@ -124,6 +124,11 @@ export interface Meeting {
 export interface MeetingDateForCreate {
   meetingId: number
   date: string
+}
+export interface MeetingDateForUpdate {
+  meetingId: number
+  dateId: number
+  updatedDate: { dateStatus: DateStatusType }
 }
 
 export interface MeetingDateForDelete {
