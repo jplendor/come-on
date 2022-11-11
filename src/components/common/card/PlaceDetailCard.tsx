@@ -3,7 +3,7 @@ import React, { useState } from "react"
 import { Box, Grid, GridProps, IconButton, Typography } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { KeyboardArrowRight, Edit } from "@mui/icons-material"
-import { PlaceType } from "types/API/course-service"
+import { Place, PlaceType } from "types/API/course-service"
 import theme from "theme"
 import PlaceDetailEditCard from "./PlaceDetailEditCard"
 
@@ -216,17 +216,6 @@ export interface ListDetailCardProp {
   titleBody: string
   titleBottom: string
 }
-interface Place {
-  id: number
-  order: number
-  name: string
-  lng: number // 경도 x
-  lat: number // 위도 y
-  apiId: number
-  category: string
-  address: string
-}
-
 interface CoursePlace extends Place {
   description: string
 }
@@ -235,15 +224,15 @@ interface MeetingPlace extends Place {
   memo: string
 }
 interface ListDetailCardProps {
-  item: CoursePlace | MeetingPlace
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
-  isSelected: boolean
-  onRemove?: (index: number) => void
+  // eslint-disable-next-line react/require-default-props
+  courseId?: number
   maxLen: number
   mode: PlaceType
   isEditable: boolean
-  // eslint-disable-next-line react/require-default-props
-  courseId?: number
+  isSelected: boolean
+  item: CoursePlace | MeetingPlace
+  onRemove?: (index: number) => void
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
 }
 
 const PlaceDetailCard: React.FC<ListDetailCardProps> = ({

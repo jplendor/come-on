@@ -2,7 +2,7 @@
 import { styled } from "@mui/material/styles"
 import { Draggable } from "react-beautiful-dnd"
 import React, { useEffect, useState } from "react"
-import { PlaceType } from "types/API/course-service"
+import { Place, PlaceType } from "types/API/course-service"
 import PlaceEditModal from "components/meeting/PlaceEditModal"
 import { KeyboardArrowRight, Edit, Close } from "@mui/icons-material"
 import { Box, Grid, GridProps, IconButton, Typography } from "@mui/material"
@@ -216,16 +216,6 @@ export interface ListDetailCardProp {
   titleTop: string
   titleBody: string
   titleBottom: string
-}
-export interface Place {
-  id: number
-  order: number
-  name: string
-  lng: number // 경도 x
-  lat: number // 위도 y
-  apiId: number
-  category: string
-  address: string
 }
 
 interface CoursePlace extends Place {

@@ -12,7 +12,7 @@ import {
 
 import { styled } from "@mui/material/styles"
 import PlaceAddModal from "components/meeting/PlaceAddModal"
-import { SearchCardProp } from "types/API/course-service"
+import { Place, PlaceType, SearchCardProp } from "types/API/course-service"
 
 const SELECTED_CARD = {
   padding: "0px",
@@ -51,12 +51,20 @@ const ITEM_BOX = {
   padding: "16px 20px 0px 20px",
 }
 
-const TITLE_FONT = {
-  fontWeight: "bold",
-  lineHeight: "135%",
-  fontSize: "18px",
-  padding: "0px",
-}
+const FontTitle = styled(Typography)(
+  ({
+    theme: {
+      textStyles: {
+        title2: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    fontWeight: bold.fontWeight,
+    lineHeight: bold.lineHeight,
+    padding: "0px",
+  })
+)
 
 const TITLE_BOX = {
   display: "flex",
@@ -66,12 +74,6 @@ const TITLE_BOX = {
   alignItems: "center",
   margin: "0px",
   padding: "0px",
-}
-
-enum PlaceType {
-  m = "meeting",
-  c = "course",
-  e = "editing",
 }
 
 interface ListDetailCardProps {
@@ -84,18 +86,6 @@ interface ListDetailCardProps {
   itemsLen?: number
   page?: number
   setPage?: Dispatch<SetStateAction<number>>
-}
-
-export interface Place {
-  id: number
-  order: number
-  name: string
-  description: string
-  lng: number
-  lat: number
-  apiId: number
-  category: string
-  address: string
 }
 
 /* eslint camelcase: ["error", {properties: "never"}] */
@@ -152,12 +142,6 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
     )
 
     if (result === true) setOpen(true)
-
-    // console.log(result, "안녕")
-    // console.log(typeof result)
-    // if (result === true) {
-
-    // }
   }
 
   const onClickAddMeeting = (): void => {
@@ -187,9 +171,7 @@ const SearchCard: React.FC<ListDetailCardProps> = ({
         >
           <Grid item xs={12} sx={TITLE_BOX}>
             <Box sx={ITEM_BOX}>
-              <Typography variant="h6" sx={TITLE_FONT}>
-                {obj.placeName}
-              </Typography>
+              <FontTitle>{obj.placeName}</FontTitle>
               <AddressFont>
                 {obj.addressName}
                 <IconButton aria-label="edit this" color="secondary" />

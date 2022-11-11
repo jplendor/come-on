@@ -12,7 +12,7 @@ import {
   TypographyProps,
 } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { PlaceType } from "types/API/course-service"
+import { Place, PlaceType } from "types/API/course-service"
 import { Close } from "@mui/icons-material"
 import { generateComponent } from "utils"
 import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
@@ -177,18 +177,18 @@ const DES_BOX = {
 const ICON = {
   width: "14px",
   height: "14px",
-  fontSize: "14px",
   margin: "0px",
   padding: "0px",
-  color: "#BDBDBD",
+  color: theme.grayscale[400],
+  fontSize: "14px",
 }
 
 const ButtonGroup = {
   display: "flex",
-  flexDirection: "column",
-  alignItems: "end",
-  justifyContent: "space-between",
   p: "10px",
+  alignItems: "end",
+  flexDirection: "column",
+  justifyContent: "space-between",
 }
 
 export interface ListDetailCardProp {
@@ -196,16 +196,6 @@ export interface ListDetailCardProp {
   titleTop: string
   titleBody: string
   titleBottom: string
-}
-interface Place {
-  id: number
-  order: number
-  name: string
-  lng: number // 경도 x
-  lat: number // 위도 y
-  apiId: number
-  category: string
-  address: string
 }
 
 interface CoursePlace extends Place {
@@ -215,12 +205,12 @@ interface CoursePlace extends Place {
 interface MeetingPlace extends Place {
   memo: string
 }
+
 interface PlaceDetailEditCard {
   item: CoursePlace | MeetingPlace
   isSelected: boolean
   maxLen: number
   mode: PlaceType
-  // course일 경우에만 courseId가 필요함, 따라서 type.c일경우 무조건 들어옴
   // eslint-disable-next-line react/require-default-props
   courseId?: number
   setIsEditing: Dispatch<SetStateAction<boolean>>
@@ -235,11 +225,10 @@ const PlaceDetailEditCard: React.FC<PlaceDetailEditCard> = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   courseId,
 }) => {
-  const { order: index, name: placeName, address } = item
-
-  const [category, setCategory] = useState<string>()
   const [memo, setMemo] = useState<string>()
+  const [category, setCategory] = useState<string>()
   const [description, setDescription] = useState<string>()
+  const { order: index, name: placeName, address } = item
 
   useEffect(() => {
     setCategory(

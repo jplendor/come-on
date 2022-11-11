@@ -1,7 +1,5 @@
 // Course-Service API Docs 참고
 
-import { Server } from "http"
-
 export interface CoursePlace {
   order: number
   name: string
@@ -146,6 +144,19 @@ export interface CourseDetail {
     }
   ]
 }
+
+// 카테고리와 메모가 없는 place
+export interface Place {
+  id: number
+  order: number
+  name: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  apiId: number
+  category: string
+  address: string
+}
+
 /**
  * 코스 업데이트 및 삭제
  */
