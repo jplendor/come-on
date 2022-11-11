@@ -5,6 +5,7 @@ import authSlice from "features/auth/authSlice"
 import geoSlice from "features/geolocation/geoSlice"
 import navigateSlice from "features/navigate/navigateSlice"
 import coursePlaceSlice from "features/course/courseSlice"
+import meetingSlice from "features/meeting/meetingSlice"
 
 const rootReducer = combineReducers({
   [api.reducerPath]: api.reducer,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   geolocation: geoSlice,
   auth: authSlice,
   course: coursePlaceSlice,
+  meeting: meetingSlice,
 })
 
 export const store = configureStore({

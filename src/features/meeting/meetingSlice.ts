@@ -1,3 +1,4 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { api } from "features/api/apiSlice"
 
 import {
@@ -197,3 +198,16 @@ export const {
   useUpdateMeetingUserMutation,
   useInviteMeetingUserMutation,
 } = meetingApiSlice
+
+export const meetingSlice = createSlice({
+  name: "meeting",
+  initialState: { myMeetingRole: "" },
+  reducers: {
+    setMeetingData: (state, action: PayloadAction<string>) => {
+      state.myMeetingRole = action.payload
+    },
+  },
+})
+
+export const { setMeetingData } = meetingSlice.actions
+export default meetingSlice.reducer

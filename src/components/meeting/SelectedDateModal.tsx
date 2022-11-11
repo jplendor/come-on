@@ -17,6 +17,8 @@ import {
 import theme from "theme"
 import styled from "@emotion/styled"
 import { DateStatusType } from "types/API/meeting-service"
+import { useSelector } from "react-redux"
+import { RootState } from "store"
 
 interface TargetDateInfo {
   date: string
@@ -107,6 +109,10 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
     totalMemberNumber,
   } = props
 
+  const myMeetingRole = useSelector((state: RootState) => {
+    return state.meeting.myMeetingRole
+  })
+
   let content
 
   const skip = dateId === 0
@@ -178,26 +184,24 @@ const SelectedDateModal = (props: SelectedDateModalProps): JSX.Element => {
               </Grid>
             </Grid>
             <Box sx={SUMMARY}>
-              <Typography
-                variant="subtitle1"
-                fontWeight="bold"
-                sx={{ mb: "16px" }}
-              >
+              <Typography variant="subtitle1" fontWeight="bold">
                 {"가능 인원 : "} <Count> {userCount}</Count>
                 {` / ${totalMemberNumber}`}
               </Typography>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{ height: "48px" }}
-                onClick={() => {
-                  handleClick(dateStatus)
-                }}
-              >
-                {dateStatus === DateStatusType.FIXED
-                  ? "모임 날짜 확정 취소하기"
-                  : "모임 날짜로 확정하기"}
-              </Button>
+              {myMeetingRole === "HOST" && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{ height: "48px", mt: "16px" }}
+                  onClick={() => {
+                    handleClick(dateStatus)
+                  }}
+                >
+                  {dateStatus === DateStatusType.FIXED
+                    ? "모임 날짜 확정 취소하기"
+                    : "모임 날짜로 확정하기"}
+                </Button>
+              )}
             </Box>
           </>
         )}

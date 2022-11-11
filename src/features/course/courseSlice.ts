@@ -238,7 +238,7 @@ export const fetchByIdCourseDetail = createAsyncThunk<
 >(
   "coursePlace/fetchByIdCourseDetail",
   async (id, { dispatch }): Promise<CourseDetail> => {
-    const { data, error } = await dispatch(
+    const { data } = await dispatch(
       getCourseDetail.initiate(id, { forceRefetch: true })
     )
     const resData = data?.data

@@ -15,6 +15,7 @@ import { generateComponent, getReorderedPlaces } from "utils"
 import { useTheme } from "@mui/material/styles"
 import Calendar from "components/meeting/Calendar"
 import {
+  setMeetingData,
   useDeleteMeetingPlaceMutation,
   useGetMeetingQuery,
   useUpdateMeetingPlaceMutation,
@@ -147,6 +148,7 @@ const MeetingEdit = (): JSX.Element => {
   } else if (isSuccess) {
     const { data: meeting } = response
 
+    dispatch(setMeetingData(meeting.myMeetingRole))
     const isHost = meeting.myMeetingRole === "HOST"
     const isEditable = isHost || meeting.myMeetingRole === "EDITOR"
 
