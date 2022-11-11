@@ -9,15 +9,16 @@ import React, {
   SetStateAction,
 } from "react"
 
-import ReactDOMServer from "react-dom/server"
-import { InputAdornment, TextField, Box, Typography } from "@mui/material"
-import { ContentCopyRounded, Search } from "@mui/icons-material"
-import { styled } from "@mui/material/styles"
-import Slide from "@mui/material/Slide"
-import SearchCard from "components/common/card/SearchCard"
-import { SearchCardProp } from "types/API/course-service"
-import useGeolocation from "hooks/geolocation/useGeolocation"
+import theme from "theme"
 import "./Customoverlay.css"
+import Slide from "@mui/material/Slide"
+import { Search } from "@mui/icons-material"
+import ReactDOMServer from "react-dom/server"
+import { styled } from "@mui/material/styles"
+import SearchCard from "components/common/card/SearchCard"
+import useGeolocation from "hooks/geolocation/useGeolocation"
+import { PlaceType, SearchCardProp } from "types/API/course-service"
+import { InputAdornment, TextField, Box, Typography } from "@mui/material"
 
 const { kakao } = window
 const DELAY = 800
@@ -43,12 +44,6 @@ export interface MapProps {
   title: string
   position: any
   content: string
-}
-
-enum PlaceType {
-  m = "meeting",
-  c = "course",
-  e = "editMode",
 }
 
 const MyMarker = ({
@@ -112,10 +107,10 @@ interface SearchPlaceProps {
 
 const SearchPlace = ({
   mode,
-  editMode,
   id,
-  setPage,
   page,
+  setPage,
+  editMode,
 }: SearchPlaceProps): JSX.Element => {
   const [myLevel, setMyLevel] = useState(5)
   const { geoState } = useGeolocation()
@@ -125,13 +120,12 @@ const SearchPlace = ({
   ])
   const containerRef = React.useRef(null)
   const [open, setOpen] = useState(false)
+  const [isSearch, setIsSearch] = useState(false)
+  const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
   const [selectedNumber, setselectedNumber] = useState("")
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [selectedData, setSelectedData] = useState<ListDetailCardProp>()
-
-  const [isSearch, setIsSearch] = useState(false)
-  const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
 
   // 검색창을 이용해 키워드를 검색
   const handleSearchBar = (): void => {
@@ -145,8 +139,22 @@ const SearchPlace = ({
     } else setselectedNumber("")
   }
 
-  // 디바운싱 함수
+  const FontTitle = styled(Typography)(
+    ({
+      theme: {
+        textStyles: {
+          title4: { bold },
+        },
+      },
+    }) => ({
+      fontSize: bold.fontSize,
+      lineHeight: bold.lineHeight,
+      fontWeight: bold.fontWeight,
+      marginBottom: "12px",
+    })
+  )
 
+  // 디바운싱 함수
   // 검색창에서 엔터키를 칠때만 검색되도록 설정 - 모바일에서 문제 생기는지 확인
   const onKeyPress = (keyValue: string): void => {
     if (keyValue === "Enter") {
@@ -171,12 +179,11 @@ const SearchPlace = ({
     debounceFunc((value: string) => onKeyPress(value), DELAY),
     [inputedKeyword]
   )
+
   const eventHandler = (e: React.KeyboardEvent): void => {
     setIsSearch(true)
     search(e.key)
   }
-
-  // 리스트 클릭했을 시 색 바뀌는 함수 + 목록에 추가되도록
 
   // 마커를 맵에 표시
   const displayMarker = (map: any, place: any): void => {
@@ -206,18 +213,12 @@ const SearchPlace = ({
       setOpen(true)
 
       map.panTo(new kakao.maps.LatLng(place.y, place.x))
-
-      // infowindow.setContent(renderedMarger)
-      // infowindow.open(map, marker)
     })
 
     marker.setMap(map)
   }
 
-  // eslint-disable-next-line prefer-const
-
   useEffect(() => {
-    // const infowindow = new kakao.maps.InfoWindow({ zIndex: 1 })
     const container = mapContainer.current
 
     const options = {
@@ -248,7 +249,6 @@ const SearchPlace = ({
     kakao.maps.event.addListener(
       map,
       "dragend",
-      // eslint-disable-next-line func-names
       async function (): Promise<void> {
         const level = await map.getLevel()
         const latlng = map.getCenter()
@@ -278,23 +278,14 @@ const SearchPlace = ({
     <>
       <header>{/* 검색창 만들기 */}</header>
       <Box sx={{ padding: "20px" }} ref={containerRef}>
-        <Typography
-          sx={{
-            marginBottom: "12px",
-            fontSize: "16px",
-            lineHeight: "140%",
-            fontWeight: "bold",
-          }}
-        >
-          장소검색
-        </Typography>
+        <FontTitle>장소검색</FontTitle>
         <SearchBar
           sx={{
             width: "100%",
             margin: "0px",
             padding: "0px 0px",
             border: "1px solid #EEEEEE",
-            backgroundColor: "#F5F5F5",
+            backgroundColor: theme.grayscale[100],
           }}
           size="small"
           id="tfSearch"

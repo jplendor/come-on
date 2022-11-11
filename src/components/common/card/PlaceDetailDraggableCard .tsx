@@ -211,12 +211,6 @@ const CATEGORY_BOX = {
   justifyContent: "center",
   backgroundColor: theme.grayscale[200],
 }
-export interface ListDetailCardProp {
-  index: number
-  titleTop: string
-  titleBody: string
-  titleBottom: string
-}
 
 interface CoursePlace extends Place {
   description: string
@@ -226,13 +220,13 @@ interface MeetingPlace extends Place {
   memo: string
 }
 interface ListDetailCardProps {
-  item: CoursePlace | MeetingPlace
-  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
-  isSelected: boolean
-  onRemove: (index: number) => void
   maxLen: number
-  editing?: boolean
   mode: PlaceType
+  editing?: boolean
+  isSelected: boolean
+  item: CoursePlace | MeetingPlace
+  onRemove: (index: number) => void
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void
   // eslint-disable-next-line react/require-default-props
 }
 
@@ -299,7 +293,6 @@ const PlaceDetailDraggableCard: React.FC<ListDetailCardProps> = ({
 
     return korCategory
   }
-  /* //draggable */
 
   return (
     <Draggable draggableId={`${item.id}`} index={item.order - 1}>

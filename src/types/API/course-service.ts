@@ -57,6 +57,13 @@ export interface CoursePlaceProps {
   category: string
 }
 
+export interface ListDetailCardProp {
+  index: number
+  titleTop: string
+  titleBody: string
+  titleBottom: string
+}
+
 export interface GetCoursePlacesRes {
   count: number
   contents: CoursePlaceProps[]

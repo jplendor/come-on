@@ -191,13 +191,6 @@ const ButtonGroup = {
   justifyContent: "space-between",
 }
 
-export interface ListDetailCardProp {
-  index: number
-  titleTop: string
-  titleBody: string
-  titleBottom: string
-}
-
 interface CoursePlace extends Place {
   description: string
 }

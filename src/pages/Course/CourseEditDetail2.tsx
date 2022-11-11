@@ -150,7 +150,6 @@ const CourseEditDetail2 = ({ id, setPage }: pageProps): JSX.Element => {
             selectedNumber={selectedNumber}
             placeLists={placeList}
             isSuccess={placeList !== undefined}
-            isLoading={placeList === undefined}
           />
         )}
         <IconContainer />

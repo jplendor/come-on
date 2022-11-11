@@ -3,13 +3,10 @@
 /* global kakao */
 
 import React, { useEffect, useRef, useState } from "react"
-import Face, { CollectionsOutlined } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { Box, Button } from "@mui/material"
 import ReactDOMServer from "react-dom/server"
-import { CoursePlace, SearchCardProp } from "types/API/course-service"
-import zIndex from "@mui/material/styles/zIndex"
-import KakaoComponent from "./KakaoComponent"
+import { CoursePlace } from "types/API/course-service"
 import MarkerOveray from "./MarkerOveray"
 
 const { kakao } = window
@@ -37,13 +34,12 @@ const createMarker: any = (
 }
 
 export interface MapContainerProps {
+  isSuccess: boolean
   selectedNumber: string
   placeLists: CoursePlace[]
-  isSuccess: boolean
-  isLoading: boolean
 }
-// {첫번째 데이터를 중심으로 잡기}
 
+// {첫번째 데이터를 중심으로 잡기}
 const makeData = (placeLists: Array<CoursePlace>): MapProps[] => {
   const arr = placeLists as Array<CoursePlace>
 
@@ -63,7 +59,6 @@ const MapContainer = ({
   selectedNumber,
   placeLists,
   isSuccess,
-  isLoading,
 }: MapContainerProps): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
   const [totalView, setTotalView] = useState<boolean>(true)
@@ -76,7 +71,6 @@ const MapContainer = ({
 
     const bounds = new kakao.maps.LatLngBounds()
     if (placeLists !== undefined && selectedNumber === "") {
-      console.log(placeLists)
       placeLists.map((place) =>
         bounds.extend(new kakao.maps.LatLng(place.lat, place.lng))
       )
