@@ -1,26 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState, SetStateAction, Dispatch, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { MydetailRes } from "types/API/user-service"
-import { toStringYyyymmdd, generateComponent } from "utils"
-
-import { useMyDetailQuery } from "features/user/userSlice"
-import { styled } from "@mui/material/styles"
-
-import { Box, Typography } from "@mui/material"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-
-import { useSelector } from "react-redux"
-import { RootState } from "store"
-import { useAddCoursePlaceMutation } from "features/course/courseSlice"
-
 import { Buffer } from "buffer"
-import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
-import PlaceDetailCard from "components/common/card/PlaceDetailCard"
-import { CoursePlaceProps, PlaceType } from "types/API/course-service"
+import { RootState } from "store"
+import { useSelector } from "react-redux"
+import { styled } from "@mui/material/styles"
+import { useNavigate } from "react-router-dom"
+import { Box, Typography } from "@mui/material"
+import { MydetailRes } from "types/API/user-service"
+import { useMyDetailQuery } from "features/user/userSlice"
+import { toStringYyyymmdd, generateComponent } from "utils"
 import MapContainer from "components/common/course/MapContainer"
 import { QueryProps } from "components/common/BasicFrame/BasicFrame"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
+import { CoursePlaceProps, PlaceType } from "types/API/course-service"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -32,7 +27,7 @@ const MainContainer = styled(Box)(() => ({
   margin: "0px 20px 16px 20px",
   flexDirection: "column",
   position: "relative",
-  top: "-40px",
+  top: "-50px",
 }))
 
 const ImgContainer = styled(Box)(() => ({
@@ -43,17 +38,20 @@ const ImgContainer = styled(Box)(() => ({
   top: "-60px",
 }))
 
-const FONT_TITLE = {
-  fontSize: "22px",
-  fontWeight: "bold",
-  margin: "auto 0",
-}
-
-const FONT_SUBTITLE = {
-  fontSize: "13px",
-  lineHeight: "145%",
-  color: "#9E9E9E",
-}
+const FontTitle = styled(Typography)(
+  ({
+    theme: {
+      textStyles: {
+        title2: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    fontWeight: bold.fontWeight,
+    marginTop: "10px",
+    margin: "auto 0",
+  })
+)
 
 const ICON_BOX = {
   lineHegiht: "145%",
@@ -84,45 +82,52 @@ const TITLE = {
   justifyContent: "space-between",
 }
 
-const DES_STYLE = {
-  fontSize: "14px",
-  lineHeight: "140%",
-  color: "#616161",
-}
+const DesText = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body1: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    color: grayscale[700],
+    margin: "auto 5px",
+  })
+)
+
+const FontSubtitle = styled(Typography)(
+  ({
+    theme: {
+      grayscale,
+      textStyles: {
+        body2: { bold },
+      },
+    },
+  }) => ({
+    fontSize: bold.fontSize,
+    lineHeight: bold.lineHeight,
+    color: grayscale[500],
+  })
+)
 
 window.Buffer = Buffer
 
-// const dataUrlToFile = (dataUrl: string, filename: string): File | undefined => {
-//   const arr = dataUrl.split(",")
-//   if (arr.length < 2) {
-//     return undefined
-//   }
-//   const mimeArr = arr[0].match(/:(.*?);/)
-//   if (!mimeArr || mimeArr.length < 2) {
-//     return undefined
-//   }
-//   const mime = mimeArr[1]
-//   const buff = Buffer.from(arr[1], "base64")
-//   return new File([buff], filename, { type: mime })
-// }
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
   id: number
 }
-// 코스등록 전 미리보기 페이지
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CourseRegiDetail3 = ({ setPage, page, id }: pageProps): JSX.Element => {
-  /* **********************************************************************
-api연동부분
- 2
-************************************************************************** */
+  const [isSubmit, setIsSubmit] = useState<boolean>(false)
+  const [selectedNumber, setselectedNumber] = useState<string>("")
   interface MyDetailQueryProps extends QueryProps {
     data: MydetailRes
   }
   const navigate = useNavigate()
-  const [selectedNumber, setselectedNumber] = useState<string>("")
-  const [addCoursePlace] = useAddCoursePlaceMutation()
   const { data: userData, isLoading: isLoadingUser } =
     useMyDetailQuery() as MyDetailQueryProps
 
@@ -132,7 +137,6 @@ api연동부분
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-  const [isSubmit, setIsSubmit] = useState<boolean>(false)
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
@@ -143,61 +147,10 @@ api연동부분
     }
   }
 
-  // 제출용 폼데이터 만드는 함수
-  // base64 => File => blob으로 만들었다.
-  // const makeFormData = async (): Promise<FormData> => {
-  //   const formData = new FormData()
-  //   formData.append("title", courseDetail.title)
-  //   formData.append("description", courseDetail.description)
-  //   const myfile = dataUrlToFile(courseDetail.imgFile, "코스화면.png")
-
-  //   if (myfile !== undefined) {
-  //     await myfile?.arrayBuffer().then((arrayBuffer) => {
-  //         const blob = new Blob([new Uint8Array(arrayBuffer)], {
-  //         type: myfile.type,
-  //       })
-  //     })
-  //     formData.append("imgFile", myfile)
-  //   }
-
-  //   return formData
-  // }
-
-  const courseList = useSelector((state: RootState) => {
-    return state.course.coursePlaces
-  })
-
   const onClickModify = (): void => {
     setPage(1)
   }
 
-  const initialPlace = {
-    order: 1,
-    name: "newName",
-    description: "값을 입력해주세요",
-    lng: 38.05248142233915, // 경도 x
-    lat: 127.65930674808553, // 위도 y
-    apiId: 12346,
-    category: "ETC",
-  }
-
-  const postData = {
-    toSave: [initialPlace],
-  }
-
-  // // 장소리스트 전송하는 함수
-  const submitPlaceList = async (courseId: number): Promise<boolean> => {
-    // map으로 toSave배열에 코스 추가하기
-    // toSave 전처리
-    postData.toSave.pop() // 첫번쨰 데이터 삭제
-    courseList.map((place: CoursePlaceProps) => postData.toSave.push(place))
-
-    await addCoursePlace({ courseId, postData })
-
-    return Promise.resolve(true)
-  }
-
-  // 무한리렌더링 조심 부분
   // 하트 컴포넌트
   const [isLike, setIsLike] = useState<boolean>(true)
   let likeCount = 999
@@ -210,13 +163,12 @@ api연동부분
   const onClickLike = (): void => {
     setIsLike(!isLike)
   }
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     likeCount = changeLikeCount()
   }, [isLike])
-  // 제출
+
   const submit = async (): Promise<boolean> => {
-    await submitPlaceList(id)
     setIsSubmit(true)
     return Promise.resolve(true)
   }
@@ -247,9 +199,7 @@ api연동부분
         <MainContainer>
           <TitleContainer>
             <Box className="Title" sx={TITLE}>
-              <Typography variant="h5" sx={FONT_TITLE}>
-                {courseDetail?.title}
-              </Typography>
+              <FontTitle>{courseDetail?.title}</FontTitle>
               {likeCount && (
                 <LikeButton
                   isLike={isLike!}
@@ -262,29 +212,24 @@ api연동부분
               )}
             </Box>
             <Box className="subTitle" sx={SUBTITLE}>
-              <Typography variant="subtitle1" sx={FONT_SUBTITLE}>
+              <FontSubtitle>
                 <Box sx={ICON_BOX}>
                   <AccountCircleOutlined sx={ICON_STYLE} />
-                  <Typography
-                    variant="subtitle1"
-                    sx={FONT_SUBTITLE}
-                    style={{ margin: "auto 5px" }}
-                  >
-                    {userData.data.nickname}
-                  </Typography>
+                  <FontSubtitle>{userData.data.nickname}</FontSubtitle>
                   <DateRange sx={ICON_STYLE} />
                   {toStringYyyymmdd(new Date())}
                 </Box>
-              </Typography>
+              </FontSubtitle>
             </Box>
           </TitleContainer>
-          <Box sx={DES_STYLE}>{courseDetail?.description}</Box>
+          <Box>
+            <DesText>{courseDetail?.description}</DesText>
+          </Box>
           {placeList !== null && placeList !== undefined && (
             <MapContainer
               selectedNumber={selectedNumber}
               placeLists={placeList}
               isSuccess
-              isLoading={false}
             />
           )}
 
@@ -303,7 +248,7 @@ api연동부분
                 onRemove={() => {}}
                 maxLen={placeList.length}
                 mode={PlaceType.c}
-                isEditable
+                isEditable={false}
               />
             ))}
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>

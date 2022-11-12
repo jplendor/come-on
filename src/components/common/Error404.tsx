@@ -3,7 +3,7 @@ import Robot404 from "assets/Robot404.svg"
 import Image404 from "assets/Image404.png"
 
 import { Box, Typography } from "@mui/material"
-import { useLocation, useParams } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 
 const CONTAINER_STYLE = {
   display: "flex",

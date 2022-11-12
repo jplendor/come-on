@@ -1,11 +1,7 @@
 import React from "react"
 import { useParams } from "react-router-dom"
+import { PlaceType } from "types/API/course-service"
 import SearchPlace from "./SearchPlace"
-
-enum PlaceType {
-  m = "meeting",
-  c = "course",
-}
 
 const CoursePlaceAdd = (): JSX.Element => {
   return <SearchPlace mode={PlaceType.c} editMode={false} id={undefined} />

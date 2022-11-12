@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Avatar,
   Box,
@@ -68,6 +68,10 @@ const MemberInfoModal = (props: MemberInfoModalProp): JSX.Element => {
 
   const { meetingId } = useParams()
   const [updateMeetingUserMutation] = useUpdateMeetingUserMutation()
+
+  useEffect(() => {
+    setMeetingRole(member.meetingRole)
+  }, [])
 
   const onClose = async (): Promise<void> => {
     try {
