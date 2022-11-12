@@ -41,78 +41,88 @@ const MenuItemText = styled(Typography)<TypographyProps>(
 interface CardMenuProps {
   meetingId: number
   meetingCodeId: number
+  myMeetingRole: "HOST" | "EDITOR" | "PARTICIPANT"
 }
-const CardMenu = memo(({ meetingId, meetingCodeId }: CardMenuProps) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLElement>) =>
-    setAnchorEl(event.currentTarget)
-  const [dialog, setDialog] = useState(false)
-  const handleClose = () => setAnchorEl(null)
-  const handleOpenDialog = () => setDialog(true)
-  const [deleteMeeting, { isLoading }] = useDeleteMeetingMutation()
-  const { goUrl } = useNavigateUrl()
-  const handleEditMeeting = () => {
-    const url = `/meeting/${meetingId}` as Url
-    goUrl({ url })
-  }
+const CardMenu = memo(
+  ({ meetingId, meetingCodeId, myMeetingRole }: CardMenuProps) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const open = Boolean(anchorEl)
+    const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      setAnchorEl(e.currentTarget)
+    }
+    const [dialog, setDialog] = useState(false)
+    const handleClose = () => setAnchorEl(null)
+    const handleOpenDialog = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      setDialog(true)
+    }
 
-  return (
-    <div>
-      <IconButton
-        aria-label="more"
-        sx={{
-          width: "24px",
-          height: "24px",
-          paddingBottom: "12px",
-          marginRight: "14px",
-        }}
-        id="CardMenu-button"
-        aria-controls={open ? "menu" : undefined}
-        aria-expanded={open ? "true" : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-      >
-        <MoreVertIcon sx={{ color: "#FFFFFF" }} />
-      </IconButton>
-      <Menu
-        id="CardMenu-menu"
-        MenuListProps={{
-          "aria-labelledby": "CardMenu-button",
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <CardDialog
-          setAnchorEl={setAnchorEl}
-          dialog={dialog}
-          setDialog={setDialog}
-          meetingId={meetingId}
-          meetingCodeId={meetingCodeId}
-        />
-        <MenuItem onClick={handleOpenDialog}>
-          <MenuItemText>초대코드 관리하기</MenuItemText>
-        </MenuItem>
-        <MenuItem onClick={handleEditMeeting}>
-          <MenuItemText>모임 수정하기</MenuItemText>
-        </MenuItem>
-        <MenuItem onClick={() => deleteMeeting({ meetingId })}>
-          <MenuItemText>
-            {isLoading ? "모임 삭제중..." : "모임 삭제하기"}
-          </MenuItemText>
-        </MenuItem>
-      </Menu>
-    </div>
-  )
-})
+    const [deleteMeeting, { isLoading }] = useDeleteMeetingMutation()
+
+    const handleClickDelete = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      deleteMeeting({ meetingId })
+    }
+
+    const isHost = myMeetingRole === "HOST"
+
+    return (
+      <div>
+        {isHost && (
+          <IconButton
+            aria-label="more"
+            sx={{
+              width: "24px",
+              height: "24px",
+              paddingBottom: "12px",
+              marginRight: "14px",
+            }}
+            id="CardMenu-button"
+            aria-controls={open ? "menu" : undefined}
+            aria-expanded={open ? "true" : undefined}
+            aria-haspopup="true"
+            onClick={handleClick}
+          >
+            <MoreVertIcon sx={{ color: "#FFFFFF" }} />
+          </IconButton>
+        )}
+        <Menu
+          id="CardMenu-menu"
+          MenuListProps={{
+            "aria-labelledby": "CardMenu-button",
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <CardDialog
+            setAnchorEl={setAnchorEl}
+            dialog={dialog}
+            setDialog={setDialog}
+            meetingId={meetingId}
+            meetingCodeId={meetingCodeId}
+          />
+          <MenuItem onClick={handleOpenDialog}>
+            <MenuItemText>초대코드 관리하기</MenuItemText>
+          </MenuItem>
+          <MenuItem onClick={handleClickDelete}>
+            <MenuItemText>
+              {isLoading ? "모임 삭제중..." : "모임 삭제하기"}
+            </MenuItemText>
+          </MenuItem>
+        </Menu>
+      </div>
+    )
+  }
+)
 
 export default CardMenu

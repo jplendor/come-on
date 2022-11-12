@@ -14,7 +14,7 @@ const MarkerOveray = (
   index: number
 ): JSX.Element => {
   return (
-    <div className="customoverlay">
+    <div>
       <a
         href={`https://map.kakao.com/link/map/${apiId}`}
         target="_blank"

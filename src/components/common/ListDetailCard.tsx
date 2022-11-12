@@ -79,13 +79,6 @@ const EDIT_BTN = {
   mb: "5px",
 }
 
-export interface ListDetailCardProp {
-  index: number
-  titleTop: string
-  titleBody: string
-  titleBottom: string
-}
-
 interface CoursePlaceState {
   order: number
   name: string

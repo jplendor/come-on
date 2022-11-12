@@ -15,7 +15,7 @@ import { useClickLikeCourseMutation } from "features/course/courseSlice"
 import endpoint from "./endpoint"
 import useInfiniteScroll from "./useInfiniteScroll"
 
-export type LoaderType = "Metting" | "Neighborhood" | "MyCourse" | "LikedCourse"
+export type LoaderType = "Meeting" | "Neighborhood" | "MyCourse" | "LikedCourse"
 interface InfiniteLoaderProps {
   type: LoaderType
 }
@@ -37,7 +37,7 @@ const Row = memo(({ index, style, data }: RowProps) => {
     clickLikeFunc,
     option: { type },
   } = data
-  if (type !== "Metting") {
+  if (type !== "Meeting") {
     const course = info[index] as CourseList
     return (
       <CardItem

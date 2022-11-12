@@ -3,13 +3,10 @@
 /* global kakao */
 
 import React, { useEffect, useRef, useState } from "react"
-import Face, { CollectionsOutlined } from "@mui/icons-material"
 import { styled } from "@mui/material/styles"
 import { Box, Button } from "@mui/material"
 import ReactDOMServer from "react-dom/server"
-import { SearchCardProp } from "types/API/course-service"
-import zIndex from "@mui/material/styles/zIndex"
-import KakaoComponent from "./KakaoComponent"
+import { CoursePlace } from "types/API/course-service"
 import MarkerOveray from "./MarkerOveray"
 
 const { kakao } = window
@@ -36,27 +33,17 @@ const createMarker: any = (
   })
 }
 
-interface CoursePlaceState {
-  order: number
-  name: string
-  description: string
-  lng: number // 경도 x
-  lat: number // 위도 y
-  apiId: number
-  category: string
-  id?: number
-}
-
 export interface MapContainerProps {
-  selectedNumber: string
-  placeLists: CoursePlaceState[]
   isSuccess: boolean
-  isLoading: boolean
+  selectedNumber: string
+  placeLists: CoursePlace[]
 }
-// {첫번째 데이터를 중심으로 잡기}
 
-const makeData = (placeLists: CoursePlaceState[]): MapProps[] => {
-  const mapData2 = placeLists.map((place) => {
+// {첫번째 데이터를 중심으로 잡기}
+const makeData = (placeLists: Array<CoursePlace>): MapProps[] => {
+  const arr = placeLists as Array<CoursePlace>
+
+  const mapData2 = Array.from(placeLists).map((place) => {
     return {
       order: place.order,
       title: place.name,
@@ -72,7 +59,6 @@ const MapContainer = ({
   selectedNumber,
   placeLists,
   isSuccess,
-  isLoading,
 }: MapContainerProps): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null) // 지도를 표시할 div
   const [totalView, setTotalView] = useState<boolean>(true)

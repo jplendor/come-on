@@ -2,24 +2,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
-import { Box, Button, Typography } from "@mui/material"
-
-import { AccountCircleOutlined, DateRange, Share } from "@mui/icons-material"
-
-import { styled } from "@mui/material/styles"
-import MapContainer from "components/common/course/MapContainer"
-import KakaoShare from "components/KakaoShare"
 import { generateComponent } from "utils"
-import KakaoIcon from "assets/nav/KakaoIcon"
+import { Box, Typography } from "@mui/material"
+import { styled } from "@mui/material/styles"
+
+import KakaoShare from "components/KakaoShare"
+import MapContainer from "components/common/course/MapContainer"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import {
   useClickLikeCourseMutation,
   useGetCourseDetailQuery,
 } from "features/course/courseSlice"
-import PlaceDetailCard from "components/common/card/PlaceDetailCard"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
+import { PlaceType } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -36,12 +35,6 @@ const ImgContainer = styled(Box)(() => ({
   height: "200px",
   overflow: "hidden",
   position: "relative",
-}))
-
-const KakaoContainer = styled(Box)(() => ({
-  display: "flex",
-  justifyContent: "right",
-  alignItems: "center",
 }))
 
 const FONT_TITLE = {
@@ -70,10 +63,10 @@ const ICON_STYLE = {
 }
 
 const SUBTITLE = {
-  lineHegiht: "145%",
   margin: "10px 0",
   display: "flex",
   flexWrap: "nowrap",
+  lineHegiht: "145%",
   justifyContent: "flex-start",
 }
 
@@ -102,9 +95,16 @@ interface CoursePlaceState {
   address: string
 }
 
-enum PlaceType {
-  m = "meeting",
-  c = "course",
+interface errorType {
+  data: {
+    code: string
+    data: {
+      errorCode: number
+      message: string
+      responseTime: string
+    }
+  }
+  status: number
 }
 
 const CoursePage = (): JSX.Element => {
@@ -115,8 +115,8 @@ const CoursePage = (): JSX.Element => {
   const {
     data: resultCourseDetail,
     isSuccess,
-    isLoading,
     isFetching,
+    error: err,
   } = useGetCourseDetailQuery(id)
   const [clickLikeCourse] = useClickLikeCourseMutation()
   const loadData = resultCourseDetail?.data?.coursePlaces
@@ -125,6 +125,39 @@ const CoursePage = (): JSX.Element => {
   let likecount = resultCourseDetail?.data?.likeCount!
   const [isLike, setIsLike] = useState<boolean>(initialLike)
   let likeCount = likecount
+  const navigate = useNavigate()
+
+  if (err && "data" in err) {
+    // eslint-disable-next-line no-empty
+
+    const error = err as errorType
+    const { errorCode } = error.data.data
+    switch (errorCode) {
+      case 904:
+        navigate("/not-found", {
+          state: { content: "죄송합니다. 저장되지 않은 코스입니다." },
+        })
+        break
+      case 905:
+        navigate("/not-found", {
+          state: { content: "요청을 수행할 권한이 없습니다." },
+        })
+        break
+      case 906:
+        navigate("/not-found", {
+          state: { content: "해당 리소스에 접근할 수 없는 상태입니다." },
+        })
+        break
+      case 907:
+        navigate("/not-found", {
+          state: { content: "인증된 사용자만 이용 가능합니다." },
+        })
+        break
+
+      default:
+        break
+    }
+  }
 
   const onClickFocus = (event: React.MouseEvent<HTMLDivElement>): void => {
     const e = event?.currentTarget
@@ -219,7 +252,6 @@ const CoursePage = (): JSX.Element => {
               selectedNumber={String(selectedNumber)}
               placeLists={loadData}
               isSuccess={isSuccess}
-              isLoading={isLoading}
             />
           )}
 

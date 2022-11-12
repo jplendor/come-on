@@ -11,6 +11,7 @@ import imgT from "assets/course/course2.jpg"
 import { MeetingList } from "types/API/meeting-service"
 import { CourseList, MyCourses } from "types/API/course-service"
 
+import { useNavigate } from "react-router-dom"
 import CardTexts from "./CardTexts"
 import { CardLikeButton, CardTopInfo } from "./CardItemTitle"
 
@@ -74,12 +75,14 @@ interface CardItem2Props {
 const CardItemLayout = ({
   children,
   style,
+  onClickCard,
 }: {
   children: any
   style?: CSSProperties
+  onClickCard: () => void
 }): JSX.Element => {
   return (
-    <Box style={style}>
+    <Box style={style} onClick={onClickCard} sx={{ cursor: "pointer" }}>
       <ImageList cols={1} sx={{ m: 0 }}>
         {children}
       </ImageList>
@@ -108,8 +111,15 @@ export const CardItem = memo(
       likeCount,
       updatedDate,
     } = useMemo(() => info, [info]) as CourseList
+
+    const navigate = useNavigate()
+
+    const handleClickCard = (): void => {
+      navigate(`/course/${courseId}`)
+    }
+
     return (
-      <CardItemLayout style={style}>
+      <CardItemLayout style={style} onClickCard={handleClickCard}>
         <ThemeImage>
           <CardLikeButton
             isLike={userLiked}
@@ -147,18 +157,26 @@ export const CardItem2 = memo(
       meetingCodeId,
       hostNickname,
       meetingStatus,
+      myMeetingRole,
     } = useMemo(() => info, [info]) as MeetingList
 
     const [start, end] = conversionToString([startDate, endDate])
 
+    const navigate = useNavigate()
+
+    const handleClickCard = (): void => {
+      navigate(`./${meetingCodeId}`)
+    }
+
     return (
-      <CardItemLayout style={style}>
+      <CardItemLayout style={style} onClickCard={handleClickCard}>
         <ThemeImageTwo>
           <CardTopInfo
             meetingId={codeId}
             userCount={userCount}
             meetingStatus={meetingStatus}
             meetingCodeId={meetingCodeId}
+            myMeetingRole={myMeetingRole}
           />
           <img src={imgT} alt={title} />
           <CardTexts

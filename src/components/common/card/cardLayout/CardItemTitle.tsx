@@ -73,18 +73,24 @@ interface CardTopInfoProps {
   meetingStatus: "UNFIXED" | "PROCEEDING" | "END"
   meetingId: number
   meetingCodeId: number
+  myMeetingRole: "HOST" | "EDITOR" | "PARTICIPANT"
 }
 export const CardTopInfo = ({
   userCount,
   meetingId,
   meetingStatus,
   meetingCodeId,
+  myMeetingRole,
 }: CardTopInfoProps): JSX.Element => {
   return (
     <ItemBarTop
       title={<TopInfo userCount={userCount} meetingStatus={meetingStatus} />}
       actionIcon={
-        <CardMenu meetingId={meetingId} meetingCodeId={meetingCodeId} />
+        <CardMenu
+          meetingId={meetingId}
+          meetingCodeId={meetingCodeId}
+          myMeetingRole={myMeetingRole}
+        />
       }
     />
   )

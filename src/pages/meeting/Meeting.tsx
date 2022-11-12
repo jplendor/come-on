@@ -1,10 +1,11 @@
 import React from "react"
 import { Route, Routes } from "react-router-dom"
 import RequireAuth from "components/auth/RequireAuth"
-import ManagingMeetings from "pages/user/Meeting"
+import ManagingMeetings from "pages/meeting/MeetingList"
 import MeetingCreate from "./MeetingCreate"
 import MeetingEdit from "./MeetingEdit"
 import MeetingPlaceAdd from "./MeetingPlaceAdd"
+import MeetingEnter from "./MeetingEnter"
 
 const AuthMeetingListRead = (): JSX.Element => (
   <RequireAuth>
@@ -30,6 +31,12 @@ const AuthMeetingPlaceAdd = (): JSX.Element => (
   </RequireAuth>
 )
 
+const AuthMeetingEnter = (): JSX.Element => (
+  <RequireAuth>
+    <MeetingEnter />
+  </RequireAuth>
+)
+
 const Meeting = (): JSX.Element => {
   return (
     <Routes>
@@ -37,6 +44,7 @@ const Meeting = (): JSX.Element => {
       <Route path="register" element={<AuthMeetingCreate />} />
       <Route path=":meetingId" element={<AuthMeetingEdit />} />
       <Route path=":meetingId/place" element={<AuthMeetingPlaceAdd />} />
+      <Route path="enter" element={<AuthMeetingEnter />} />
     </Routes>
   )
 }

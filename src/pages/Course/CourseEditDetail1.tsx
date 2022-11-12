@@ -6,20 +6,20 @@ import React, {
   useEffect,
   useCallback,
 } from "react"
-import { Grid } from "@mui/material"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
-
-import TextInput from "components/common/input/TextInput"
-import ImageInput from "components/common/input/ImageInput"
-
 import {
   fetchByIdCourseDetail,
   setCourseDetail,
   useUpdateCourseDetailMutation,
 } from "features/course/courseSlice"
 
-import { useDispatch } from "react-redux"
 import { AppDispatch } from "store"
+import { useDispatch } from "react-redux"
+
+import { Grid } from "@mui/material"
+import { fileToObjectUrl } from "utils"
+import TextInput from "components/common/input/TextInput"
+import ImageInput from "components/common/input/ImageInput"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 interface pageProps {
   page: number
@@ -33,56 +33,40 @@ const MAIN_CONTAINER = {
 
 const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>()
+  const [isValid, setIsValid] = useState(false)
   const [image, setImage] = useState<string>("")
   const [title, setTitle] = useState<string>("")
+  const [imageFile, setImageFile] = useState<Blob>()
   const [description, setDescription] = useState<string>("")
-  const [updateCourseDetail, { data: res }] = useUpdateCourseDetailMutation()
+  const [updateCourseDetail] = useUpdateCourseDetailMutation()
 
-  // rtkq에서 데이터 불러오기
-  // store에 데이터 저장하기
-
-  // useEffect 써봤는데, 데이터를 못가져온다 => 여러번 호출하면, 기다려서 가져오거든요 ?
-  // useEffect를 쓰면 여러번호출이 안된다. 왜냐하면 마운트 될때만 실행되거나
-  // 값이 바뀔 때만 실행되기 때문에.
   const dis = useCallback(async () => {
     const detailData = await dispatch(fetchByIdCourseDetail(id))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = detailData.payload
-    setDescription(myData.data.description)
-    setTitle(myData.data.title)
-    setImage(myData.data.imageUrl)
+    setDescription(myData.description)
+
+    setTitle(myData.title)
+    setImage(myData.imageUrl)
   }, [dispatch, id])
 
   useEffect(() => {
     if (page === 1) dis()
   }, [dis, page])
 
-  // 문제 : api의 pending이나 reject가 오면 mount 될 때 바인딩 할 수가 없음
-
-  const [isValid, setIsValid] = useState(false)
-  const [imageFile, setImageFile] = useState<Blob>()
-
   const onValid = useCallback((): void => {
     if (title === "") return
     if (description === "") return
     if (image === "" || image === "undefined") return
+
     setIsValid(true)
   }, [description, image, title])
 
-  const changeFileToObjectUrl = (file: File): string => {
-    const fileUrl = URL.createObjectURL(file)
-
-    console.log(fileUrl)
-    return fileUrl
-  }
-
   const onChangeImage = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files) {
-      console.log(e.target.files)
-      const a = changeFileToObjectUrl(e.target.files[0])
+      const img = fileToObjectUrl(e.target.files[0])
       setImageFile(e.target.files[0])
-      console.log(a)
-      setImage(String(a))
+      setImage(String(img))
     }
   }
 
@@ -110,8 +94,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
     }
 
     await updateCourseDetail({ id, data: newDetail })
-    console.log(res)
-    // navigate(`/course/${id}/update`, { state: 2 })
+
     setPage(2)
   }
 
@@ -134,6 +117,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
           title="코스이름"
           name="title"
           value={title}
+          maxLength={10}
           placeholder="코스명을 입력해 주세요"
           handleChange={handleChangeTitle}
         />
@@ -145,6 +129,7 @@ const Test = ({ id, setPage, page }: pageProps): JSX.Element => {
           placeholder="코스설명을 입력해주세요"
           rows={8}
           name="description"
+          maxLength={30}
           value={description}
           handleChange={handleChangeDes}
         />

@@ -9,6 +9,7 @@ import NeighborhoodCourse from "pages/user/Neighborhood"
 // 코스
 import Course from "pages/course/Course"
 import Meeting from "pages/meeting/Meeting"
+import Error404 from "components/common/Error404"
 
 const App = (): JSX.Element => {
   return (
@@ -18,7 +19,8 @@ const App = (): JSX.Element => {
       <Route path="user/*" element={<User />} />
       <Route path="course/*" element={<Course />} />
       <Route path="meeting/*" element={<Meeting />} />
-      <Route path="*" element={<NeighborhoodCourse />} />
+      <Route path="not-found" element={<Error404 />} />
+      <Route path="*" element={<Error404 />} />
     </Routes>
   )
 }
