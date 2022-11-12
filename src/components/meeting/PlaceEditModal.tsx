@@ -272,7 +272,9 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
     )
   }
   const content =
-    mode === PlaceType.c ? makeCourseContent() : makeMeetingContent()
+    mode === PlaceType.c || mode === "editMode"
+      ? makeCourseContent()
+      : makeMeetingContent()
 
   return content && <div>{content}</div>
 }

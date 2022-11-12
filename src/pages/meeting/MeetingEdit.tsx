@@ -26,11 +26,11 @@ import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
 import MemberInfoModal from "components/meeting/MemberInfoModal"
 import { User, MeetingPlace, MeetingError } from "types/API/meeting-service"
-import { Place as CoursePlace } from "components/common/card/SearchCard"
+
 import { useDispatch } from "react-redux"
 import { addCoursePlace } from "features/course/courseSlice"
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
-import { PlaceType } from "types/API/course-service"
+import { CoursePlace, PlaceType } from "types/API/course-service"
 
 const NewPlace = {
   border: "dashed 2px gray",

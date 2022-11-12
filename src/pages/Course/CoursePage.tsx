@@ -4,22 +4,21 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
-import { Box, Button, Typography } from "@mui/material"
-
-import { AccountCircleOutlined, DateRange, Share } from "@mui/icons-material"
-
-import { styled } from "@mui/material/styles"
-import MapContainer from "components/common/course/MapContainer"
-import KakaoShare from "components/KakaoShare"
 import { generateComponent } from "utils"
-import KakaoIcon from "assets/nav/KakaoIcon"
+import { Box, Typography } from "@mui/material"
+import { styled } from "@mui/material/styles"
+
+import KakaoShare from "components/KakaoShare"
+import MapContainer from "components/common/course/MapContainer"
+import PlaceDetailCard from "components/common/card/PlaceDetailCard"
+import { AccountCircleOutlined, DateRange } from "@mui/icons-material"
 import LikeButton from "components/common/card/cardLayout/CardItemButton"
+import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import {
   useClickLikeCourseMutation,
   useGetCourseDetailQuery,
 } from "features/course/courseSlice"
-import PlaceDetailCard from "components/common/card/PlaceDetailCard"
-import CourseNextStepButton from "components/user/course/CourseNextStepButton"
+import { PlaceType } from "types/API/course-service"
 
 const TitleContainer = styled(Box)(() => ({
   display: "flex",
@@ -64,10 +63,10 @@ const ICON_STYLE = {
 }
 
 const SUBTITLE = {
-  lineHegiht: "145%",
   margin: "10px 0",
   display: "flex",
   flexWrap: "nowrap",
+  lineHegiht: "145%",
   justifyContent: "flex-start",
 }
 
@@ -96,11 +95,6 @@ interface CoursePlaceState {
   address: string
 }
 
-enum PlaceType {
-  m = "meeting",
-  c = "course",
-}
-
 interface errorType {
   data: {
     code: string
@@ -121,10 +115,8 @@ const CoursePage = (): JSX.Element => {
   const {
     data: resultCourseDetail,
     isSuccess,
-    isLoading,
     isFetching,
     error: err,
-    // eslint-disable-next-line react-hooks/rules-of-hooks
   } = useGetCourseDetailQuery(id)
   const [clickLikeCourse] = useClickLikeCourseMutation()
   const loadData = resultCourseDetail?.data?.coursePlaces
@@ -260,7 +252,6 @@ const CoursePage = (): JSX.Element => {
               selectedNumber={String(selectedNumber)}
               placeLists={loadData}
               isSuccess={isSuccess}
-              isLoading={isLoading}
             />
           )}
 
