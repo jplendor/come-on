@@ -18,7 +18,6 @@ import { Box, Typography } from "@mui/material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 
 import { useDispatch, useSelector } from "react-redux"
-import theme from "theme"
 import { fetchByIdCourseDetail } from "features/course/courseSlice"
 
 import { Buffer } from "buffer"

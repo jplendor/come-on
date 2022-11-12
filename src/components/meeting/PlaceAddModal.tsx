@@ -13,16 +13,14 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
-import { Place } from "components/common/card/SearchCard"
 import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { useDispatch, useSelector } from "react-redux"
 import {
   addCoursePlace,
   updateToSave,
   useAddCoursePlaceSingleMutation,
-  useUpdateCoursePlaceToDBMutation,
 } from "features/course/courseSlice"
-import { PlaceType } from "types/API/course-service"
+import { Place, PlaceType } from "types/API/course-service"
 import { RootState } from "store"
 import { PlaceOutlined } from "@mui/icons-material"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
