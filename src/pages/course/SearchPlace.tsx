@@ -19,6 +19,8 @@ import SearchCard from "components/common/card/SearchCard"
 import useGeolocation from "hooks/geolocation/useGeolocation"
 import { PlaceType, SearchCardProp } from "types/API/course-service"
 import { InputAdornment, TextField, Box, Typography } from "@mui/material"
+import { debounceFunc } from "utils"
+import { range } from "@fxts/core"
 
 const { kakao } = window
 const DELAY = 800
@@ -126,7 +128,7 @@ const SearchPlace = ({
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [inputedKeyword, setInputedKeyword] = useState<string>("")
   const [selectedData, setSelectedData] = useState<ListDetailCardProp>()
-
+  const [selectedMarker, setSelectedMarker] = useState<any>()
   // 검색창을 이용해 키워드를 검색
   const handleSearchBar = (): void => {
     setSearchKeyword(inputedKeyword)
@@ -162,18 +164,6 @@ const SearchPlace = ({
     }
   }
 
-  const debounceFunc = (
-    callback: (v: string) => void,
-    delay: number
-  ): ((v: string) => void) => {
-    let timer: ReturnType<typeof setTimeout>
-
-    return (...args) => {
-      clearTimeout(timer)
-      timer = setTimeout(() => callback(args[0]), delay)
-    }
-  }
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const search = useCallback(
     debounceFunc((value: string) => onKeyPress(value), DELAY),
@@ -185,38 +175,49 @@ const SearchPlace = ({
     search(e.key)
   }
 
+  const displayOvelay: any[] = []
+
   // 마커를 맵에 표시
-  const displayMarker = (map: any, place: any): void => {
-    const marker = new kakao.maps.Marker({
-      map,
-      position: new kakao.maps.LatLng(place.y, place.x),
-    })
+  const displayMarker = useCallback(
+    (map: any, place: any): void => {
+      const marker = new kakao.maps.Marker({
+        map,
+        position: new kakao.maps.LatLng(place.y, place.x),
+      })
 
-    const overlay = myOverlay({ content: place.place_name, apiId: place.id })
-    const content = ReactDOMServer.renderToString(overlay)
+      const overlay = myOverlay({ content: place.place_name, apiId: place.id })
+      const content = ReactDOMServer.renderToString(overlay)
 
-    const customoverlay = new kakao.maps.CustomOverlay({
-      content,
-      position: marker.getPosition(),
-      yAnchor: 2,
-    })
+      const customoverlay = new kakao.maps.CustomOverlay({
+        content,
+        position: marker.getPosition(),
+        yAnchor: 2,
+      })
 
-    // 마커에 클릭이벤트를 등록합니다
-    kakao.maps.event.addListener(marker, "click", function () {
-      customoverlay.setMap(null)
-      // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-      const myMarker = MyMarker(place)
-      const renderedMarger = ReactDOMServer.renderToString(myMarker)
+      displayOvelay.push(customoverlay)
 
-      customoverlay.setMap(map)
-      setSelectedData(place)
-      setOpen(true)
+      // 마커에 클릭이벤트를 등록합니다
+      kakao.maps.event.addListener(marker, "click", function () {
+        const myMarker = MyMarker(place)
+        const renderedMarger = ReactDOMServer.renderToString(myMarker)
 
-      map.panTo(new kakao.maps.LatLng(place.y, place.x))
-    })
+        // 이전의 마커를 지워줌
+        for (let i = 0; i < displayOvelay.length; i += 1) {
+          displayOvelay[i].setMap(null)
+        }
 
-    marker.setMap(map)
-  }
+        // 클릭시 해당 customOvelay를 출력
+        customoverlay.setMap(map)
+        setSelectedData(place)
+        setOpen(true)
+
+        map.panTo(new kakao.maps.LatLng(place.y, place.x))
+      })
+
+      marker.setMap(map)
+    },
+    [displayOvelay]
+  )
 
   useEffect(() => {
     const container = mapContainer.current

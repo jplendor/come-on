@@ -67,25 +67,25 @@ const FontTitle = styled(Typography)(
 )
 
 const TITLE_BOX = {
+  margin: "0px",
+  padding: "0px",
   display: "flex",
-  displayDirection: "column",
   flexwrap: "nowrap",
   lineHeight: "140%",
   alignItems: "center",
-  margin: "0px",
-  padding: "0px",
+  displayDirection: "column",
 }
 
 interface ListDetailCardProps {
-  item: SearchCardProp
-  onClickFocus: (event: React.MouseEvent<HTMLDivElement>) => void
-  selectedNumber: string
-  mode: PlaceType
-  editing?: boolean
   id?: number
-  itemsLen?: number
   page?: number
+  mode: PlaceType
+  itemsLen?: number
+  editing?: boolean
+  item: SearchCardProp
+  selectedNumber: string
   setPage?: Dispatch<SetStateAction<number>>
+  onClickFocus: (event: React.MouseEvent<HTMLDivElement>) => void
 }
 
 /* eslint camelcase: ["error", {properties: "never"}] */
