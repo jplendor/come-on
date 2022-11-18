@@ -9,10 +9,10 @@ import { ArrowBackIosNewOutlined, Close } from "@mui/icons-material"
 import LinearProgress from "@mui/material/LinearProgress"
 
 import { PlaceType } from "types/API/course-service"
-import CourseRegiDetail1 from "./CourseRegiDetail1"
-import CourseRegiDetail2 from "./CourseRegiDetail2"
-import CourseRegiDetail3 from "./CourseRegiDetail3"
-import SearchPlace from "./SearchPlace"
+import CourseRegiDetail1 from "pages/course/CourseRegiDetail1"
+import CourseRegiDetail2 from "pages/course/CourseRegiDetail2"
+import CourseRegiDetail3 from "pages/course/CourseRegiDetail3"
+import SearchPlace from "pages/course/SearchPlace"
 // MUI
 
 /* Course Layout 

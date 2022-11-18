@@ -4,9 +4,9 @@ import RequireAuth from "components/auth/RequireAuth"
 
 import Error404 from "components/common/Error404"
 import CoursePlaceAdd from "pages/course/CoursePlaceAdd"
-import CoursePage from "./CoursePage"
-import CourseUpdate from "./CourseUpdate"
-import CourseRegiLayout from "./CourseRegiLayout"
+import CoursePage from "pages/course/CoursePage"
+import CourseUpdate from "pages/course/CourseUpdate"
+import CourseRegiLayout from "pages/course/CourseRegiLayout"
 
 const AuthCoursePage = (): JSX.Element => (
   <RequireAuth>

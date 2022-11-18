@@ -6,10 +6,10 @@ import { styled } from "@mui/material/styles"
 import { Box, LinearProgress, Typography } from "@mui/material"
 import { Close, ArrowBackIosNewOutlined } from "@mui/icons-material"
 import { PlaceType } from "types/API/course-service"
-import CourseEditDetail1 from "./CourseEditDetail1"
-import CourseEditDetail2 from "./CourseEditDetail2"
-import CourseEditDetail3 from "./CourseEditDetail3"
-import SearchPlace from "./SearchPlace"
+import CourseEditDetail1 from "pages/course/CourseEditDetail1"
+import CourseEditDetail2 from "pages/course/CourseEditDetail2"
+import CourseEditDetail3 from "pages/course/CourseEditDetail3"
+import SearchPlace from "pages/course/SearchPlace"
 // MUI
 
 /* Course Layout 
