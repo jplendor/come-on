@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, {
   Dispatch,
@@ -6,27 +7,30 @@ import React, {
   useEffect,
   useState,
 } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { DragDropContext, Droppable } from "react-beautiful-dnd"
-import { styled } from "@mui/material/styles"
-import { Box } from "@mui/material"
-import { generateComponent } from "utils"
-import MapContainer from "components/common/course/MapContainer"
-import { AppDispatch, RootState } from "store"
 import {
   updateCoursePlace,
-  useUpdateCoursePlaceToDBMutation,
   fetchByIdCoursePlaces,
-  updateToModify,
+  useDeleteCoursePlaceMutation,
+  useModifyCoursePlaceMutation,
 } from "features/course/courseSlice"
+
+import { Box } from "@mui/material"
+import { styled } from "@mui/material/styles"
+
+import { AppDispatch, RootState } from "store"
+import { useDispatch, useSelector } from "react-redux"
+
+import { generateComponent, getReorderedPlaces } from "utils"
+import MapContainer from "components/common/course/MapContainer"
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
+import AddCourseBox from "components/common/course/AddCourseBox"
+import {
+  CoursePlace,
+  CoursePlaceProps,
+  PlaceType,
+} from "types/API/course-service"
 import CourseNextStepButton from "components/user/course/CourseNextStepButton"
 import PlaceDetailDraggableCard from "components/common/card/PlaceDetailDraggableCard "
-import {
-  CoursePlaceProps,
-  coursePlaceToModify,
-  CourseUpdatePlaceProps,
-} from "types/API/course-service"
-import AddCourseBox from "components/common/course/AddCourseBox"
 
 const MainContainer = styled(Box)(() => ({
   display: "flex",
@@ -36,57 +40,24 @@ const MAIN_CONTAINER = {
   padding: "20px",
 }
 
-enum PlaceType {
-  m = "meeting",
-  c = "course",
-}
-
-interface CoursePlaceState {
-  order: number
-  name: string
-  description: string
-  lng: number // 경도 x
-  lat: number // 위도 y
-  apiId: number
-  category: string
-  address: string
-  id: number
-}
-
 interface pageProps {
   page: number
   setPage: Dispatch<SetStateAction<number>>
   id: number
 }
 const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
-  const [selectedNumber, setselectedNumber] = useState<string>("")
+  const dispatch = useDispatch<AppDispatch>()
   const [isValid, setIsValid] = useState(false)
+  const [deleteCoursePlace] = useDeleteCoursePlaceMutation()
+  const [modifyCoursePlace] = useModifyCoursePlaceMutation()
+  const [selectedNumber, setselectedNumber] = useState<string>("")
   const placeList: CoursePlaceProps[] = useSelector((state: RootState) => {
     return state.course.coursePlaces
   })
-  const updatePlaces: CourseUpdatePlaceProps = useSelector(
-    (state: RootState) => {
-      return state.course.updatePlaces
-    }
-  )
-  const dispatch = useDispatch<AppDispatch>()
-  const [updateCoursePlaceToDB] = useUpdateCoursePlaceToDBMutation()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [placeData, setPlaceData] = useState<CoursePlaceState[]>(placeList)
+  const [placeData, setPlaceData] = useState<CoursePlace[]>(placeList)
 
-  const setUpdateCourseForDnD = async (
-    newModify: coursePlaceToModify[]
-  ): Promise<void> => {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const updateCourse = {
-      courseId: id,
-      toModify: newModify,
-    }
-    await updateCoursePlaceToDB(updateCourse)
-  }
   const dis = useCallback(async () => {
     const myCourseData = await dispatch(fetchByIdCoursePlaces(id))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const myData: any = myCourseData
     dispatch(updateCoursePlace(myData.payload.data.contents))
     setPlaceData(myData.payload.data.contents)
@@ -94,70 +65,10 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
 
   useEffect(() => {
     dis()
-  }, [])
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onDragEnd = async (result: any): Promise<void> => {
-    const { destination, source, draggableId } = result
-    if (!destination) {
-      return
-    }
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return
-    }
-
-    const newPlaceNames = placeData.map((place: { id: number }) => {
-      return place.id
-    })
-
-    newPlaceNames.splice(source.index, 1)
-    newPlaceNames.splice(destination.index, 0, draggableId)
-
-    const newPlace: Array<CoursePlaceState> = []
-    for (let i = 0; i < newPlaceNames.length; i += 1) {
-      const temp: CoursePlaceState[] = placeData.filter(
-        (place: { id: number }) => {
-          return String(place.id) === String(newPlaceNames[i])
-        }
-      )
-      const temp2 = { ...temp[0] }
-
-      const newState = {
-        ...temp2,
-        order: i + 1,
-      }
-      newPlace.push(newState)
-    }
-
-    setPlaceData(newPlace)
-
-    dispatch(updateCoursePlace(newPlace))
-    // 로직 끝난후에 코스에 데이터 등록
-
-    const newModify: coursePlaceToModify[] = []
-    // eslint-disable-next-line array-callback-return
-    newPlace.map((place) => {
-      const modifyPlace = {
-        id: place.id,
-        description: place.description,
-        order: place.order,
-        category: place.category,
-      }
-      newModify.push(modifyPlace)
-    })
-
-    console.log(newModify)
-
-    dispatch(updateToModify(newPlace))
-
-    await setUpdateCourseForDnD(newModify)
-  }
+  }, [dis])
 
   const onValid = useCallback((): void => {
-    if (placeData.length !== 0) setIsValid(true)
+    if (placeData && placeData.length !== 0) setIsValid(true)
     else {
       setIsValid(false)
     }
@@ -176,64 +87,71 @@ const CourseRegiDetail2 = ({ setPage, page, id }: pageProps): JSX.Element => {
     }
   }
 
-  const onRemove = async (index: number): Promise<void> => {
-    const filteredData = placeData.filter((place) => place.order !== index)
+  // 장소 수정 - 드래그 시
+  const onDragEnd = async (result: DropResult): Promise<void> => {
+    const reorderedPlaces = getReorderedPlaces(
+      result,
+      placeData,
+      PlaceType.c
+    ) as CoursePlace[]
 
-    /* eslint array-callback-return: "error" */
-    // eslint-disable-next-line array-callback-return, @typescript-eslint/no-explicit-any
-    const data = filteredData.map((place: CoursePlaceState): any => {
-      const temp = place
-      if (place.order > index) {
-        const temp2 = { ...temp, order: temp.order - 1 }
-        return temp2
-      }
-      return temp
-    })
-    setPlaceData(data)
+    const sourcePlace = reorderedPlaces[result.source.index]
 
-    // 전역 상태인 course에서 삭제시키고
-    dispatch(updateCoursePlace(data))
-    // 딜리트에 넣어서 db에서 삭제시키기
-    const deleteCourse = {
+    const queryData = {
       courseId: id,
-      toDelete: updatePlaces.toDelete,
+      placeId: sourcePlace.id,
+      data: {
+        description: sourcePlace.description,
+        order: sourcePlace.order,
+        category: sourcePlace.category,
+      },
     }
-    await updateCoursePlaceToDB(deleteCourse)
 
-    // toSave에도 추가하면 안됨
+    dispatch(updateCoursePlace(reorderedPlaces))
+    setPlaceData(reorderedPlaces)
+    await modifyCoursePlace(queryData)
+  }
+
+  // 장소 삭제
+  const onRemove = async (placeId: number): Promise<void> => {
+    const res = await deleteCoursePlace({
+      courseId: String(id),
+      coursePlaceId: String(placeId),
+    })
+
+    const resData = res as any
+    const newData = resData.data.data.coursePlaces
+
+    setPlaceData(newData)
+    dispatch(updateCoursePlace(newData))
   }
 
   const onClicKNextPage = (): void => {
     setPage(page + 1)
   }
 
-  // order바꿔주기
   const handleAddClick = (): void => {
     setPage(2)
   }
-
   return (
-    placeData && (
+    placeList && (
       <MainContainer sx={MAIN_CONTAINER}>
-        {placeData.length !== 0 && (
+        {placeList && placeList.length !== 0 && (
           <MapContainer
             selectedNumber={selectedNumber}
-            placeLists={placeData}
-            isSuccess={placeData !== undefined}
-            isLoading={placeData === undefined}
+            placeLists={placeList}
+            isSuccess={placeList !== undefined}
           />
         )}
-        {/* //dragDropContext */}
         <DragDropContext onDragEnd={onDragEnd}>
-          {placeList.length !== 0 && (
-            // droppable
+          {placeList && placeList.length !== 0 && placeList[0] !== undefined && (
             <Droppable droppableId="placeData">
               {(provided) => (
                 <Box ref={provided.innerRef} {...provided.droppableProps}>
-                  {placeList.map((item) => (
+                  {generateComponent(placeList, (item, key) => (
                     <PlaceDetailDraggableCard
                       item={{ ...item, id: item.id }}
-                      key={item.id}
+                      key={key}
                       onClick={onClickFocus}
                       isSelected={
                         item.order ===

@@ -6,7 +6,7 @@ import CourseListLayout from "../CourseListLayout"
 const Body = (): JSX.Element => {
   return (
     <CourseListLayout>
-      <ListInfiniteLoader type="Metting" />
+      <ListInfiniteLoader type="Meeting" />
     </CourseListLayout>
   )
 }

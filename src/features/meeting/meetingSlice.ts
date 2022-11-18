@@ -16,6 +16,8 @@ import {
   MeetingPlaceForDelete,
   MeetingPlaceForUpdate,
   MeetingUserForUpdate,
+  MeetingUserForCreate,
+  MeetingUserForCreateSuccess,
 } from "types/API/meeting-service"
 
 export const meetingApiSlice = api.injectEndpoints({
@@ -150,6 +152,17 @@ export const meetingApiSlice = api.injectEndpoints({
       }),
       invalidatesTags: ["Meeting"],
     }),
+    // 모임 멤버 생성
+    inviteMeetingUser: builder.mutation<
+      ServerResponse<MeetingUserForCreateSuccess>,
+      MeetingUserForCreate
+    >({
+      query: (inviteCode) => ({
+        url: "/meetings/users",
+        method: "POST",
+        body: inviteCode,
+      }),
+    }),
   }),
 })
 
@@ -167,4 +180,5 @@ export const {
   useDeleteMeetingPlaceMutation,
   useUpdateMeetingPlaceMutation,
   useUpdateMeetingUserMutation,
+  useInviteMeetingUserMutation,
 } = meetingApiSlice

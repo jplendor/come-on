@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import { Button } from "@mui/material"
 
 const BUTTON_STYLE = [
@@ -15,22 +15,26 @@ const BUTTON_STYLE = [
 
 // ButtonComponent의 type 설정
 interface ButtonProps {
+  children?: ReactNode
   content: string
   width?: string
   isValid?: boolean
+  btnStyle?: object
   onClick: () => void
 }
 
-const CourseNextStepButton: React.FC<ButtonProps> = ({
+const CourseNextStepButton: React.FunctionComponent<ButtonProps> = ({
+  children,
   content,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onClick = () => {},
   isValid,
   width,
+  btnStyle,
 }): JSX.Element => {
   return (
     <Button
-      sx={{ ...BUTTON_STYLE[0], width }}
+      sx={{ ...BUTTON_STYLE[0], width, btnStyle }}
       className="nextButton"
       variant="contained"
       disabled={!isValid}
@@ -44,5 +48,7 @@ const CourseNextStepButton: React.FC<ButtonProps> = ({
 export default CourseNextStepButton
 CourseNextStepButton.defaultProps = {
   isValid: false,
+  btnStyle: BUTTON_STYLE,
   width: "100%",
+  children: "",
 }

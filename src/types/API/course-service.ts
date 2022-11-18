@@ -1,6 +1,16 @@
 // Course-Service API Docs 참고
 
-import { Server } from "http"
+export interface CoursePlace {
+  order: number
+  name: string
+  description: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  apiId: number
+  category: string
+  address: string
+  id: number
+}
 
 export interface SearchCardProp {
   index: number // 카드의 인덱스 넘버 - order
@@ -47,11 +57,17 @@ export interface CoursePlaceProps {
   category: string
 }
 
+export interface ListDetailCardProp {
+  index: number
+  titleTop: string
+  titleBody: string
+  titleBottom: string
+}
+
 export interface GetCoursePlacesRes {
   count: number
   contents: CoursePlaceProps[]
 }
-
 export interface coursePlaceToModify {
   id: number
   description: string
@@ -135,6 +151,19 @@ export interface CourseDetail {
     }
   ]
 }
+
+// 카테고리와 메모가 없는 place
+export interface Place {
+  id: number
+  order: number
+  name: string
+  lng: number // 경도 x
+  lat: number // 위도 y
+  apiId: number
+  category: string
+  address: string
+}
+
 /**
  * 코스 업데이트 및 삭제
  */
@@ -220,6 +249,10 @@ interface SliceResponse<T> {
   last: boolean
 }
 
+interface CourseResMsg {
+  message: string
+  courseStatus: "COMPLETE" | "DISABLED" | "WRITING"
+}
 export type MyCoursesSliceRes = SliceResponse<MyCourses>
 export type CourseListSliceRes = SliceResponse<CourseList>
 
@@ -266,6 +299,28 @@ interface Exception {
  * UNAUTHORIZED    : 인증에 실패하였습니다.
  */
 
+export interface CourseError {
+  error: any
+  status: number
+  data: {
+    code: string
+    data: {
+      errorCode: number
+      message: string
+    }
+  }
+}
+
+export interface CourseModifyList {
+  targetCourseId: number
+  coursePlaces: CoursePlace[]
+}
+export interface CourseDeleteResponse {
+  coursePlaces: CoursePlaceProps[]
+  courseStatus: string
+  targetCourseId: number
+}
+
 enum Code {
   BAD_PARAMETER = "BAD_PARAMETER",
   FORBIDDEN = "FORBIDDEN",
@@ -287,7 +342,14 @@ export interface ServerRes {
     | CourseId
     | CoursePlaceProps
     | GetCoursePlacesRes
+    | CourseResMsg
+    | CourseDeleteResponse
+    | CourseModifyList
     | undefined
+}
+
+export interface CourseDeleteRes extends ServerRes {
+  data: CourseDeleteResponse
 }
 
 // GET /courses/my & GET /courses/like
@@ -355,4 +417,18 @@ export interface UpdateCourseDetailQProps {
 export interface CoursePlacesRes extends ServerRes {
   id: number
   data: GetCoursePlacesRes
+}
+
+export interface CourseModifyRes extends ServerRes {
+  data: CourseModifyList
+}
+
+export interface CourseModifyData {
+  courseId: number
+  placeId: number
+  data: {
+    description: string
+    order: number
+    category: string
+  }
 }

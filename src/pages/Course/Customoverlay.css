@@ -1,0 +1,37 @@
+a {
+  text-decoration: none;
+}
+.number {
+  display: inline-block;
+  transform: rotate(135deg);
+  background-color: #337ffe;
+
+  width: 25px;
+  height: 25px;
+  bottom: 25px;
+  left: 25px;
+  border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+  z-index: 5;
+}
+.order {
+  z-index: 100;
+  transform: none;
+  text-decoration: none;
+  position: absolute;
+  left: 8px;
+  bottom: 7px;
+  color: white;
+  font-weight: bold;
+}
+
+.markerBox {
+  position: relative;
+  margin: 0 auto;
+  padding: 5px 10px;
+  border: 1px solid #337ffe;
+  border-radius: 4px;
+  background-color: white;
+  top: -18px;
+}

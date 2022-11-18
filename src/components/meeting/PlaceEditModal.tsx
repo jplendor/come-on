@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import {
   Box,
   Button,
@@ -12,18 +12,16 @@ import {
 } from "@mui/material"
 import { generateComponent } from "utils"
 import TextInput from "components/common/input/TextInput"
-import { useCreateMeetingPlaceMutation } from "features/meeting/meetingSlice"
+import { useUpdateMeetingPlaceMutation } from "features/meeting/meetingSlice"
 import { useDispatch, useSelector } from "react-redux"
 import {
-  addCoursePlace,
   addToModify,
   modifyCoursePlaces,
   modifyToSave,
-  updateToSave,
 } from "features/course/courseSlice"
 import { PlaceType } from "types/API/course-service"
 import { RootState } from "store"
-import { PlaceOutlined, SettingsPowerRounded } from "@mui/icons-material"
+import { PlaceOutlined } from "@mui/icons-material"
 
 const CATEGORY_BOX = {
   height: "80px",
@@ -109,13 +107,10 @@ interface PlaceEditModalProps {
 
 const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
   const { open, onClose, newPlace, mode, id, item } = props
-  const [category, setCategory] = useState("")
+  const [category, setCategory] = useState(item.category)
   const [memo, setMemo] = useState(
     mode === PlaceType.m ? item.memo : item.description
   )
-  const placeItems = useSelector((state: RootState) => {
-    return state.course.coursePlaces
-  })
   const updatePlaceItems = useSelector((state: RootState) => {
     return state.course.updatePlaces
   })
@@ -129,97 +124,12 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
   }
 
   const handleClose = (): void => {
-    setCategory("")
-    setMemo("")
     onClose()
-  }
-
-  const navigate = useNavigate()
-
-  const { meetingId } = useParams()
-  const [createMeetingPlace] = useCreateMeetingPlaceMutation()
-
-  const addPlace = async (): Promise<void> => {
-    try {
-      const res = await createMeetingPlace({
-        meetingId: Number(meetingId),
-        newPlace: {
-          id: newPlace.id,
-          apiId: newPlace.apiId,
-          name: newPlace.name,
-          lat: newPlace.lat,
-          lng: newPlace.lng,
-          memo,
-          category,
-          address: newPlace.address,
-        },
-      }).unwrap()
-
-      if (res.code !== "SUCCESS") {
-        throw new Error(`error code: ${res.code}`)
-      }
-
-      navigate(`/meeting/${meetingId}`)
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message)
-      } else {
-        alert(`unexpected error: ${error}`)
-      }
-    }
   }
 
   const dispatch = useDispatch()
 
-  const onClickAddCoursePlace = (): void => {
-    const myPlace = {
-      ...newPlace,
-      description: memo,
-      category,
-    }
-    dispatch(addCoursePlace(myPlace))
-    navigate("/course", { state: 2 })
-  }
-
-  // 업데이트 로직
-  const onClickUpdateAddCoursePlace = (): void => {
-    const place = {
-      ...newPlace,
-      id: 0,
-      description: memo,
-      category,
-    }
-
-    dispatch(addCoursePlace(place))
-
-    const typePlace = {
-      apiId: newPlace.apiId,
-      name: newPlace.name,
-      lat: newPlace.lat,
-      lng: newPlace.lng,
-      description: memo,
-      category,
-      address: newPlace.address,
-    }
-
-    const itemsLen = placeItems.length
-    const order = itemsLen === 0 ? 0 : itemsLen + 1
-    const myPlace = {
-      ...typePlace,
-      order,
-      description: memo,
-      category,
-    }
-    dispatch(updateToSave({ toSave: myPlace }))
-    navigate(`/course/${id}/update`, { state: 2 })
-  }
-
-  // 1. 전역 toSave에 des,cate 수정하기 [O] -modifyToSave
-  // 2. 전역 toModify에 추가하기 형식에 맞춰 [O] - toSave에 있으면 안됨 -addToModify
-  // 3. 전역 courseList의 해당 수정하기 [O] - modifyCoursePlaces
-  // 4. 수정했던 데이터를 다시 수정하고 싶을 경우 [O] - toModify배열에서 해당녀석만 뽑아내고 다시 집어넣어야함
-  // 추가 리스트의 경우 [O]
-  // 원본 코스의 경우 [O]
+  const { meetingId } = useParams()
 
   const onClickUpdateCourse = (): void => {
     // 객체가 toSave에 있는경우 undefined, 반환 있으면 찾은 객체를 반환
@@ -243,6 +153,75 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
     // courseList업데이트
     dispatch(modifyCoursePlaces(myPlace))
     onClose()
+  }
+
+  const [updateMeetingPlaceMutation] = useUpdateMeetingPlaceMutation()
+
+  const onClickUpdateMeeting = async (): Promise<void> => {
+    try {
+      const res = await updateMeetingPlaceMutation({
+        meetingId: Number(meetingId),
+        placeId: item.id,
+        updatedPlace: { ...item, category, memo },
+      }).unwrap()
+
+      if (res.code !== "SUCCESS") {
+        throw new Error(`error code: ${res.code}`)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message)
+      } else {
+        alert(`unexpected error: ${error}`)
+      }
+    }
+  }
+
+  const makeMeetingContent = (): JSX.Element => {
+    return (
+      <Dialog open={open} sx={DIALOG_STYLE} onClose={handleClose} fullWidth>
+        <DialogTitle sx={DIALOG_TITLE}>{newPlace.name}</DialogTitle>
+
+        <Box sx={ADDRESS_STYLE}>
+          <PlaceOutlined sx={{ color: "#616161", fontSize: "20px" }} />
+          <Typography sx={{ color: "#616161" }}>{newPlace.address}</Typography>
+        </Box>
+        <Box sx={CATEGORY_BOX}>
+          <Typography sx={CATEGORY_FONTSTYLE}>카테고리</Typography>
+          <Select
+            sx={SELECT_STYLE}
+            value={category}
+            onChange={handleCategoryChange}
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value="">카테고리</MenuItem>
+            {generateComponent(CATEGORY_LIST, (data, key) => (
+              <MenuItem value={data.name} key={key}>
+                {data.value}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+        <Box sx={INPUTBOX_STYLE}>
+          <TextInput
+            title="메모"
+            name="memo"
+            value={memo}
+            handleChange={handleMemoChange}
+            multiline
+            rows={2}
+          />
+        </Box>
+        <Button
+          variant="contained"
+          sx={BUTTON_STYLE}
+          onClick={onClickUpdateMeeting}
+        >
+          수정하기
+        </Button>
+      </Dialog>
+    )
   }
 
   const makeCourseContent = (): JSX.Element => {
@@ -276,6 +255,7 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
             title="코스메모"
             name="memo"
             value={memo}
+            maxLength={30}
             handleChange={handleMemoChange}
             multiline
             rows={2}
@@ -291,7 +271,10 @@ const PlaceEditModal = (props: PlaceEditModalProps): JSX.Element => {
       </Dialog>
     )
   }
-  const content = makeCourseContent()
+  const content =
+    mode === PlaceType.c || mode === "editMode"
+      ? makeCourseContent()
+      : makeMeetingContent()
 
   return content && <div>{content}</div>
 }

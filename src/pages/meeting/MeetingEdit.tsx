@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
   Grid,
@@ -11,7 +11,7 @@ import {
   Container,
   Tooltip,
 } from "@mui/material"
-import { generateComponent } from "utils"
+import { generateComponent, getReorderedPlaces } from "utils"
 import { useTheme } from "@mui/material/styles"
 import Calendar from "components/meeting/Calendar"
 import {
@@ -25,26 +25,12 @@ import { MapOutlined } from "@mui/icons-material"
 import Header from "components/meeting/Header"
 import styled from "@emotion/styled"
 import MemberInfoModal from "components/meeting/MemberInfoModal"
-import { User, Place as MeetingPlace } from "types/API/meeting-service"
-import { Place as CoursePlace } from "components/common/card/SearchCard"
+import { User, MeetingPlace, MeetingError } from "types/API/meeting-service"
+
 import { useDispatch } from "react-redux"
 import { addCoursePlace } from "features/course/courseSlice"
-import { DragDropContext, Droppable } from "react-beautiful-dnd"
-import { PlaceType } from "types/API/course-service"
-
-const CATEGORY_LIST = [
-  { name: "SCHOOL", value: "학교" },
-  { name: "CAFE", value: "카페" },
-  { name: "BAR", value: "술집" },
-  { name: "SPORT", value: "스포츠" },
-  { name: "SHOPPING", value: "쇼핑" },
-  { name: "ETC", value: "기타" },
-  { name: "ATTRACTION", value: "관광명소" },
-  { name: "RESTAURANT", value: "음식점" },
-  { name: "ACCOMMODATION", value: "숙박" },
-  { name: "CULTURE", value: "문화시설" },
-  { name: "ACTIVITY", value: "액티비티" },
-]
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd"
+import { CoursePlace, PlaceType } from "types/API/course-service"
 
 const NewPlace = {
   border: "dashed 2px gray",
@@ -64,6 +50,10 @@ const Title = styled(Typography)`
 
 const MeetingEdit = (): JSX.Element => {
   const { meetingId } = useParams()
+  const theme = useTheme()
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [memberInfoModalOpen, setmMemberInfoModalOpen] = useState(false)
   const [clickedMember, setClickedMember] = useState<User>()
@@ -73,12 +63,32 @@ const MeetingEdit = (): JSX.Element => {
     data: response,
     isFetching,
     isSuccess,
+    error: getMeetingError,
   } = useGetMeetingQuery(Number(meetingId))
 
-  const theme = useTheme()
+  useEffect(() => {
+    if (!getMeetingError) return
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+    const meetingError = getMeetingError as MeetingError
+    const { errorCode } = meetingError.data.data
+
+    switch (errorCode) {
+      case 104:
+        navigate("/not-found", {
+          state: { content: "존재하지 않는 모임입니다." },
+        })
+        break
+      case 105:
+        navigate("/not-found", {
+          state: { content: "입장 권한이 없습니다." },
+        })
+        break
+      default:
+        navigate("/not-found", {
+          state: { content: "관리자에게 문의하세요." },
+        })
+    }
+  }, [getMeetingError, navigate])
 
   const addNewPlace = (): void => {
     navigate(`/meeting/${meetingId}/place`)
@@ -140,60 +150,32 @@ const MeetingEdit = (): JSX.Element => {
     const isHost = meeting.myMeetingRole === "HOST"
     const isEditable = isHost || meeting.myMeetingRole === "EDITOR"
 
-    const onDragEnd = async (result: any): Promise<void> => {
-      const placeData = meeting.meetingPlaces
+    const onDragEnd = async (result: DropResult): Promise<void> => {
+      const reorderedPlaces = getReorderedPlaces(
+        result,
+        meeting.meetingPlaces,
+        PlaceType.m
+      )
 
-      const { destination, source, draggableId } = result
-      if (!destination) {
-        return
-      }
-      if (
-        destination.droppableId === source.droppableId &&
-        destination.index === source.index
-      ) {
-        return
-      }
-      const newPlaceNames = placeData.map((place) => {
-        return place.name
-      })
-      newPlaceNames.splice(source.index, 1)
-      newPlaceNames.splice(destination.index, 0, draggableId)
-      const newPlace: Array<MeetingPlace> = []
-      for (let i = 0; i < newPlaceNames.length; i += 1) {
-        const temp: any = placeData.filter((place) => {
-          return place.name === newPlaceNames[i]
-        })
-        const temp2 = { ...temp[0] }
-        const newState = {
-          ...temp2,
-          order: i + 1,
-        }
-        newPlace.push(newState)
-      }
+      if (reorderedPlaces) {
+        const targetPlace = reorderedPlaces[result.destination!.index]
 
-      let targetPlace = newPlace[destination.index]
+        try {
+          const res = await updateMeetingPlaceMutation({
+            meetingId: Number(meetingId),
+            placeId: targetPlace.id,
+            updatedPlace: targetPlace,
+          }).unwrap()
 
-      const categoryCode = CATEGORY_LIST.filter(
-        (it) => it.value === targetPlace.category
-      )[0].name
-
-      targetPlace = { ...targetPlace, category: categoryCode }
-
-      try {
-        const res = await updateMeetingPlaceMutation({
-          meetingId: Number(meetingId),
-          placeId: targetPlace.id,
-          updatedPlace: targetPlace,
-        }).unwrap()
-
-        if (res.code !== "SUCCESS") {
-          throw new Error(`error code: ${res.code}`)
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(error.message)
-        } else {
-          alert(`unexpected error: ${error}`)
+          if (res.code !== "SUCCESS") {
+            throw new Error(`error code: ${res.code}`)
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            alert(error.message)
+          } else {
+            alert(`unexpected error: ${error}`)
+          }
         }
       }
     }

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from "react"
 import { styled } from "@mui/material/styles"
-import EditIcon from "@mui/icons-material/Edit"
+import { Edit, MeetingRoom } from "@mui/icons-material"
 import type { SpeedDialProps } from "@mui/material"
 import {
   Box,
@@ -27,13 +27,18 @@ const ThemeSpeedDial = styled((props: SpeedDialProps) => (
 }))
 
 // 우리동네코스
-const actions1 = [
-  { icon: <EditIcon />, name: "코스생성", url: Url.meetingRegister },
-]
+const actions1 = [{ icon: <Edit />, name: "코스생성", url: Url.courseRegister }]
 // 모임관리
 const actions2 = [
-  { icon: <EditIcon />, name: "모임생성", url: Url.meetingRegister },
+  { icon: <Edit />, name: "모임등록", url: Url.meetingRegister },
+  { icon: <MeetingRoom />, name: "모임입장", url: Url.meetingEnter },
 ]
+
+// speedDial을 사용할 URL 목록
+enum DIAL_URL {
+  COURSE_LIST = "/",
+  MEETING_LIST = "/meeting",
+}
 
 interface ActionType {
   icon: JSX.Element
@@ -56,9 +61,12 @@ const SpeedDial = (): JSX.Element | null => {
   const handleOpen = (): void => setOpen(true)
   const handleClose = (): void => setOpen(false)
 
-  // 마이페이지 & 비로그인 컴포넌트 비활성화
+  // !(코스/모임 리스트) || 마이페이지 || 비로그인 컴포넌트 비활성
+  const pathName = window.location.pathname
+  const pathDial = Object.values(DIAL_URL)
 
-  if (currentIndex === 2 || !isloggedin) return null
+  const onDial = pathDial.includes(pathName as DIAL_URL)
+  if (!onDial || currentIndex === 2 || !isloggedin) return null
 
   return (
     <ThemeSpeedDial
