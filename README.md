@@ -85,7 +85,7 @@ geolocation으로 사용자의 위치를 기반해서 모임 장소를 검색할
 
 ![comeon_1](https://user-images.githubusercontent.com/28006318/219537682-536ae7bb-2297-4ab7-bb81-3b465fbcec2e.png)
 ![comeon_2](https://user-images.githubusercontent.com/28006318/219540004-a030299f-e077-4d41-aab4-a41b42bae701.png)
-
+![comeon_3](https://user-images.githubusercontent.com/28006318/219542405-925bc291-17f8-4b3a-b407-4d53b3889b45.png)
 
 
 각 팀원의 역할과 기여한 부분
