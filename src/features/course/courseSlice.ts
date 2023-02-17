@@ -420,7 +420,6 @@ export const coursePlaceSlice = createSlice({
 
       if ("contents" in loadData) state.coursePlaces = loadData.contents
       else if ("errorCode" in loadData) state.coursePlaces = []
-      else state.coursePlaces = initialState
     })
     builder.addCase(fetchByIdCoursePlaces.pending, (state) => {
       state.done = false
