@@ -12,7 +12,7 @@
 배포사이트
 <현재 시범중이라 더미데이터가 있습니다.>
 
-https://comeoncalender.netlify.app/
+~~https://comeoncalender.netlify.app/~~
 
 
 ~~~
